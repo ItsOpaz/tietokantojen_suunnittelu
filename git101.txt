@@ -1,0 +1,4 @@
+Tehdään kaikki muutokset dev-branchiin, kun toimii niin tehdään merge masteriin
+
+Vastalauseita ja kommentteja saa esittää, mut tällä lailla meillä on aina
+toimiva koodi masterissa, nii jos dev-branchi kusee ni voi helposti alottaa alusta
