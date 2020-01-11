@@ -93,6 +93,15 @@ CREATE TABLE laskutusosoite(
 	
 );
 
+-- Vois tehä funktion, joka automaattisesti etsii id:n kun sille antaa nimen/katuosoitteen/jotain muuta
+
+INSERT INTO laskutusosoite (katuosoite, postinumero, postitoimipaikka, maa) VALUES(
+	'tunitie 45',
+	33720,
+	'Tampere',
+	'Suomi'
+);
+
 CREATE TABLE yhteyshenkilo(
 
 	hloId SERIAL PRIMARY KEY,
@@ -101,5 +110,25 @@ CREATE TABLE yhteyshenkilo(
 	email VARCHAR(40),
 	puhelinnumero VARCHAR(30)
 
+);
+
+INSERT INTO yhteyshenkilo(etunimi, sukunimi, email, puhelinnumero) VALUES(
+	'Pekka', 'Penttilä', 'pekupena@tuni.fi', '6969696969'
+);
+
+CREATE TABLE mainostaja(
+	vat VARCHAR(30) PRIMARY KEY,
+	nimi VARCHAR(30),
+	yhteysHloId integer,
+	FOREIGN KEY(yhteysHloId) REFERENCES yhteyshenkilo(hloId) ON DELETE SET NULL ON UPDATE CASCADE,
+	laskutusosoiteId integer,
+	FOREIGN KEY(laskutusosoiteId) REFERENCES laskutusosoite(osoiteId) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+INSERT INTO mainostaja VALUES(
+	'45 TUNIPATSAS',
+	'Mainostoimisto Masa',
+	1,
+	1
 );
 
