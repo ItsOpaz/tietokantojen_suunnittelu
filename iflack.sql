@@ -52,26 +52,6 @@ INSERT INTO jarjestelma_kirjautumistiedot (kayttaja_tunnus, salasana) VALUES(
 -- EI VIELÄ MITÄÄN VIRHETARKASTELUA!!! 
 
 -- first_name, last_name, user_name, password
-CREATE FUNCTION add_user(VARCHAR, VARCHAR, VARCHAR(30), VARCHAR) RETURNS void AS $$
-	
-	WITH ins1 AS (
-		INSERT INTO jarjestelma_kayttaja VALUES(
-		
-		$3,
-		$1,
-		$2,
-		false
-	)
-	
-	WITH ins2 AS (
-		INSERT INTO jarjestelma_kirjautumistiedot VALUES(
-			$3,
-			$4
-	)
-	
-$$ LANGUAGE SQL;
-
-
 CREATE OR REPLACE FUNCTION add_user(VARCHAR, VARCHAR, VARCHAR(30), VARCHAR) 
 	RETURNS boolean AS 
 	$func$
@@ -97,4 +77,29 @@ CREATE OR REPLACE FUNCTION add_user(VARCHAR, VARCHAR, VARCHAR(30), VARCHAR)
 		RETURN FOUND;
 	END
 	$func$ LANGUAGE plpgsql;
+
+
+-- käyttö: SELECT add_user(etunimi, sukunimi, kayttaja_tunnus, salasana);
+
+-- Tämä ei osaa vielä käsitellä väärässä muodossa olevia postinumeroja
+-- Tarviiko sitä edes tarkistaa?
+CREATE TABLE laskutusosoite(
+
+	osoiteId SERIAL PRIMARY KEY,
+	katuosoite VARCHAR(40),
+	postinumero NUMERIC(5),
+	postitoimipaikka VARCHAR(40),
+	maa VARCHAR(20)
+	
+);
+
+CREATE TABLE yhteyshenkilo(
+
+	hloId SERIAL PRIMARY KEY,
+	etunimi VARCHAR(30),
+	sukunimi VARCHAR(40),
+	email VARCHAR(40),
+	puhelinnumero VARCHAR(30)
+
+);
 
