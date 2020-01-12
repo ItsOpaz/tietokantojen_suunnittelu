@@ -3,6 +3,8 @@
 	En oo laittanu vielä esim NOT NULL lisämääreitä iha hirvesti
 	Koitan vasta saada jonkunäkösen kannan pystyyn ja kattoo mite toimii
 	lisää sit noi virhetarkastelut myöhemmin
+
+	
 */
 
 -- Järjestelmän käyttäjä
