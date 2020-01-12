@@ -1,0 +1,4 @@
+Käyttäjätunnut: sqlmanager
+salasana: tikasu
+
+Pitäis toimia, oon itse omalla tunnuksella kai admin ja luulen lisänneeni ton toiseksi superuseriksi. Kattoo mitä tapahtuu
