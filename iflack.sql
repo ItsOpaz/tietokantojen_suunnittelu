@@ -245,3 +245,15 @@ INSERT INTO laskurivi(selite, hinta, kampanjaId) VALUES (
 	99.99,
 	1
 );
+
+CREATE TABLE jingle (
+	jingleID SERIAL PRIMARY KEY,
+	tiedoston_sijainti VARCHAR(40),
+	nimi VARCHAR(30)
+);
+
+CREATE TABLE genre(
+	genreID SERIAL PRIMARY KEY,
+	nimi VARCHAR(50)
+);
+
