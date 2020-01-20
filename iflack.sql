@@ -257,6 +257,17 @@ CREATE TABLE genre(
 	nimi VARCHAR(50)
 );
 
+CREATE TABLE mainos(
+	mainosId SERIAL PRIMARY KEY,
+	kampanjaId REFERENCES mainoskampanja(kampanjaId) ON DELETE CASCADE ON UPDATE CASCADE,
+	nimi VARCHAR(40),
+	pituus TIME,
+	kuvaus VARCHAR(300),
+	esitysaika TIME,
+	jingleId int REFERENCES jingle(jingleId) ON DELETE NO ACTION ON UPDATE CASCADE,
+	profiiliId int REFERENCES profiili(profiiliId) ON DELETE SET NULL ON UPDATE CASCADE
+);
+
 CREATE TABLE kuuntelija(
 	nimimerkki VARCHAR(30) PRIMARY KEY,
 	ika integer,
@@ -267,13 +278,12 @@ CREATE TABLE kuuntelija(
 	sahkoposti VARCHAR(40)
 );
 
-CREATE TABLE esitys (
-	esitysId SERIAL PRIMARY KEY,
-	kuuntelijaTunnus VARCHAR(30),
-	mainosId integer,
-	pvm DATE,
-	kloaika TIME,
-	FOREIGN KEY(kuuntelijaTunnus) REFERENCES kuuntelija(nimimerkki) ON DELETE NO ACTION ON UPDATE CASCADE,
-	FOREIGN KEY(mainosId) REFERENCES mainos(mainosId) ON DELETE NO ACTION ON UPDATE CASCADE,
-	UNIQUE(kuuntelijaTunnus, mainosId)
-);
+-- CREATE TABLE esitys (
+-- 	esitysId SERIAL PRIMARY KEY,
+-- 	kuuntelijaTunnus VARCHAR(30) REFERENCES kuuntelija(nimimerkki) ON DELETE NO ACTION ON UPDATE CASCADE,
+-- 	mainosId integer REFERENCES mainos(mainosId) ON DELETE NO ACTION ON UPDATE CASCADE,
+-- 	pvm DATE,
+-- 	kloaika TIME,
+-- 	FOREIGN KEY (kuuntelija)
+-- 	UNIQUE(kuuntelijaTunnus, mainosId)
+-- );
