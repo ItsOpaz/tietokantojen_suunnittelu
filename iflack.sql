@@ -29,33 +29,6 @@ CREATE TABLE jarjestelma_kirjautumistiedot (
 	ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- Testi dataa
-INSERT INTO jarjestelma_kayttaja VALUES(
-	'isoTony69',
-	'Toni',
-	'Halme',
-	false);
-
-INSERT INTO jarjestelma_kayttaja VALUES(
-	'MenkaaToihin',
-	'Donald',
-	'Trump',
-	false);
-
-
-INSERT INTO jarjestelma_kirjautumistiedot (kayttaja_tunnus, salasana) VALUES(
-
-		'MenkaaToihin',
-		'BuildAWall'
-);
-
-INSERT INTO jarjestelma_kirjautumistiedot (kayttaja_tunnus, salasana) VALUES(
-
-		'isoTony69',
-		'painuPelleHiiteen'
-);
-
-
 -- Lisää uuden käyttäjän järjestelmään
 -- Pitää kai lisätä virhetarkastelu vai voiko sen tehdä koodin puolella
 
@@ -103,12 +76,6 @@ CREATE TABLE laskutusosoite(
 
 -- Vois tehä funktion, joka automaattisesti etsii id:n kun sille antaa nimen/katuosoitteen/jotain muuta
 
-INSERT INTO laskutusosoite (katuosoite, postinumero, postitoimipaikka, maa) VALUES(
-	'tunitie 45',
-	33720,
-	'Tampere',
-	'Suomi'
-);
 
 CREATE TABLE yhteyshenkilo(
 
@@ -120,9 +87,6 @@ CREATE TABLE yhteyshenkilo(
 
 );
 
-INSERT INTO yhteyshenkilo(etunimi, sukunimi, email, puhelinnumero) VALUES(
-	'Pekka', 'Penttilä', 'pekupena@tuni.fi', '6969696969'
-);
 
 -- Eikös tässä voi olla tilanne, jossa mainostajalla ei ole yhteyshenkilöä?
 -- Jos poistetaan yhteyshenkilö, tilalle jää null- arvo
@@ -137,14 +101,6 @@ CREATE TABLE mainostaja(
 	FOREIGN KEY(yhteysHloId) REFERENCES yhteyshenkilo(hloId) ON DELETE SET NULL ON UPDATE CASCADE
 	
 );
-
-INSERT INTO mainostaja VALUES(
-	'45 TUNIPATSAS', -- vat
-	'Mainostoimisto Masa', -- nimi
-	1, -- yht. hlö. id
-	1 -- laskutusosoite id
-);
-
 
 -- Experimental
 
@@ -172,6 +128,8 @@ CREATE TABLE profiili(
 );
 
 -- Tämä ei tarkista vielä sitä xor- suhdetta profiilin ja mainoksen välillä
+
+
 CREATE TABLE mainoskampanja(
 	kampanjaId SERIAL PRIMARY KEY,
 	laskuId integer,
@@ -181,8 +139,13 @@ CREATE TABLE mainoskampanja(
 	nimi VARCHAR(40),
 	alkupvm DATE DEFAULT CURRENT_DATE,
 	loppupvm DATE,
+<<<<<<< HEAD
 	maaraRahat numeric(8,2), -- Miljoona suurin luku, tuleeko ongelmia?
 	sekuntihinta numeric(4,2), -- Ei varmaankaan yli 100€ sekuntihintaa?
+=======
+	maaraRahat NUMERIC(8,2), -- luokkaa miljoona varmaan riittää
+	sekuntihinta NUMERIC(5,2),-- tietotyyppi money on kuulemma erittäin vanhanaikainen
+>>>>>>> 2c81a16d32783dc814e77c35afc6f9ce83b6a431
 	tila boolean DEFAULT false NOT NULL, -- enabled/disabled
 
 	profiiliId integer,
@@ -206,42 +169,55 @@ ALTER TABLE lasku
 	ADD CONSTRAINT fk_lasku_rivi FOREIGN KEY (riviId) REFERENCES laskurivi(riviId)
 	ON DELETE SET NULL ON UPDATE CASCADE;
 
-INSERT INTO lasku (	lahetyspvm,
-					eraPvm,
-					tila,
-					viitenro,
-					korko,
-					riviId) VALUES(
-						
-						'2020-11-1',
-						'2020-11-2',
-						false,
-						'123452346',
-						12.00,
-						NULL
-
-					);
-
-INSERT INTO profiili VALUES (
-	1,
-	'00:00',
-	'Suomi',
-	'Tampere',
-	3,
-	null
+CREATE TABLE jingle (
+	jingleID SERIAL PRIMARY KEY,
+	tiedoston_sijainti VARCHAR(40),
+	nimi VARCHAR(30)
 );
 
-INSERT INTO mainoskampanja (laskuId, nimi, loppupvm, maaraRahat, sekuntihinta, tila, profiiliId) VALUES(
-
-	1,
-	'masan mainoskampanja',
-	'2020-08-30',
-	100.00,
-	0.20,
-	false,
-	1
+CREATE TABLE genre(
+	genreID SERIAL PRIMARY KEY,
+	nimi VARCHAR(50)
 );
 
+-- HUOM! Tässä ei tuota mainoksen viite-eheyttä oltu mietitty
+-- Päätin sit että update ja delete on cascade, saa muuttaa
+CREATE TABLE mainos(
+	mainosId SERIAL PRIMARY KEY,
+	kampanjaId int,
+	nimi VARCHAR(40),
+	pituus TIME,
+	kuvaus VARCHAR(300),
+	esitysaika TIME,
+	jingleId int,
+	profiiliId int,
+	CONSTRAINT mainos_kampanja_fk FOREIGN KEY(kampanjaId) REFERENCES mainoskampanja(kampanjaId) ON UPDATE CASCADE ON DELETE CASCADE,
+	CONSTRAINT mainos_jingle_fk FOREIGN KEY(jingleId) REFERENCES jingle(jingleId) ON UPDATE CASCADE ON DELETE NO ACTION,
+	CONSTRAINT mainos_profiili_fk FOREIGN KEY(profiiliId) REFERENCES profiili(profiiliId) ON UPDATE CASCADE ON DELETE SET NULL,
+	UNIQUE(kampanjaId, jingleId, profiiliId)
+);
+
+CREATE TABLE kuuntelija(
+	nimimerkki VARCHAR(30) PRIMARY KEY,
+	ika integer,
+	CHECK(ika > 0 and ika < 150),
+	sukupuoli CHAR(1) CHECK(sukupuoli = 'm' or sukupuoli = 'f'),
+	hinta numeric(5,2),
+	maa VARCHAR(20),
+	paikkakunta VARCHAR(40),
+	sahkoposti VARCHAR(40)
+);
+
+CREATE TABLE esitys (
+	esitysId SERIAL PRIMARY KEY,
+	kuuntelijaTunnus VARCHAR(30) REFERENCES kuuntelija(nimimerkki) ON UPDATE CASCADE ON DELETE NO ACTION,
+	mainosId integer REFERENCES mainos(mainosId) ON UPDATE CASCADE ON DELETE NO ACTION,
+	pvm DATE,
+	kloaika TIME,
+	UNIQUE(kuuntelijaTunnus, mainosId)
+);
+
+<<<<<<< HEAD
 INSERT INTO laskurivi(selite, hinta, kampanjaId) VALUES (
 	'Perkeleen kallis mainos',
 	99.99,
@@ -255,3 +231,32 @@ INSERT INTO laskurivi(selite, hinta, kampanjaId) VALUES (
 	20.20,
 	1
 );
+=======
+
+-- laskuid, nimi, alkupvm, loppupvm maararahat, sekuntihinta, tila(false), profiili
+CREATE OR REPLACE FUNCTION add_ad_campaign(int, varchar, date, date, numeric(5,2), numeric(5,2), int) 
+	RETURNS boolean AS 
+	$func$
+	
+	BEGIN
+		INSERT INTO jarjestelma_kayttaja VALUES(
+			
+			$3,
+			$1,
+			$2,
+			false
+		);
+
+		IF NOT FOUND THEN
+			RETURN FALSE;
+		END IF;
+
+		INSERT INTO jarjestelma_kirjautumistiedot VALUES(
+			$3,
+			$4
+		);
+
+		RETURN FOUND;
+	END
+	$func$ LANGUAGE plpgsql;
+>>>>>>> 2c81a16d32783dc814e77c35afc6f9ce83b6a431
