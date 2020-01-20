@@ -245,3 +245,35 @@ INSERT INTO laskurivi(selite, hinta, kampanjaId) VALUES (
 	99.99,
 	1
 );
+
+CREATE TABLE jingle (
+	jingleID SERIAL PRIMARY KEY,
+	tiedoston_sijainti VARCHAR(40),
+	nimi VARCHAR(30)
+);
+
+CREATE TABLE genre(
+	genreID SERIAL PRIMARY KEY,
+	nimi VARCHAR(50)
+);
+
+CREATE TABLE kuuntelija(
+	nimimerkki VARCHAR(30) PRIMARY KEY,
+	ika integer,
+	CHECK(ika > 0 and ika < 150),
+	hinta numeric(5,2),
+	maa VARCHAR(20),
+	paikkakunta VARCHAR(40),
+	sahkoposti VARCHAR(40)
+);
+
+CREATE TABLE esitys (
+	esitysId SERIAL PRIMARY KEY,
+	kuuntelijaTunnus VARCHAR(30),
+	mainosId integer,
+	pvm DATE,
+	kloaika TIME,
+	FOREIGN KEY(kuuntelijaTunnus) REFERENCES kuuntelija(nimimerkki) ON DELETE NO ACTION ON UPDATE CASCADE,
+	FOREIGN KEY(mainosId) REFERENCES mainos(mainosId) ON DELETE NO ACTION ON UPDATE CASCADE,
+	UNIQUE(kuuntelijaTunnus, mainosId)
+);
