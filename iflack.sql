@@ -131,9 +131,11 @@ CREATE TABLE mainostaja(
 	vat VARCHAR(30) PRIMARY KEY,
 	nimi VARCHAR(30),
 	yhteysHloId integer,
-	FOREIGN KEY(yhteysHloId) REFERENCES yhteyshenkilo(hloId) ON DELETE SET NULL ON UPDATE CASCADE,
 	laskutusosoiteId integer,
+
 	FOREIGN KEY(laskutusosoiteId) REFERENCES laskutusosoite(osoiteId) ON DELETE CASCADE ON UPDATE CASCADE
+	FOREIGN KEY(yhteysHloId) REFERENCES yhteyshenkilo(hloId) ON DELETE SET NULL ON UPDATE CASCADE
+	
 );
 
 INSERT INTO mainostaja VALUES(
@@ -179,8 +181,8 @@ CREATE TABLE mainoskampanja(
 	nimi VARCHAR(40),
 	alkupvm DATE DEFAULT CURRENT_DATE,
 	loppupvm DATE,
-	maaraRahat MONEY,
-	sekuntihinta MONEY,
+	maaraRahat numeric(8,2), -- Miljoona suurin luku, tuleeko ongelmia?
+	sekuntihinta numeric(4,2), -- Ei varmaankaan yli 100€ sekuntihintaa?
 	tila boolean DEFAULT false NOT NULL, -- enabled/disabled
 
 	profiiliId integer,
@@ -193,7 +195,7 @@ CREATE TABLE laskurivi(
 
 	riviId SERIAL PRIMARY KEY,
 	selite VARCHAR(40),
-	hinta MONEY,
+	hinta numeric(8,2),
 	kampanjaId integer,
 	FOREIGN KEY(kampanjaId) REFERENCES mainoskampanja(kampanjaId)
 	ON DELETE NO ACTION ON UPDATE NO ACTION
@@ -243,5 +245,13 @@ INSERT INTO mainoskampanja (laskuId, nimi, loppupvm, maaraRahat, sekuntihinta, t
 INSERT INTO laskurivi(selite, hinta, kampanjaId) VALUES (
 	'Perkeleen kallis mainos',
 	99.99,
+	1
+);
+
+UPDATE lasku WHERE laskuId = 1 SET riviId = 1;
+
+INSERT INTO laskurivi(selite, hinta, kampanjaId) VALUES (
+	'Toinen vitun kallis mainos',
+	20.20,
 	1
 );
