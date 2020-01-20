@@ -1,4 +1,9 @@
 
+
+-- Kätevä tapa katsoa taulun sisältö on komennolla
+-- table <tablename>;
+-- vastaa siis komentoa select * from <tablename>
+
 -- Testi dataa
 INSERT INTO jarjestelma_kayttaja VALUES(
 	'isoTony69',
@@ -33,9 +38,21 @@ INSERT INTO laskutusosoite (katuosoite, postinumero, postitoimipaikka, maa) VALU
 	'Suomi'
 );
 
+INSERT INTO laskutusosoite (katuosoite, postinumero, postitoimipaikka, maa) VALUES(
+	'Koodarinkatu 69',
+	33720,
+	'Tampere',
+	'Suomi'
+);
+
 INSERT INTO yhteyshenkilo(etunimi, sukunimi, email, puhelinnumero) VALUES(
 	'Pekka', 'Penttilä', 'pekupena@tuni.fi', '6969696969'
 );
+
+INSERT INTO yhteyshenkilo(etunimi, sukunimi, email, puhelinnumero) VALUES(
+	'Tietokanta', 'Osaaja', 'superkoodari@koodia.com', '040583834588'
+);
+
 
 
 INSERT INTO mainostaja VALUES(
@@ -45,22 +62,36 @@ INSERT INTO mainostaja VALUES(
 	1 -- laskutusosoite id
 );
 
+INSERT INTO mainostaja VALUES(
+	'89KOODAAJA', -- vat
+	'Kooditorio', -- nimi
+	2, -- yht. hlö. id
+	2 -- laskutusosoite id
+);
 
-INSERT INTO lasku (	lahetyspvm,
-					eraPvm,
-					tila,
-					viitenro,
-					korko,
-					riviId) VALUES(
-						
-						'2020-11-1',
-						'2020-11-2',
-						false,
-						'123452346',
-						12.00,
-						NULL
 
-					);
+
+
+INSERT INTO lasku (	lahetyspvm,eraPvm, tila, viitenro, korko) VALUES(
+					
+		'2020-1-20',
+		'2020-2-20',
+		false,
+		'123452346',
+		6.50
+);
+
+INSERT INTO lasku (	lahetyspvm,eraPvm, tila, viitenro, korko, riviId) VALUES(
+					
+		'2020-20-1',
+		'2020-20-2',
+		false,
+		'123452346',
+		6.50,
+		NULL
+);
+
+
 
 INSERT INTO profiili VALUES (
 	1,
@@ -82,11 +113,33 @@ INSERT INTO mainoskampanja (laskuId, nimi, loppupvm, maaraRahat, sekuntihinta, t
 	1
 );
 
-INSERT INTO laskurivi(selite, hinta, kampanjaId) VALUES (
+INSERT INTO mainoskampanja (laskuId, nimi, loppupvm, maaraRahat, sekuntihinta, tila, profiiliId) VALUES(
+
+	1,
+	'masan mainoskampanja',
+	'2020-08-30',
+	100.00,
+	0.20,
+	false,
+	1
+);
+
+INSERT INTO laskurivi(selite, laskuId, hinta, kampanjaId) VALUES (
 	'Perkeleen kallis mainos',
+	1,
 	99.99,
 	1
 );
+
+INSERT INTO laskurivi(selite, laskuId, hinta, kampanjaId) VALUES (
+	'Testimainos',
+	1,
+	10.00,
+	1
+);
+
+
+UPDATE lasku SET riviId = 1 WHERE laskuId = 1;
 
 INSERT INTO kuuntelija VALUES (
     

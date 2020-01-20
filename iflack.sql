@@ -29,41 +29,9 @@ CREATE TABLE jarjestelma_kirjautumistiedot (
 	ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- Lisää uuden käyttäjän järjestelmään
--- Pitää kai lisätä virhetarkastelu vai voiko sen tehdä koodin puolella
-
--- first_name, last_name, user_name, password
-CREATE OR REPLACE FUNCTION add_user(VARCHAR, VARCHAR, VARCHAR(30), VARCHAR) 
-	RETURNS boolean AS 
-	$func$
-	
-	BEGIN
-		INSERT INTO jarjestelma_kayttaja VALUES(
-			
-			$3,
-			$1,
-			$2,
-			false
-		);
-
-		IF NOT FOUND THEN
-			RETURN FALSE;
-		END IF;
-
-		INSERT INTO jarjestelma_kirjautumistiedot VALUES(
-			$3,
-			$4
-		);
-
-		RETURN FOUND;
-	END
-	$func$ LANGUAGE plpgsql;
 
 
--- käyttö: SELECT add_user(etunimi, sukunimi, kayttaja_tunnus, salasana);
 
--- Tämä ei osaa vielä käsitellä väärässä muodossa olevia postinumeroja
--- Tarviiko sitä edes tarkistaa?
 CREATE TABLE laskutusosoite(
 
 	osoiteId SERIAL PRIMARY KEY,
@@ -111,8 +79,8 @@ CREATE TABLE lasku(
 	eraPvm DATE,
 	tila boolean,
 	viitenro VARCHAR(20),
-	korko decimal(5,2),
-	riviId integer -- Ei aseteta vierasavainta vielä
+	korko decimal(5,2)
+	--riviId integer -- Ei aseteta vierasavainta vielä
 );
 
 CREATE TABLE profiili(
@@ -139,13 +107,8 @@ CREATE TABLE mainoskampanja(
 	nimi VARCHAR(40),
 	alkupvm DATE DEFAULT CURRENT_DATE,
 	loppupvm DATE,
-<<<<<<< HEAD
 	maaraRahat numeric(8,2), -- Miljoona suurin luku, tuleeko ongelmia?
 	sekuntihinta numeric(4,2), -- Ei varmaankaan yli 100€ sekuntihintaa?
-=======
-	maaraRahat NUMERIC(8,2), -- luokkaa miljoona varmaan riittää
-	sekuntihinta NUMERIC(5,2),-- tietotyyppi money on kuulemma erittäin vanhanaikainen
->>>>>>> 2c81a16d32783dc814e77c35afc6f9ce83b6a431
 	tila boolean DEFAULT false NOT NULL, -- enabled/disabled
 
 	profiiliId integer,
@@ -154,14 +117,21 @@ CREATE TABLE mainoskampanja(
 
 );
 
+-- Muutin laskurivin ja laskun vierasavaimen suunnan
+-- Nyt laskurivi ottaa vierasavaimekseen laskuId:n
+-- Lisäksi mietin, että kampanjaId olisi viisaampi siirtää lasku-relaatioon
+-- Miksi kampanjaId:tä tarvittaisiin laskurivin yhteydessä?
+-- Mun mielestä olis parempi jos siirtäis sen laskuun, en toki vielä näin tehnyt
 CREATE TABLE laskurivi(
 
 	riviId SERIAL PRIMARY KEY,
+	laskuId int,
 	selite VARCHAR(40),
 	hinta numeric(8,2),
 	kampanjaId integer,
+	FOREIGN KEY(laskuId) REFERENCES lasku(laskuId) ON DELETE CASCADE,
 	FOREIGN KEY(kampanjaId) REFERENCES mainoskampanja(kampanjaId)
-	ON DELETE NO ACTION ON UPDATE NO ACTION
+	ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
 -- Muutetaan laskurivi vielä laskun vierasavaimeksi
@@ -217,46 +187,15 @@ CREATE TABLE esitys (
 	UNIQUE(kuuntelijaTunnus, mainosId)
 );
 
-<<<<<<< HEAD
 INSERT INTO laskurivi(selite, hinta, kampanjaId) VALUES (
 	'Perkeleen kallis mainos',
 	99.99,
 	1
 );
 
-UPDATE lasku WHERE laskuId = 1 SET riviId = 1;
 
 INSERT INTO laskurivi(selite, hinta, kampanjaId) VALUES (
 	'Toinen vitun kallis mainos',
 	20.20,
 	1
 );
-=======
-
--- laskuid, nimi, alkupvm, loppupvm maararahat, sekuntihinta, tila(false), profiili
-CREATE OR REPLACE FUNCTION add_ad_campaign(int, varchar, date, date, numeric(5,2), numeric(5,2), int) 
-	RETURNS boolean AS 
-	$func$
-	
-	BEGIN
-		INSERT INTO jarjestelma_kayttaja VALUES(
-			
-			$3,
-			$1,
-			$2,
-			false
-		);
-
-		IF NOT FOUND THEN
-			RETURN FALSE;
-		END IF;
-
-		INSERT INTO jarjestelma_kirjautumistiedot VALUES(
-			$3,
-			$4
-		);
-
-		RETURN FOUND;
-	END
-	$func$ LANGUAGE plpgsql;
->>>>>>> 2c81a16d32783dc814e77c35afc6f9ce83b6a431

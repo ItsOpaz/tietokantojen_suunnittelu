@@ -1,0 +1,21 @@
+
+Mitä on muuttunut?
+
+Muutin laskurivin ja laskun vierasavaimen suunnan. Nyt laskurivi ottaa vierasavaimekseen laskuId:n.
+Lisäksi mietin, että kampanjaId olisi viisaampi siirtää lasku-relaatioon
+
+Lisäks tuolla iflack.sql tiedostossa on tällä hetkellä jotain ylimääräistä, mutta
+en uskalla poistaa ku kuitenki tarvii vielä.
+
+Mitä pitää vielä tehdä:
+
+loput luontilauseet
+populointi
+käteviä näkymiä esim. näkyy kampanja, laskun loppusumma jne. samassa taulussa
+
+Esim mainoskampanjan poistaminen ei onnistu ennenkuin lasku on poistettu, mutta
+mun mielestä siihen kannattais tehä triggeri, joka katsoo ennen poistamista, että
+lasku on maksettu. Jos on niin sillon voidaan poistaa toi kampanja.
+Lasku siis sais jäädä voimaan/poistettais siinä samalla
+
+
