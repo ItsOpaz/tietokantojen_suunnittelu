@@ -1,6 +1,9 @@
 -- Kätevä tapa katsoa taulun sisältö on komennolla
 -- table <tablename>;
 -- vastaa siis komentoa select * from <tablename>
+
+
+
 -- Testi dataa
 INSERT INTO jarjestelma_kayttaja
 VALUES('isoTony69', 'Toni', 'Halme', false);
@@ -11,10 +14,17 @@ VALUES(
     'Trump',
     false
   );
+
+-- Kirjautumistietoja, älä käytä tätä!
+-- Käytä add_user- funktiota! Lisätietoa funktiot.sql tiedostossa
 INSERT INTO jarjestelma_kirjautumistiedot (kayttaja_tunnus, salasana)
 VALUES('MenkaaToihin', 'BuildAWall');
+
+
 INSERT INTO jarjestelma_kirjautumistiedot (kayttaja_tunnus, salasana)
 VALUES('isoTony69', 'painuPelleHiiteen');
+
+-- Laskutusosoitteet
 INSERT INTO laskutusosoite (katuosoite, postinumero, postitoimipaikka, maa)
 VALUES(
     'tunitie 45',
@@ -22,6 +32,7 @@ VALUES(
     'Tampere',
     'Suomi'
   );
+
 INSERT INTO laskutusosoite (katuosoite, postinumero, postitoimipaikka, maa)
 VALUES(
     'Koodarinkatu 69',
@@ -29,6 +40,8 @@ VALUES(
     'Tampere',
     'Suomi'
   );
+
+-- Yhteyshenkilöt
 INSERT INTO yhteyshenkilo(etunimi, sukunimi, email, puhelinnumero)
 VALUES(
     'Pekka',
@@ -43,6 +56,8 @@ VALUES(
     'superkoodari@koodia.com',
     '040583834588'
   );
+
+-- Mainostajaan liittyvät lisäykset
 INSERT INTO mainostaja
 VALUES(
     '45 TUNIPATSAS',

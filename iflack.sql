@@ -43,9 +43,8 @@ CREATE TABLE mainostaja(
   nimi VARCHAR(30),
   yhteysHloId integer,
   laskutusosoiteId integer,
-  FOREIGN KEY(laskutusosoiteId) REFERENCES laskutusosoite(osoiteId) ON DELETE CASCADE ON UPDATE CASCADE FOREIGN KEY(yhteysHloId) REFERENCES yhteyshenkilo(hloId) ON DELETE
-  SET
-    NULL ON UPDATE CASCADE
+  FOREIGN KEY(laskutusosoiteId) REFERENCES laskutusosoite(osoiteId) ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY(yhteysHloId) REFERENCES yhteyshenkilo(hloId) ON UPDATE CASCADE ON DELETE SET NULL
 );
 -- Experimental
 CREATE TABLE lasku(
