@@ -54,3 +54,36 @@ CREATE OR REPLACE FUNCTION lisaa_laskurivi(int, VARCHAR, NUMERIC, int)
         RETURN FOUND;
     END
 	$func$ LANGUAGE plpgsql;
+
+
+-- Ei salli mainoskampanjan poistamista, mikäli laskua ei ole maksettu
+-- Jos lasku on maksettu, ja mainoskampanjaa ollaan poistamassa,
+-- poistetaan lasku ja siihen liittyvät laskurivit
+CREATE OR REPLACE FUNCTION kampanja_posto_func() RETURNS TRIGGER AS
+
+$kampanja_posto_func$
+
+	BEGIN
+		perform * from lasku l
+
+			where l.tila = false and OLD.kampanjaId = l.kampanjaid;
+		IF FOUND THEN
+			RAISE EXCEPTION 'Maksamatonta mainoskampanjaa ei voi poistaa!';
+			RETURN FOUND;
+		ELSE
+			-- Ei maksamattomia laskurivejä, kampanja voidaan poistaa
+			-- Poistetaan kaikki siihen liittyvät laskurivit, lasku sekä kampanja
+			
+			DELETE FROM lasku l WHERE OLD.kampanjaId = l.kampanjaId;
+
+		END IF;
+
+		RETURN OLD;
+
+	END;
+$kampanja_posto_func$ LANGUAGE plpgsql;
+
+CREATE TRIGGER check_mainoskampanja_del_tr BEFORE DELETE ON mainoskampanja
+	FOR EACH ROW EXECUTE PROCEDURE kampanja_posto_func();
+
+

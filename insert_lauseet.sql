@@ -72,8 +72,8 @@ INSERT INTO mainostaja VALUES(
 
 
 
-INSERT INTO lasku (	lahetyspvm,eraPvm, tila, viitenro, korko) VALUES(
-					
+INSERT INTO lasku (	kampanjaid, lahetyspvm,eraPvm, tila, viitenro, korko) VALUES(
+		1,		
 		'2020-1-20',
 		'2020-2-20',
 		false,
@@ -81,15 +81,6 @@ INSERT INTO lasku (	lahetyspvm,eraPvm, tila, viitenro, korko) VALUES(
 		6.50
 );
 
-INSERT INTO lasku (	lahetyspvm,eraPvm, tila, viitenro, korko, riviId) VALUES(
-					
-		'2020-20-1',
-		'2020-20-2',
-		false,
-		'123452346',
-		6.50,
-		NULL
-);
 
 
 
@@ -124,18 +115,18 @@ INSERT INTO mainoskampanja (laskuId, nimi, loppupvm, maaraRahat, sekuntihinta, t
 	1
 );
 
-INSERT INTO laskurivi(selite, laskuId, hinta, kampanjaId) VALUES (
+INSERT INTO laskurivi(selite, laskuId, hinta) VALUES (
 	'Perkeleen kallis mainos',
 	1,
-	99.99,
-	1
+	99.99
+	
 );
 
-INSERT INTO laskurivi(selite, laskuId, hinta, kampanjaId) VALUES (
+INSERT INTO laskurivi(selite, laskuId, hinta) VALUES (
 	'Testimainos',
 	1,
-	10.00,
-	1
+	10.00
+	
 );
 
 

@@ -75,12 +75,14 @@ CREATE TABLE mainostaja(
 CREATE TABLE lasku(
 
 	laskuId SERIAL PRIMARY KEY,
+	kampanjaId int,
 	lahetyspvm DATE,
 	eraPvm DATE,
 	tila boolean,
 	viitenro VARCHAR(20),
-	korko decimal(5,2)
-	--riviId integer -- Ei aseteta vierasavainta vielä
+	korko decimal(5,2),
+	FOREIGN KEY(kampanjaId) REFERENCES mainoskampanja(kampanjaId)
+	ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
 CREATE TABLE profiili(
@@ -128,16 +130,9 @@ CREATE TABLE laskurivi(
 	laskuId int,
 	selite VARCHAR(40),
 	hinta numeric(8,2),
-	kampanjaId integer,
-	FOREIGN KEY(laskuId) REFERENCES lasku(laskuId) ON DELETE CASCADE,
-	FOREIGN KEY(kampanjaId) REFERENCES mainoskampanja(kampanjaId)
-	ON UPDATE NO ACTION ON DELETE NO ACTION
+	FOREIGN KEY(laskuId) REFERENCES lasku(laskuId) ON DELETE CASCADE
 );
 
--- Muutetaan laskurivi vielä laskun vierasavaimeksi
-ALTER TABLE lasku
-	ADD CONSTRAINT fk_lasku_rivi FOREIGN KEY (riviId) REFERENCES laskurivi(riviId)
-	ON DELETE SET NULL ON UPDATE CASCADE;
 
 CREATE TABLE jingle (
 	jingleID SERIAL PRIMARY KEY,
