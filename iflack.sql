@@ -155,3 +155,9 @@ CREATE TABLE esitys (
   kloaika TIME,
   UNIQUE(kuuntelijaTunnus, mainosId)
 );
+
+CREATE TABLE musiikintekija (
+  tekijaId SERIAL PRIMARY KEY,
+  nimi VARCHAR(40),
+  rooli VARCHAR(30)
+);

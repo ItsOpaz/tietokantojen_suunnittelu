@@ -1,4 +1,12 @@
 
+HUOM!
+
+Mainoskampanjassa ja laskussa vierasavaimet linkitetty molempiin suuntiin
+Mainoskampanja ei tarvi laskuid:tä?
+
+Miksi profiilissa on lähetysaika? Mitä se kertoo? Miksi se ei ole itse mainoksessa?
+
+
 Mitä on muuttunut?
 
 Muutin laskurivin ja laskun vierasavaimen suunnan. Nyt laskurivi ottaa vierasavaimekseen laskuId:n.

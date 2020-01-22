@@ -39,6 +39,13 @@ SELECT lisaa_laskutusosoite(
     'Suomi'
   );
 
+SELECT lisaa_laskutusosoite(
+  'Teekkarinkatu 23',
+  '33720',
+  'Tampere',
+  'Suomi'
+);
+
 -- Yhteyshenkilöt
 INSERT INTO yhteyshenkilo(etunimi, sukunimi, email, puhelinnumero)
 VALUES(
@@ -54,6 +61,14 @@ VALUES(
     'superkoodari@koodia.com',
     '040583834588'
   );
+
+INSERT INTO yhteyshenkilo(etunimi, sukunimi, email, puhelinnumero)
+VALUES(
+    'Mikko',
+    'Mainio',
+    'mikko.mainio@gmail.com',
+    '0405838345'
+);
 
 -- Mainostajaan liittyvät lisäykset
 INSERT INTO mainostaja
@@ -77,21 +92,24 @@ VALUES(
     2 -- laskutusosoite id
   );
 INSERT INTO lasku (
-    kampanjaid,
-    lahetyspvm,
-    eraPvm,
-    tila,
-    viitenro,
-    korko
-  )
+  kampanjaid,
+  lahetyspvm,
+  eraPvm,
+  tila,
+  viitenro,
+  korko
+)
 VALUES(
-    3,
-    '2020-1-20',
-    '2020-2-20',
-    false,
-    '123452346',
-    6.50
-  );
+  3,
+  '2020-1-20',
+  '2020-2-20',
+  false,
+  '123452346',
+  6.50
+);
+
+
+
 INSERT INTO profiili
 VALUES
   (
@@ -101,7 +119,18 @@ VALUES
     'Tampere',
     3,
     null
-  );
+);
+
+INSERT INTO profiili (lahetysaika, maa, paikkakunta, alaikaraja, ylaikaraja)
+VALUES
+  (
+    '00:00',
+    'Suomi',
+    'Tampere',
+    6,
+    null
+);
+
 INSERT INTO profiili(
     lahetysaika,
     maa,
@@ -152,7 +181,8 @@ VALUES(
     0.20,
     false,
     null
-  );
+);
+
 
 INSERT INTO jingle(tiedoston_sijainti, nimi) VALUES(
   '/home/tikasu/tonihalme.mp3',
