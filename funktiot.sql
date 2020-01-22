@@ -55,6 +55,32 @@ CREATE OR REPLACE FUNCTION lisaa_laskurivi(int, VARCHAR, NUMERIC, int)
     END
 	$func$ LANGUAGE plpgsql;
 
+-- Tällä voi lisätä kivasti ja helposti uusia laskutusosoitteita
+-- Jos postinumero on jo olemassa, ei tarvi siitä murehtia
+-- postiosoite, postinumero, postitoimipaikka, maa
+CREATE OR REPLACE FUNCTION lisaa_laskutusosoite(VARCHAR, VARCHAR, VARCHAR, VARCHAR)
+	RETURNS void AS
+	$$
+	DECLARE
+		pstosoite alias for $1;
+		pstnumero alias for $2;
+		pstoimipaikka alias for $3;
+		maa alias for $4;
+
+		isFound integer;
+	BEGIN
+
+		SELECT count(*) INTO isFound FROM postitoimipaikka as pt WHERE pt.postinumero = pstnumero; 
+
+		IF isFound = 0 THEN
+			INSERT INTO postitoimipaikka VALUES(pstnumero, pstoimipaikka);
+		END IF;
+
+		INSERT INTO laskutusosoite(postinumero, katuosoite, maa) VALUES(
+			pstnumero, pstosoite, maa
+		);
+	END
+	$$ LANGUAGE plpgsql;
 
 -- Ei salli mainoskampanjan poistamista, mikäli laskua ei ole maksettu
 -- Jos lasku on maksettu, ja mainoskampanjaa ollaan poistamassa,

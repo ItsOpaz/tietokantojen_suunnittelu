@@ -20,12 +20,17 @@ CREATE TABLE jarjestelma_kirjautumistiedot (
   salasana VARCHAR NOT NULL,
   FOREIGN KEY(kayttaja_tunnus) REFERENCES jarjestelma_kayttaja(kayttaja_tunnus) ON DELETE CASCADE ON UPDATE CASCADE
 );
+CREATE TABLE postitoimipaikka(
+  postinumero VARCHAR(8) PRIMARY KEY,
+  check(postinumero ~ '^[0-9]+$'),
+  pstoimipaikka VARCHAR(40)
+);
 CREATE TABLE laskutusosoite(
   osoiteId SERIAL PRIMARY KEY,
+  postinumero VARCHAR(8),
   katuosoite VARCHAR(40),
-  postinumero NUMERIC(5),
-  postitoimipaikka VARCHAR(40),
-  maa VARCHAR(20)
+  maa VARCHAR(20),
+  FOREIGN KEY(postinumero) REFERENCES postitoimipaikka(postinumero)
 );
 -- Vois tehä funktion, joka automaattisesti etsii id:n kun sille antaa nimen/katuosoitteen/jotain muuta
 CREATE TABLE yhteyshenkilo(

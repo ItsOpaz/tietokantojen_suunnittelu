@@ -25,18 +25,16 @@ INSERT INTO jarjestelma_kirjautumistiedot (kayttaja_tunnus, salasana)
 VALUES('isoTony69', 'painuPelleHiiteen');
 
 -- Laskutusosoitteet
-INSERT INTO laskutusosoite (katuosoite, postinumero, postitoimipaikka, maa)
-VALUES(
+SELECT lisaa_laskutusosoite(
     'tunitie 45',
-    33720,
+    '33720',
     'Tampere',
     'Suomi'
   );
 
-INSERT INTO laskutusosoite (katuosoite, postinumero, postitoimipaikka, maa)
-VALUES(
+SELECT lisaa_laskutusosoite(
     'Koodarinkatu 69',
-    33720,
+    '33720',
     'Tampere',
     'Suomi'
   );
@@ -181,8 +179,3 @@ VALUES
 INSERT INTO laskurivi(selite, laskuId, hinta)
 VALUES
   ('Testimainos', 2, 10.00);
-UPDATE lasku
-SET
-  riviId = 1
-WHERE
-  laskuId = 1;
