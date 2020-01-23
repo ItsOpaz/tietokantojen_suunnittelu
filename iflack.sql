@@ -145,10 +145,7 @@ CREATE TABLE kuuntelija(
     and ika < 150
   ),
   -- tää järkevin varmaa määrittämällä jotkut arvot mitä sukupuoli voi saada tai booleanilla
-  sukupuoli CHAR(1) CHECK(
-    sukupuoli = 'm'
-    or sukupuoli = 'f'
-  ),
+  sukupuoli sukupuoli,
   hinta numeric(5, 2),
   maa VARCHAR(20),
   paikkakunta VARCHAR(40),
