@@ -1,4 +1,3 @@
-
 /*
 	En oo laittanu vielä esim NOT NULL lisämääreitä iha hirvesti
 	Koitan vasta saada jonkunäkösen kannan pystyyn ja kattoo mite toimii
@@ -16,6 +15,7 @@ CREATE TABLE jarjestelma_kayttaja (
 	kayttaja_tunnus VARCHAR(30) PRIMARY KEY,
 	etunimi VARCHAR NOT NULL,
 	sukunimi VARCHAR NOT NULL,
+	-- tyyppi "sihteeri"|"myyjä" 
 	tila BOOLEAN
 
 );
@@ -170,6 +170,7 @@ CREATE TABLE profiili(
 );
 
 -- Tämä ei tarkista vielä sitä xor- suhdetta profiilin ja mainoksen välillä
+-- xor tarkistus varmaa järkevin tehdä triggerillä?
 CREATE TABLE mainoskampanja(
 	kampanjaId SERIAL PRIMARY KEY,
 	laskuId integer,
@@ -181,7 +182,7 @@ CREATE TABLE mainoskampanja(
 	loppupvm DATE,
 	maaraRahat MONEY,
 	sekuntihinta MONEY,
-	tila boolean DEFAULT false NOT NULL, -- enabled/disabled
+	tila BOOLEAN DEFAULT false NOT NULL, -- enabled/disabled
 
 	profiiliId integer,
 	FOREIGN Key(profiiliId) REFERENCES profiili(profiiliId)
@@ -200,6 +201,8 @@ CREATE TABLE laskurivi(
 );
 
 -- Muutetaan laskurivi vielä laskun vierasavaimeksi
+-- eiks tää oo ny väärinpäin nyt lasku -> laskurivi ja laskussa voi olla monta laskuriviä
+-- pitäis olla laskurivi -> lasku
 ALTER TABLE lasku
 	ADD CONSTRAINT fk_lasku_rivi FOREIGN KEY (riviId) REFERENCES laskurivi(riviId)
 	ON DELETE SET NULL ON UPDATE CASCADE;
