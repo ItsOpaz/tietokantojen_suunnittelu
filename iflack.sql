@@ -12,6 +12,7 @@ CREATE TABLE jarjestelma_kayttaja (
   kayttaja_tunnus VARCHAR(30) PRIMARY KEY,
   etunimi VARCHAR NOT NULL,
   sukunimi VARCHAR NOT NULL,
+  --tyyppi "sihteeri"|"myyjä" (tähän oli joku mil pysty määrittää valmiit arvot, mitä attribuutti voi saada)
   tila BOOLEAN
 );
 -- Kirjautumistiedot
@@ -42,7 +43,8 @@ CREATE TABLE yhteyshenkilo(
 );
 -- Eikös tässä voi olla tilanne, jossa mainostajalla ei ole yhteyshenkilöä?
 -- Jos poistetaan yhteyshenkilö, tilalle jää null- arvo
--- oliko tää sallittua
+-- oliko tää sallittua 
+-- pitäis olla sallittu, koska ei voida vaihtaa yhteyshenkilöö poistamatta edellistä
 CREATE TABLE mainostaja(
   vat VARCHAR(30) PRIMARY KEY,
   nimi VARCHAR(30),
@@ -73,6 +75,7 @@ CREATE TABLE profiili(
   CHECK(ylaikaraja > 0)
 );
 -- Tämä ei tarkista vielä sitä xor- suhdetta profiilin ja mainoksen välillä
+-- XOR suhteen tarkastus varmaan järkevin tehdä triggerillä
 CREATE TABLE mainoskampanja(
   kampanjaId SERIAL PRIMARY KEY,
   laskuId integer,
@@ -138,6 +141,7 @@ CREATE TABLE kuuntelija(
     ika > 0
     and ika < 150
   ),
+  -- tää järkevin varmaa määrittämällä jotkut arvot mitä sukupuoli voi saada tai booleanilla
   sukupuoli CHAR(1) CHECK(
     sukupuoli = 'm'
     or sukupuoli = 'f'
