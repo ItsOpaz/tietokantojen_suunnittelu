@@ -1,5 +1,4 @@
 
-
 -- Lisää uuden käyttäjän järjestelmään
 -- Pitää kai lisätä virhetarkastelu vai voiko sen tehdä koodin puolella
 
@@ -85,9 +84,9 @@ CREATE OR REPLACE FUNCTION lisaa_laskutusosoite(VARCHAR, VARCHAR, VARCHAR, VARCH
 -- Ei salli mainoskampanjan poistamista, mikäli laskua ei ole maksettu
 -- Jos lasku on maksettu, ja mainoskampanjaa ollaan poistamassa,
 -- poistetaan lasku ja siihen liittyvät laskurivit
-CREATE OR REPLACE FUNCTION kampanja_posto_func() RETURNS TRIGGER AS
+CREATE OR REPLACE FUNCTION kampanja_poisto_func() RETURNS TRIGGER AS
 
-$kampanja_posto_func$
+$kampanja_poisto_func$
 
 	BEGIN
 		perform * from lasku l
@@ -107,9 +106,9 @@ $kampanja_posto_func$
 		RETURN OLD;
 
 	END;
-$kampanja_posto_func$ LANGUAGE plpgsql;
+$kampanja_poisto_func$ LANGUAGE plpgsql;
 
 CREATE TRIGGER check_mainoskampanja_del_tr BEFORE DELETE ON mainoskampanja
-	FOR EACH ROW EXECUTE PROCEDURE kampanja_posto_func();
+	FOR EACH ROW EXECUTE PROCEDURE kampanja_poisto_func();
 
 
