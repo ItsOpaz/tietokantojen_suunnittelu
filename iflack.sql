@@ -8,7 +8,9 @@
 -- Järjestelmän käyttäjä
 -- Pitääköhän mainosmyyjä ja sihteeri erotella jotenki?
 -- Eli pitääkö esim tähän laittaa rooli? tms.
--- olli tekee roolille typen
+CREATE TYPE rooli AS ENUM('sihteeri', 'myyjä');
+CREATE TYPE sukupuoli AS ENUM('nainen', 'mies', 'muu');
+
 CREATE TABLE jarjestelma_kayttaja (
   kayttaja_tunnus VARCHAR(30) PRIMARY KEY,
   etunimi VARCHAR NOT NULL,
