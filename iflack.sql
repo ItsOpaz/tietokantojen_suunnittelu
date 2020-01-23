@@ -8,11 +8,12 @@
 -- Järjestelmän käyttäjä
 -- Pitääköhän mainosmyyjä ja sihteeri erotella jotenki?
 -- Eli pitääkö esim tähän laittaa rooli? tms.
+-- olli tekee roolille typen
 CREATE TABLE jarjestelma_kayttaja (
   kayttaja_tunnus VARCHAR(30) PRIMARY KEY,
   etunimi VARCHAR NOT NULL,
   sukunimi VARCHAR NOT NULL,
-  --tyyppi "sihteeri"|"myyjä" (tähän oli joku mil pysty määrittää valmiit arvot, mitä attribuutti voi saada)
+  tyyppi rooli,
   tila BOOLEAN
 );
 -- Kirjautumistiedot
