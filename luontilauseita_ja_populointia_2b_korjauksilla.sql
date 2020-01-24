@@ -14,7 +14,7 @@ postitoimipaikka VARCHAR(40)
 
 CREATE TABLE kuuntelija_kirjautumistiedot (
 nimimerkki VARCHAR(20) PRIMARY KEY,
-salasana VARCHAR(40),
+salasana chkpass,
 FOREIGN KEY(nimimerkki) REFERENCES kuuntelija(nimimerkki) ON UPDATE CASCADE ON DELETE CASCADE
 );
 

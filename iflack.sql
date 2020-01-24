@@ -18,10 +18,12 @@ CREATE TABLE jarjestelma_kayttaja (
   tyyppi rooli,
   tila BOOLEAN
 );
+
+CREATE EXTENSION chkpass;
 -- Kirjautumistiedot
 CREATE TABLE jarjestelma_kirjautumistiedot (
   kayttaja_tunnus VARCHAR(30) PRIMARY KEY,
-  salasana VARCHAR NOT NULL,
+  salasana chkpass NOT NULL,
   FOREIGN KEY(kayttaja_tunnus) REFERENCES jarjestelma_kayttaja(kayttaja_tunnus) ON DELETE CASCADE ON UPDATE CASCADE
 );
 CREATE TABLE postitoimipaikka(

@@ -3,7 +3,7 @@
 -- Pitää kai lisätä virhetarkastelu vai voiko sen tehdä koodin puolella
 
 -- first_name, last_name, user_name, password
-CREATE OR REPLACE FUNCTION add_user(VARCHAR, VARCHAR, VARCHAR(30), VARCHAR) 
+CREATE OR REPLACE FUNCTION lisaa_kayttaja(VARCHAR, VARCHAR, VARCHAR(30), chkpass) 
 	RETURNS boolean AS 
 	$func$
 	

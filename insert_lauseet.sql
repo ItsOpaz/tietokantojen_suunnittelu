@@ -16,7 +16,8 @@ VALUES(
   );
 
 -- Kirjautumistietoja, älä käytä tätä!
--- Käytä add_user- funktiota! Lisätietoa funktiot.sql tiedostossa
+-- Käytä 
+-- select lisaa_kayttaja('etunimi', 'sukunimi', 'käyttäjätunnus', 'salasana')
 INSERT INTO jarjestelma_kirjautumistiedot (kayttaja_tunnus, salasana)
 VALUES('MenkaaToihin', 'BuildAWall');
 
