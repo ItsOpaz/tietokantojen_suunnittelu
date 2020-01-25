@@ -132,7 +132,7 @@ kayttajatunnus VARCHAR(30),
 laskuNro INTEGER,
 PRIMARY KEY(kampanjaID, mainostajaID, kayttajatunnus, laskuNro),
 FOREIGN KEY(kampanjaID) REFERENCES mainoskampanja(kampanjaID) ON UPDATE CASCADE ON DELETE CASCADE,
-FOREIGN KEY(mainostajaID) REFERENCES mainostaja(mainostajaID) ON UPDATE CASCADE ON DELETE NO ACTION,
+FOREIGN KEY(mainostajaID) REFERENCES mainostaja(VAT) ON UPDATE CASCADE ON DELETE NO ACTION,
 FOREIGN KEY(kayttajatunnus) REFERENCES jarjestelma_kayttaja(kayttajatunnus) ON UPDATE CASCADE ON DELETE NO ACTION,
 FOREIGN KEY(laskuNro) REFERENCES lasku(laskuid) ON UPDATE CASCADE ON DELETE NO ACTION
 );
