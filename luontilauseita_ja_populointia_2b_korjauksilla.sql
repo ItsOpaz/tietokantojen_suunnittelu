@@ -95,7 +95,7 @@ FOREIGN KEY(teosID) REFERENCES teos(teosID) ON UPDATE CASCADE ON DELETE CASCADE
 --en tiedä onko id ja nimi nyt sama juttu mut tein kuitenki ku muissakin on?
 CREATE TABLE rooli (
 rooliID SERIAL PRIMARY KEY,
-roolin nimi VARHCAR(30)
+roolin nimi VARCHAR(30)
 );
 
 CREATE TABLE yhdiste_teos_tekija_rooli (
