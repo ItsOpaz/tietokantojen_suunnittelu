@@ -29,7 +29,7 @@ FOREIGN KEY(kuuntelijaID) REFERENCES kuuntelija(nimimerkki) ON UPDATE CASCADE ON
 CREATE TABLE teos (
 teosID SERIAL PRIMARY KEY,
 nimi VARCHAR(100),
-julkaisuvuosi YEAR
+julkaisuvuosi DATE
 );
 
 CREATE TABLE musiikintekija (
