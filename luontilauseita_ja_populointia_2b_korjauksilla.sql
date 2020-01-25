@@ -93,7 +93,7 @@ FOREIGN KEY(teosID) REFERENCES teos(teosID) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 --en tiedä onko id ja nimi nyt sama juttu mut tein kuitenki ku muissakin on?
-CREATE TABLE rooli (
+CREATE TABLE musarooli (
 rooliID SERIAL PRIMARY KEY,
 roolin_nimi VARCHAR(30)
 );
@@ -105,7 +105,7 @@ rooliID INTEGER ,
 PRIMARY KEY(teosID, tekijaID, rooliID),
 FOREIGN KEY(teosID) REFERENCES teos(teosID) ON UPDATE CASCADE ON DELETE CASCADE,
 FOREIGN KEY(tekijaID) REFERENCES musiikintekija(tekijaID) ON UPDATE CASCADE ON DELETE NO ACTION,
-FOREIGN KEY(rooliID) REFERENCES rooli(rooliID) ON UPDATE CASCADE ON DELETE NO ACTION
+FOREIGN KEY(rooliID) REFERENCES musarooli(rooliID) ON UPDATE CASCADE ON DELETE NO ACTION
 );
 
 --järjestysnumerolle jokin parempi tietotyyppi?
