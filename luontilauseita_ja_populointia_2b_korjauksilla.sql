@@ -119,8 +119,8 @@ CREATE TABLE karhulasku (
 karhulaskuNro INTEGER,
 laskuNro INTEGER,
 PRIMARY KEY(karhulaskuNro, laskuNro),
-FOREIGN KEY(karhulaskuNro) REFERENCES lasku(laskuNro) ON UPDATE CASCADE ON DELETE CASCADE,
-FOREIGN KEY(laskuNro) REFERENCES lasku(laskuNro) ON UPDATE CASCADE ON DELETE NO ACTION
+FOREIGN KEY(karhulaskuNro) REFERENCES lasku(laskuid) ON UPDATE CASCADE ON DELETE CASCADE,
+FOREIGN KEY(laskuNro) REFERENCES lasku(laskuid) ON UPDATE CASCADE ON DELETE NO ACTION
 );
 
 --tähän keksin itse laskunron viite-eheyden kun puuttui, tsekkaa
@@ -134,5 +134,5 @@ PRIMARY KEY(kampanjaID, mainostajaID, kayttajatunnus, laskuNro),
 FOREIGN KEY(kampanjaID) REFERENCES mainoskampanja(kampanjaID) ON UPDATE CASCADE ON DELETE CASCADE,
 FOREIGN KEY(mainostajaID) REFERENCES mainostaja(mainostajaID) ON UPDATE CASCADE ON DELETE NO ACTION,
 FOREIGN KEY(kayttajatunnus) REFERENCES jarjestelma_kayttaja(kayttajatunnus) ON UPDATE CASCADE ON DELETE NO ACTION,
-FOREIGN KEY(laskuNro) REFERENCES lasku(laskuNro) ON UPDATE CASCADE ON DELETE NO ACTION
+FOREIGN KEY(laskuNro) REFERENCES lasku(laskuid) ON UPDATE CASCADE ON DELETE NO ACTION
 );
