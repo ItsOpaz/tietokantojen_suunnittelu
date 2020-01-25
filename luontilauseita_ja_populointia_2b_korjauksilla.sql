@@ -1,4 +1,4 @@
---Nipsun luontilauseet ja populoinnit 22.1.2020
+ --Nipsun luontilauseet ja populoinnit 22.1.2020
 --tsekkaa, että kaikki tietotyypit samoja kuin tietohakemistossa?
 --tietohakemistosta myös löytyy tauluja mitä relaatiokaaviossa ei ole
 --postinumeroiden täytynee olla varchar koska voi alkaa nollilla
@@ -18,10 +18,10 @@ salasana chkpass,
 FOREIGN KEY(nimimerkki) REFERENCES kuuntelija(nimimerkki) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
---huom onko kakkuri vaihtanut kuuntelijaID:n kuten puhuttiin?
+--huom onko kakkuri vaihtanut kuuntelijaID:n kuten puhuttiin? vaihdoin itse nyt IDn olemaan varchar
 CREATE TABLE soittolista (
 soittolistaID SERIAL PRIMARY KEY,
-kuuntelijaID INTEGER,
+kuuntelijaID VARCHAR,
 nimi VARCHAR(40),
 FOREIGN KEY(kuuntelijaID) REFERENCES kuuntelija(nimimerkki) ON UPDATE CASCADE ON DELETE CASCADE
 );
