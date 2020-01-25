@@ -127,7 +127,7 @@ FOREIGN KEY(laskuNro) REFERENCES lasku(laskuid) ON UPDATE CASCADE ON DELETE NO A
 
 CREATE TABLE yhdiste_kampanja (
 kampanjaID INTEGER,
-mainostajaID INTEGER,
+mainostajaID VARCHAR(30),
 kayttajatunnus VARCHAR(30),
 laskuNro INTEGER,
 PRIMARY KEY(kampanjaID, mainostajaID, kayttajatunnus, laskuNro),
