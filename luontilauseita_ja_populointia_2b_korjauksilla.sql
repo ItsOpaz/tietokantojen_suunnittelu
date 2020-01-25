@@ -92,6 +92,12 @@ FOREIGN KEY(soittolistaID) REFERENCES soittolista(soittolistaID) ON UPDATE CASCA
 FOREIGN KEY(teosID) REFERENCES teos(teosID) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+--en tiedä onko id ja nimi nyt sama juttu mut tein kuitenki ku muissakin on?
+CREATE TABLE rooli (
+rooliID SERIAL PRIMARY KEY,
+roolin nimi VARHCAR(30)
+);
+
 CREATE TABLE yhdiste_teos_tekija_rooli (
 teosID INTEGER,
 tekijaID INTEGER,
@@ -136,3 +142,4 @@ FOREIGN KEY(mainostajaID) REFERENCES mainostaja(VAT) ON UPDATE CASCADE ON DELETE
 FOREIGN KEY(kayttajatunnus) REFERENCES jarjestelma_kayttaja(kayttaja_tunnus) ON UPDATE CASCADE ON DELETE NO ACTION,
 FOREIGN KEY(laskuNro) REFERENCES lasku(laskuid) ON UPDATE CASCADE ON DELETE NO ACTION
 );
+
