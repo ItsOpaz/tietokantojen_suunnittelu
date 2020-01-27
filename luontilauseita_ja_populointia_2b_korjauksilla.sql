@@ -43,9 +43,6 @@ rooli VARCHAR(40)
 -- select rand_puid();
 CREATE TABLE musiikkikappale (
 PUID TEXT PRIMARY KEY,
-CHECK(
-    length(PUID) > 31 and length(PUID) < 43
-),
 teosID INTEGER,
 kesto TIME,
 aanitiedosto VARCHAR(40),

@@ -3,66 +3,19 @@
 -- vastaa siis komentoa select * from <tablename>
 
 
-
--- Testi dataa
-INSERT INTO jarjestelma_kayttaja
-VALUES('isoTony69', 'Toni', 'Halme', false);
-INSERT INTO jarjestelma_kayttaja
-VALUES(
-    'MenkaaToihin',
-    'Donald',
-    'Trump',
-    false
-  );
-
--- Kirjautumistietoja, älä käytä tätä!
--- Käytä 
 -- select lisaa_kayttaja('etunimi', 'sukunimi', 'käyttäjätunnus', 'salasana')
-INSERT INTO jarjestelma_kirjautumistiedot (kayttaja_tunnus, salasana)
-VALUES('MenkaaToihin', 'BuildAWall');
 
-
-INSERT INTO jarjestelma_kirjautumistiedot (kayttaja_tunnus, salasana)
-VALUES('isoTony69', 'painuPelleHiiteen');
-
+SELECT lisaa_kayttaja('Pekka', 'Salminen', 'peksa08', 'PeksaOnKovaUkko87!');
 -- Laskutusosoitteet
 SELECT lisaa_laskutusosoite(
-    'tunitie 45',
+    'Opiskelijankatu 18',
     '33720',
     'Tampere',
     'Suomi'
-  );
-
-SELECT lisaa_laskutusosoite(
-    'Koodarinkatu 69',
-    '33720',
-    'Tampere',
-    'Suomi'
-  );
-
-SELECT lisaa_laskutusosoite(
-  'Teekkarinkatu 23',
-  '33720',
-  'Tampere',
-  'Suomi'
 );
 
--- Yhteyshenkilöt
-INSERT INTO yhteyshenkilo(etunimi, sukunimi, email, puhelinnumero)
-VALUES(
-    'Pekka',
-    'Penttilä',
-    'pekupena@tuni.fi',
-    '6969696969'
-  );
-INSERT INTO yhteyshenkilo(etunimi, sukunimi, email, puhelinnumero)
-VALUES(
-    'Tietokanta',
-    'Osaaja',
-    'superkoodari@koodia.com',
-    '040583834588'
-  );
 
+-- Yhteyshenkilöt
 INSERT INTO yhteyshenkilo(etunimi, sukunimi, email, puhelinnumero)
 VALUES(
     'Mikko',
@@ -74,52 +27,13 @@ VALUES(
 -- Mainostajaan liittyvät lisäykset
 INSERT INTO mainostaja
 VALUES(
-    '45 TUNIPATSAS',
+    'FI19195944',
     -- vat
     'Mainostoimisto Masa',
     -- nimi
-    1,
+    5,
     -- yht. hlö. id
-    1 -- laskutusosoite id
-  );
-INSERT INTO mainostaja
-VALUES(
-    '89KOODAAJA',
-    -- vat
-    'Kooditorio',
-    -- nimi
-    2,
-    -- yht. hlö. id
-    2 -- laskutusosoite id
-  );
-INSERT INTO lasku (
-  kampanjaid,
-  lahetyspvm,
-  eraPvm,
-  tila,
-  viitenro,
-  korko
-)
-VALUES(
-  3,
-  '2020-1-20',
-  '2020-2-20',
-  false,
-  '123452346',
-  6.50
-);
-
-
-
-INSERT INTO profiili
-VALUES
-  (
-    1,
-    '00:00',
-    'Suomi',
-    'Tampere',
-    3,
-    null
+    4 -- laskutusosoite id
 );
 
 INSERT INTO profiili (lahetysaika, maa, paikkakunta, alaikaraja, ylaikaraja)
@@ -132,21 +46,18 @@ VALUES
     null
 );
 
-INSERT INTO profiili(
-    lahetysaika,
-    maa,
-    paikkakunta,
-    alaikaraja,
-    ylaikaraja
-  )
+INSERT INTO profiili (lahetysaika, maa, paikkakunta, alaikaraja, ylaikaraja)
 VALUES
   (
     '00:00',
     'Suomi',
     'Helsinki',
-    18,
-    null
-  );
+    6,
+    16
+);
+
+-- Kokeilkaa luoda mainoskampanja ilman profiilia ja lisätä siihen mainos ilman profiilia
+-- Pitäis tulla erroria
 INSERT INTO mainoskampanja (
     laskuId,
     nimi,
@@ -158,36 +69,41 @@ INSERT INTO mainoskampanja (
   )
 VALUES(
     1,
-    'masan mainoskampanja',
+    'Masan mainoskampanja',
     '2020-08-30',
     100.00,
     0.20,
     false,
-    1
+    4
   );
-  INSERT INTO mainoskampanja (
-    laskuId,
-    nimi,
-    loppupvm,
-    maaraRahat,
-    sekuntihinta,
-    tila,
-    profiiliId
-  )
+
+INSERT INTO lasku (
+  kampanjaid,
+  lahetyspvm,
+  eraPvm,
+  tila,
+  viitenro,
+  korko
+)
 VALUES(
-    2,
-    'Tonyn mainoskampanja',
-    '2020-08-30',
-    69.00,
-    0.20,
-    false,
-    null
+  5,
+  '2020-1-27',
+  '2020-4-27',
+  false,
+  '123452346',
+  8.0
 );
 
 
+
 INSERT INTO jingle(tiedoston_sijainti, nimi) VALUES(
-  '/home/tikasu/tonihalme.mp3',
-  'Toni Halme-Painu pelle hiiteen'
+  'https://mainostoimisto-masa.fi/mainokset/jingle/backgroung-pump-track.mp3',
+  'Background pump track'
+);
+
+INSERT INTO jingle(tiedoston_sijainti, nimi) VALUES(
+  'https://mainostoimisto-masa.fi/mainokset/jingle/backgroung-fast-track.mp3',
+  'Background fast track'
 );
 
 INSERT INTO genre(nimi) VALUES(
@@ -195,13 +111,13 @@ INSERT INTO genre(nimi) VALUES(
 );
 
 INSERT INTO mainos(kampanjaId, nimi, pituus, kuvaus, esitysaika, jingleId, profiiliId) VALUES(
-  3,
-  'Halmeen eka mainos',
-  '03:20',
-  'Toni Halmeen hempeä esitys',
+  5,
+  'Miele P5500 imuri',
+  '00:00:25',
+  'Uuden imurin mainos, joka kertoo imurin ominaisuuksista',
   '00:00',
-  1,
-  1
+  2,
+  5
 );
 
 INSERT INTO laskurivi(selite, laskuId, hinta)

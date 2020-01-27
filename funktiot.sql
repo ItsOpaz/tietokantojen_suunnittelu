@@ -115,7 +115,7 @@ CREATE TRIGGER check_mainoskampanja_del_tr BEFORE DELETE ON mainoskampanja
 -- Kopioi alkuperäisen laskun
 -- Kopioi alkuperäisen laskun laskurivit ja muuttaa niiden hinnat
 
--- KÄYTTÖ: select lisaa_laskurivi(x), missä x on laskuid
+-- KÄYTTÖ: select lisaa_karhulasku(x), missä x on laskuid
 CREATE OR REPLACE FUNCTION lisaa_karhulasku(laskuid_ int) RETURNS void AS
 $karhulasku$
 DECLARE
@@ -173,3 +173,35 @@ BEGIN
 
 END;
 $$ LANGUAGE plpgsql;
+
+-- Tarkistaa mainoskampanjan sekä mainoksen välisen xor-suhteen
+-- Jos mainoskampanjalle on asetettu profiili, siihen lisättävillä mainoksilla ei ole profiilia
+-- Toisaalta, jos mainoskampanjaan ei ole asetettu profiilia
+-- mainoksella täytyy olla profiili
+CREATE OR REPLACE FUNCTION check_mainoskampanja_mainos_profiili() RETURNS trigger AS
+$$
+DECLARE
+	kampanjaHasProfile boolean;
+BEGIN
+	kampanjaHasProfile := exists(SELECT profiiliId FROM mainoskampanja AS m WHERE m.kampanjaid = NEW.kampanjaId); 
+	-- NEW tarkoittaa siis uutta mainos-tauluun lisättävää/päivitettävää riviä
+	
+	if kampanjaHasProfile then
+		-- Mainoskampanjalla on profiili -> mainoksella ei saa olla profiilia
+		if NEW.profiiliid is not null then
+			RAISE EXCEPTION 'Mainoskampanjalla on jo profiili! Lisättävällä mainoksella tällöin ei saa olla profiilia. Uutta mainosta ei lisätty.';
+		end if;
+	ELSE
+		-- Mainoskampanjalla ei ole profiilia -> mainoksella täytyy olla profiili
+		if NEW.profiiliid = null then
+			RAISE EXCEPTION 'Mainoskampanjalla ei ole profiilia! Tällöin mainokselle täytyy asettaa profiili. Uutta mainosta ei lisätty.';
+		end if;
+	end if;
+
+	RETURN NEW;
+END;
+
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER check_mainoskampanja_mainos_profiili_tr BEFORE INSERT ON mainos
+	FOR EACH ROW EXECUTE PROCEDURE check_mainoskampanja_mainos_profiili();
