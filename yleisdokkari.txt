@@ -1,4 +1,3 @@
-
 HUOM!
 
 Mainoskampanjassa ja laskussa vierasavaimet linkitetty molempiin suuntiin
@@ -33,3 +32,5 @@ Mainoskampanjan voi poistaa vain, jos siihen liittyvät maksut on suoritettu,
 Eli siis jos laskun tila on maksettu, mainoskampanjan poistaminen aiheuttaa
 myös laskun ja laskurivien poiston.
 
+Mainoskampanjaa luodessa yhdiste_kampanja tauluun laskuId pitää asettaa NULL, 
+koska lasku voidaan luoda vasta kampanjan loputtua
