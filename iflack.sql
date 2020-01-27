@@ -12,7 +12,7 @@ CREATE TYPE rooli AS ENUM('sihteeri', 'myyjä');
 CREATE TYPE sukupuoli AS ENUM('nainen', 'mies', 'muu');
 
 CREATE TABLE jarjestelma_kayttaja (
-  kayttaja_tunnus VARCHAR(30) PRIMARY KEY,
+  kayttajatunnus VARCHAR(30) PRIMARY KEY,
   etunimi VARCHAR NOT NULL,
   sukunimi VARCHAR NOT NULL,
   tyyppi rooli,
