@@ -122,24 +122,24 @@ FOREIGN KEY(teosID) REFERENCES teos(teosID) ON UPDATE CASCADE ON DELETE CASCADE
 --molemmat vierasavaimet viittaavat samaan, haittaako?
 
 CREATE TABLE karhulasku (
-karhulaskuNro INTEGER,
-laskuNro INTEGER,
-PRIMARY KEY(karhulaskuNro, laskuNro),
-FOREIGN KEY(karhulaskuNro) REFERENCES lasku(laskuid) ON UPDATE CASCADE ON DELETE CASCADE,
-FOREIGN KEY(laskuNro) REFERENCES lasku(laskuid) ON UPDATE CASCADE ON DELETE NO ACTION
+karhulaskuId INTEGER,
+laskuId INTEGER,
+PRIMARY KEY(karhulaskuId, laskuId),
+FOREIGN KEY(karhulaskuId) REFERENCES lasku(laskuid) ON UPDATE CASCADE ON DELETE NO ACTION,
+FOREIGN KEY(laskuId) REFERENCES lasku(laskuid) ON UPDATE CASCADE ON DELETE NO ACTION
 );
 
---tähän keksin itse laskunron viite-eheyden kun puuttui, tsekkaa
+--tähän keksin itse laskuIdn viite-eheyden kun puuttui, tsekkaa
 
 CREATE TABLE yhdiste_kampanja (
 kampanjaID INTEGER,
 mainostajaID VARCHAR(30),
 kayttajatunnus VARCHAR(30),
-laskuNro INTEGER,
-PRIMARY KEY(kampanjaID, mainostajaID, kayttajatunnus, laskuNro),
+laskuId INTEGER,
+PRIMARY KEY(kampanjaID, mainostajaID, kayttajatunnus, laskuId),
 FOREIGN KEY(kampanjaID) REFERENCES mainoskampanja(kampanjaID) ON UPDATE CASCADE ON DELETE CASCADE,
 FOREIGN KEY(mainostajaID) REFERENCES mainostaja(VAT) ON UPDATE CASCADE ON DELETE NO ACTION,
 FOREIGN KEY(kayttajatunnus) REFERENCES jarjestelma_kayttaja(kayttaja_tunnus) ON UPDATE CASCADE ON DELETE NO ACTION,
-FOREIGN KEY(laskuNro) REFERENCES lasku(laskuid) ON UPDATE CASCADE ON DELETE NO ACTION
+FOREIGN KEY(laskuId) REFERENCES lasku(laskuid) ON UPDATE CASCADE ON DELETE NO ACTION
 );
 
