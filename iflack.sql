@@ -22,7 +22,7 @@ CREATE TABLE jarjestelma_kayttaja (
 CREATE EXTENSION chkpass;
 -- Kirjautumistiedot
 CREATE TABLE jarjestelma_kirjautumistiedot (
-  kayttaja_tunnus VARCHAR(30) PRIMARY KEY,
+  kayttajatunnus VARCHAR(30) PRIMARY KEY,
   salasana chkpass NOT NULL,
   FOREIGN KEY(kayttaja_tunnus) REFERENCES jarjestelma_kayttaja(kayttaja_tunnus) ON DELETE CASCADE ON UPDATE CASCADE
 );
