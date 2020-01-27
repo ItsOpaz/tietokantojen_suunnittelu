@@ -128,7 +128,7 @@ BEGIN
 		(SELECT kampanjaid, lahetyspvm, erapvm, tila, viitenro, korko from lasku WHERE laskuId = laskuid_)
 		RETURNING laskuid into bearBillId;
 	-- Päivitetään lasku
-	RAISE notice 'päivitetyn laskun id: %', bearBillId; -- DEBUG
+	--RAISE notice 'päivitetyn laskun id: %', bearBillId; -- DEBUG
 
 	-- Lisätään karhulaskuun uusi lasku
 	INSERT INTO karhulasku VALUES(
@@ -147,3 +147,29 @@ BEGIN
 	);
 END
 $karhulasku$ LANGUAGE plpgsql;
+
+-- Tätä käytetään PUID-arvon luontiin
+CREATE OR REPLACE FUNCTION rand_puid() RETURNS text AS
+$$
+DECLARE
+	chars text[] := '{0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z}';
+	result text := '';
+	i integer := 0;
+	-- Tietohakemiston mukaan puid:n pituus on [32,40]
+	length integer := random()*(41-32)+32; -- 32 <= n < 41
+BEGIN
+	-- Generoidaan satunnainen puid, jonka pituus on välillä 32-40
+	for i in 1..length LOOP
+		result := result || chars[1+random()*(array_length(chars, 1)-1)];
+	END LOOP;
+
+	-- Tarkistetaan, onko vastaavaa puid:tä vielä olemassa, jos on luodaan uusi
+	IF exists(SELECT PUID FROM musiikkikappale WHERE PUID = result LIMIT 1) THEN
+		-- Kutsutaan funktiota rekursiivisesti, jolloin generoidaan uusi puid
+		result = rand_puid();	
+	ELSE
+		RETURN result;
+	END IF;
+
+END;
+$$ LANGUAGE plpgsql;
