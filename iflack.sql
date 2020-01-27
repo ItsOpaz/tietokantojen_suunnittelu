@@ -94,7 +94,7 @@ CREATE TABLE mainoskampanja(
     -- Miljoona suurin luku, tuleeko ongelmia?
     sekuntihinta numeric(4, 2),
     -- Ei varmaankaan yli 100€ sekuntihintaa?
-    tila boolean DEFAULT false NOT NULL,
+    tila boolean DEFAULT true NOT NULL,
     -- enabled/disabled
     profiiliId integer,
     FOREIGN Key(profiiliId) REFERENCES profiili(profiiliId) ON UPDATE CASCADE ON DELETE
@@ -150,7 +150,6 @@ CREATE TABLE kuuntelija(
   ),
   -- tää järkevin varmaa määrittämällä jotkut arvot mitä sukupuoli voi saada tai booleanilla
   sukupuoli sukupuoli,
-  hinta numeric(5, 2),
   maa VARCHAR(20),
   paikkakunta VARCHAR(40),
   sahkoposti VARCHAR(40)
@@ -159,8 +158,8 @@ CREATE TABLE esitys (
   esitysId SERIAL PRIMARY KEY,
   kuuntelijaTunnus VARCHAR(30) REFERENCES kuuntelija(nimimerkki) ON UPDATE CASCADE ON DELETE NO ACTION,
   mainosId integer REFERENCES mainos(mainosId) ON UPDATE CASCADE ON DELETE NO ACTION,
-  pvm DATE,
-  kloaika TIME,
+  pvm DATE DEFAULT NOW(),
+  kloaika TIME DEFAULT NOW(),
   UNIQUE(kuuntelijaTunnus, mainosId)
 );
 

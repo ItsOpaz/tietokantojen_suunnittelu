@@ -30,29 +30,39 @@ CREATE OR REPLACE FUNCTION lisaa_kayttaja(VARCHAR, VARCHAR, VARCHAR(30), chkpass
 	$func$ LANGUAGE plpgsql;
 
 
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+
 -- käyttö: SELECT add_user(etunimi, sukunimi, kayttaja_tunnus, salasana);
 
 -- Tämä ei osaa vielä käsitellä väärässä muodossa olevia postinumeroja
 -- Tarviiko sitä edes tarkistaa?
 
--- laskuid, selite, hinta, kampanjaid
-CREATE OR REPLACE FUNCTION lisaa_laskurivi(int, VARCHAR, NUMERIC, int) 
+-- laskuid, selite, hinta
+CREATE OR REPLACE FUNCTION lisaa_laskurivi(int, VARCHAR, NUMERIC) 
 	RETURNS boolean AS
 	$func$
+	DECLARE
+
+		riviid_ int;
 	
 	BEGIN
-		INSERT INTO laskurivi(selite, hinta, kampanjaid) VALUES(
-            $2,$3,$4
-
-        );
-
-        UPDATE lasku SET riviId = (SELECT max(riviId) FROM laskurivi WHERE selite = $2)
-        
-        WHERE laskuId = $1;
+		-- Lisää uuden laskurivin
+		INSERT INTO laskurivi(laskuid, selite, hinta) VALUES(
+            $1, $2 ,$3
+        ) RETURNING riviid AS riviid_;
 
         RETURN FOUND;
     END
 	$func$ LANGUAGE plpgsql;
+
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+
 
 -- Tällä voi lisätä kivasti ja helposti uusia laskutusosoitteita
 -- Jos postinumero on jo olemassa, ei tarvi siitä murehtia
@@ -80,6 +90,12 @@ CREATE OR REPLACE FUNCTION lisaa_laskutusosoite(VARCHAR, VARCHAR, VARCHAR, VARCH
 		);
 	END
 	$$ LANGUAGE plpgsql;
+
+
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 
 -- Ei salli mainoskampanjan poistamista, mikäli laskua ei ole maksettu
 -- Jos lasku on maksettu, ja mainoskampanjaa ollaan poistamassa,
@@ -111,6 +127,12 @@ $kampanja_poisto_func$ LANGUAGE plpgsql;
 CREATE TRIGGER check_mainoskampanja_del_tr BEFORE DELETE ON mainoskampanja
 	FOR EACH ROW EXECUTE PROCEDURE kampanja_poisto_func();
 
+
+
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 
 -- Kopioi alkuperäisen laskun
 -- Kopioi alkuperäisen laskun laskurivit ja muuttaa niiden hinnat
@@ -148,6 +170,11 @@ BEGIN
 END
 $karhulasku$ LANGUAGE plpgsql;
 
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+
 -- Tätä käytetään PUID-arvon luontiin
 CREATE OR REPLACE FUNCTION rand_puid() RETURNS text AS
 $$
@@ -173,6 +200,11 @@ BEGIN
 
 END;
 $$ LANGUAGE plpgsql;
+
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 
 -- Tarkistaa mainoskampanjan sekä mainoksen välisen xor-suhteen
 -- Jos mainoskampanjalle on asetettu profiili, siihen lisättävillä mainoksilla ei ole profiilia

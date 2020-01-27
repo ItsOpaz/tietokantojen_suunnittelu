@@ -49,6 +49,16 @@ VALUES
 INSERT INTO profiili (lahetysaika, maa, paikkakunta, alaikaraja, ylaikaraja)
 VALUES
   (
+    '17:30',
+    'Suomi',
+    'Seinäjoki',
+    18,
+    35
+);
+
+INSERT INTO profiili (lahetysaika, maa, paikkakunta, alaikaraja, ylaikaraja)
+VALUES
+  (
     '00:00',
     'Suomi',
     'Helsinki',
@@ -94,7 +104,8 @@ VALUES(
   8.0
 );
 
-
+-- laskuid, selite, hinta, kampanjaid
+INSERT INTO laskurivi(laskuid, selite, hinta) VALUES(12, 'Imurimainoksen perusmaksu', 20.00);
 
 INSERT INTO jingle(tiedoston_sijainti, nimi) VALUES(
   'https://mainostoimisto-masa.fi/mainokset/jingle/backgroung-pump-track.mp3',
@@ -106,9 +117,6 @@ INSERT INTO jingle(tiedoston_sijainti, nimi) VALUES(
   'Background fast track'
 );
 
-INSERT INTO genre(nimi) VALUES(
-  'Halme rock'
-);
 
 INSERT INTO mainos(kampanjaId, nimi, pituus, kuvaus, esitysaika, jingleId, profiiliId) VALUES(
   5,
@@ -120,9 +128,29 @@ INSERT INTO mainos(kampanjaId, nimi, pituus, kuvaus, esitysaika, jingleId, profi
   5
 );
 
-INSERT INTO laskurivi(selite, laskuId, hinta)
-VALUES
-  ('Perkeleen kallis mainos', 2, 99.99);
-INSERT INTO laskurivi(selite, laskuId, hinta)
-VALUES
-  ('Testimainos', 2, 10.00);
+
+INSERT into kuuntelija values(
+  'markalapanen',
+  22,
+  'mies',
+  'Suomi',
+  'Tampere',
+  'markalapanen@gmail.com'
+
+);
+
+INSERT into kuuntelija_kirjautumistiedot values (
+  'markalapanen',
+  'kitaraTaivasJaTahdet'
+  
+);
+
+insert into esitys(kuuntelijaTunnus, mainosid) values(
+  'markalapanen',
+  5
+);
+
+insert into yhdiste_profiili_kuuntelija(
+
+);
+
