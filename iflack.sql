@@ -296,7 +296,7 @@ CREATE TABLE yhdiste_kampanja (
 kampanjaID INTEGER,
 mainostajaID VARCHAR(30),
 kayttajatunnus VARCHAR(30),
-laskuId INTEGER,
+laskuId INTEGER DEFAULT NULL,
 PRIMARY KEY(kampanjaID, mainostajaID, kayttajatunnus, laskuId),
 FOREIGN KEY(kampanjaID) REFERENCES mainoskampanja(kampanjaID) ON UPDATE CASCADE ON DELETE CASCADE,
 FOREIGN KEY(mainostajaID) REFERENCES mainostaja(VAT) ON UPDATE CASCADE ON DELETE NO ACTION,
