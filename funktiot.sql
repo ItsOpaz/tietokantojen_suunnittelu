@@ -112,3 +112,38 @@ CREATE TRIGGER check_mainoskampanja_del_tr BEFORE DELETE ON mainoskampanja
 	FOR EACH ROW EXECUTE PROCEDURE kampanja_poisto_func();
 
 
+-- Kopioi alkuperäisen laskun
+-- Kopioi alkuperäisen laskun laskurivit ja muuttaa niiden hinnat
+
+-- KÄYTTÖ: select lisaa_laskurivi(x), missä x on laskuid
+CREATE OR REPLACE FUNCTION lisaa_karhulasku(laskuid_ int) RETURNS void AS
+$karhulasku$
+DECLARE
+	bearBillId integer;
+	interest integer;
+
+BEGIN
+	-- Lisätään ensin uusi lasku päivitetyllä hinnalla
+	INSERT INTO lasku(kampanjaid, lahetyspvm, erapvm, tila, viitenro, korko)
+		(SELECT kampanjaid, lahetyspvm, erapvm, tila, viitenro, korko from lasku WHERE laskuId = laskuid_)
+		RETURNING laskuid into bearBillId;
+	-- Päivitetään lasku
+	RAISE notice 'päivitetyn laskun id: %', bearBillId; -- DEBUG
+
+	-- Lisätään karhulaskuun uusi lasku
+	INSERT INTO karhulasku VALUES(
+		bearBillId,
+		laskuid_
+	);
+
+	-- Lasketaan viivästysmaksun summa
+	interest := (SELECT sum(hinta) FROM laskurivi WHERE laskuid = laskuId_)*(SELECT korko from lasku WHERE laskuid = laskuid_)/100;
+
+	-- Lisätään laskuriviin uusi rivi, joka kertoo karhulaskun viivästysmaksun hinnan
+	INSERT INTO laskurivi(selite, laskuid, hinta) VALUES(
+		'Viivästysmaksu',
+		bearBillId,
+		interest
+	);
+END
+$karhulasku$ LANGUAGE plpgsql;

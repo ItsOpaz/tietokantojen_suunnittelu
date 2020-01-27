@@ -8,13 +8,8 @@
 -- Järjestelmän käyttäjä
 -- Pitääköhän mainosmyyjä ja sihteeri erotella jotenki?
 -- Eli pitääkö esim tähän laittaa rooli? tms.
-CREATE TABLE jarjestelma_kayttaja (
-	
-	kayttaja_tunnus VARCHAR(30) PRIMARY KEY,
-	etunimi VARCHAR NOT NULL,
-	sukunimi VARCHAR NOT NULL,
-	-- tyyppi "sihteeri"|"myyjä" 
-	tila BOOLEAN
+CREATE TYPE rooli AS ENUM('sihteeri', 'myyjä');
+CREATE TYPE sukupuoli AS ENUM('nainen', 'mies', 'muu');
 
 CREATE TABLE jarjestelma_kayttaja (
   kayttaja_tunnus VARCHAR(30) PRIMARY KEY,
@@ -85,81 +80,90 @@ CREATE TABLE profiili(
   CHECK(ylaikaraja > 0)
 );
 -- Tämä ei tarkista vielä sitä xor- suhdetta profiilin ja mainoksen välillä
--- xor tarkistus varmaa järkevin tehdä triggerillä?
+-- XOR suhteen tarkastus varmaan järkevin tehdä triggerillä
 CREATE TABLE mainoskampanja(
-	kampanjaId SERIAL PRIMARY KEY,
-	laskuId integer,
-	FOREIGN Key(laskuId) REFERENCES lasku(laskuId)
-	ON UPDATE CASCADE ON DELETE SET NULL,
-
-	nimi VARCHAR(40),
-	alkupvm DATE DEFAULT CURRENT_DATE,
-	loppupvm DATE,
-	maaraRahat MONEY,
-	sekuntihinta MONEY,
-	tila BOOLEAN DEFAULT false NOT NULL, -- enabled/disabled
-
-	profiiliId integer,
-	FOREIGN Key(profiiliId) REFERENCES profiili(profiiliId)
-	ON UPDATE CASCADE ON DELETE SET NULL
-
+  kampanjaId SERIAL PRIMARY KEY,
+  laskuId integer,
+  FOREIGN Key(laskuId) REFERENCES lasku(laskuId) ON UPDATE CASCADE ON DELETE
+  SET NULL,
+    nimi VARCHAR(40),
+    alkupvm DATE DEFAULT CURRENT_DATE,
+    loppupvm DATE,
+    maaraRahat numeric(8, 2),
+    -- Miljoona suurin luku, tuleeko ongelmia?
+    sekuntihinta numeric(4, 2),
+    -- Ei varmaankaan yli 100€ sekuntihintaa?
+    tila boolean DEFAULT false NOT NULL,
+    -- enabled/disabled
+    profiiliId integer,
+    FOREIGN Key(profiiliId) REFERENCES profiili(profiiliId) ON UPDATE CASCADE ON DELETE
+  SET
+    NULL
 );
-
+-- Muutin laskurivin ja laskun vierasavaimen suunnan
+-- Nyt laskurivi ottaa vierasavaimekseen laskuId:n
+-- Lisäksi mietin, että kampanjaId olisi viisaampi siirtää lasku-relaatioon
+-- Miksi kampanjaId:tä tarvittaisiin laskurivin yhteydessä?
+-- Mun mielestä olis parempi jos siirtäis sen laskuun, en toki vielä näin tehnyt
 CREATE TABLE laskurivi(
-
-	riviId SERIAL PRIMARY KEY,
-	selite VARCHAR(40),
-	hinta MONEY,
-	kampanjaId integer,
-	FOREIGN KEY(kampanjaId) REFERENCES mainoskampanja(kampanjaId)
-	ON DELETE NO ACTION ON UPDATE NO ACTION
+  riviId SERIAL PRIMARY KEY,
+  laskuId int,
+  selite VARCHAR(40),
+  hinta numeric(8, 2),
+  FOREIGN KEY(laskuId) REFERENCES lasku(laskuId) ON DELETE CASCADE
+);
+CREATE TABLE jingle (
+  jingleID SERIAL PRIMARY KEY,
+  tiedoston_sijainti VARCHAR(40),
+  nimi VARCHAR(30)
+);
+CREATE TABLE genre(
+  genreID SERIAL PRIMARY KEY,
+  nimi VARCHAR(50)
+);
+-- HUOM! Tässä ei tuota mainoksen viite-eheyttä oltu mietitty
+-- Päätin sit että update ja delete on cascade, saa muuttaa
+CREATE TABLE mainos(
+  mainosId SERIAL PRIMARY KEY,
+  kampanjaId int,
+  nimi VARCHAR(40),
+  pituus TIME,
+  kuvaus VARCHAR(300),
+  esitysaika TIME,
+  jingleId int,
+  profiiliId int,
+  CONSTRAINT mainos_kampanja_fk FOREIGN KEY(kampanjaId) REFERENCES mainoskampanja(kampanjaId) ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT mainos_jingle_fk FOREIGN KEY(jingleId) REFERENCES jingle(jingleId) ON UPDATE CASCADE ON DELETE NO ACTION,
+  CONSTRAINT mainos_profiili_fk FOREIGN KEY(profiiliId) REFERENCES profiili(profiiliId) ON UPDATE CASCADE ON DELETE
+  SET
+    NULL,
+    UNIQUE(kampanjaId, jingleId, profiiliId)
+);
+CREATE TABLE kuuntelija(
+  nimimerkki VARCHAR(30) PRIMARY KEY,
+  ika integer,
+  CHECK(
+    ika > 0
+    and ika < 150
+  ),
+  -- tää järkevin varmaa määrittämällä jotkut arvot mitä sukupuoli voi saada tai booleanilla
+  sukupuoli sukupuoli,
+  hinta numeric(5, 2),
+  maa VARCHAR(20),
+  paikkakunta VARCHAR(40),
+  sahkoposti VARCHAR(40)
+);
+CREATE TABLE esitys (
+  esitysId SERIAL PRIMARY KEY,
+  kuuntelijaTunnus VARCHAR(30) REFERENCES kuuntelija(nimimerkki) ON UPDATE CASCADE ON DELETE NO ACTION,
+  mainosId integer REFERENCES mainos(mainosId) ON UPDATE CASCADE ON DELETE NO ACTION,
+  pvm DATE,
+  kloaika TIME,
+  UNIQUE(kuuntelijaTunnus, mainosId)
 );
 
--- Muutetaan laskurivi vielä laskun vierasavaimeksi
--- eiks tää oo ny väärinpäin nyt lasku -> laskurivi ja laskussa voi olla monta laskuriviä
--- pitäis olla laskurivi -> lasku
-ALTER TABLE lasku
-	ADD CONSTRAINT fk_lasku_rivi FOREIGN KEY (riviId) REFERENCES laskurivi(riviId)
-	ON DELETE SET NULL ON UPDATE CASCADE;
-
-INSERT INTO lasku (	lahetyspvm,
-					eraPvm,
-					tila,
-					viitenro,
-					korko,
-					riviId) VALUES(
-						
-						'2020-11-1',
-						'2020-11-2',
-						false,
-						'123452346',
-						12.00,
-						NULL
-
-					);
-
-INSERT INTO profiili VALUES (
-	1,
-	'00:00',
-	'Suomi',
-	'Tampere',
-	3,
-	null
-);
-
-INSERT INTO mainoskampanja (laskuId, nimi, loppupvm, maaraRahat, sekuntihinta, tila, profiiliId) VALUES(
-
-	1,
-	'masan mainoskampanja',
-	'2020-08-30',
-	100.00,
-	0.20,
-	false,
-	1
-);
-
-INSERT INTO laskurivi(selite, hinta, kampanjaId) VALUES (
-	'Perkeleen kallis mainos',
-	99.99,
-	1
+CREATE TABLE musiikintekija (
+  tekijaId SERIAL PRIMARY KEY,
+  nimi VARCHAR(40),
+  rooli VARCHAR(30)
 );
