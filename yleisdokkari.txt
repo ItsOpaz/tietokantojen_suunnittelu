@@ -1,0 +1,35 @@
+
+HUOM!
+
+Mainoskampanjassa ja laskussa vierasavaimet linkitetty molempiin suuntiin
+Mainoskampanja ei tarvi laskuid:tä?
+
+Miksi profiilissa on lähetysaika? Mitä se kertoo? Miksi se ei ole itse mainoksessa?
+
+
+Mitä on muuttunut?
+
+Muutin laskurivin ja laskun vierasavaimen suunnan. Nyt laskurivi ottaa vierasavaimekseen laskuId:n.
+Lisäksi mietin, että kampanjaId olisi viisaampi siirtää lasku-relaatioon
+
+Lisäks tuolla iflack.sql tiedostossa on tällä hetkellä jotain ylimääräistä, mutta
+en uskalla poistaa ku kuitenki tarvii vielä.
+
+Mitä pitää vielä tehdä:
+
+- loput luontilauseet
+- populointi
+- käteviä näkymiä esim. näkyy kampanja, laskun loppusumma jne. samassa taulussa
+
+Esim mainoskampanjan poistaminen ei onnistu ennenkuin lasku on poistettu, mutta
+mun mielestä siihen kannattais tehä triggeri, joka katsoo ennen poistamista, että
+lasku on maksettu. Jos on niin sillon voidaan poistaa toi kampanja.
+Lasku siis sais jäädä voimaan/poistettais siinä samalla
+
+
+Mitä hienoa on toteutettu?
+
+Mainoskampanjan voi poistaa vain, jos siihen liittyvät maksut on suoritettu,
+Eli siis jos laskun tila on maksettu, mainoskampanjan poistaminen aiheuttaa
+myös laskun ja laskurivien poiston.
+
