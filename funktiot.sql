@@ -3,7 +3,7 @@
 -- Pitää kai lisätä virhetarkastelu vai voiko sen tehdä koodin puolella
 
 -- first_name, last_name, user_name, password
-CREATE OR REPLACE FUNCTION add_user(VARCHAR, VARCHAR, VARCHAR(30), VARCHAR) 
+CREATE OR REPLACE FUNCTION lisaa_kayttaja(VARCHAR, VARCHAR, VARCHAR(30), chkpass) 
 	RETURNS boolean AS 
 	$func$
 	
@@ -112,3 +112,96 @@ CREATE TRIGGER check_mainoskampanja_del_tr BEFORE DELETE ON mainoskampanja
 	FOR EACH ROW EXECUTE PROCEDURE kampanja_poisto_func();
 
 
+-- Kopioi alkuperäisen laskun
+-- Kopioi alkuperäisen laskun laskurivit ja muuttaa niiden hinnat
+
+-- KÄYTTÖ: select lisaa_karhulasku(x), missä x on laskuid
+CREATE OR REPLACE FUNCTION lisaa_karhulasku(laskuid_ int) RETURNS void AS
+$karhulasku$
+DECLARE
+	bearBillId integer;
+	interest integer;
+
+BEGIN
+	-- Lisätään ensin uusi lasku päivitetyllä hinnalla
+	INSERT INTO lasku(kampanjaid, lahetyspvm, erapvm, tila, viitenro, korko)
+		(SELECT kampanjaid, lahetyspvm, erapvm, tila, viitenro, korko from lasku WHERE laskuId = laskuid_)
+		RETURNING laskuid into bearBillId;
+	-- Päivitetään lasku
+	--RAISE notice 'päivitetyn laskun id: %', bearBillId; -- DEBUG
+
+	-- Lisätään karhulaskuun uusi lasku
+	INSERT INTO karhulasku VALUES(
+		bearBillId,
+		laskuid_
+	);
+
+	-- Lasketaan viivästysmaksun summa
+	interest := (SELECT sum(hinta) FROM laskurivi WHERE laskuid = laskuId_)*(SELECT korko from lasku WHERE laskuid = laskuid_)/100;
+
+	-- Lisätään laskuriviin uusi rivi, joka kertoo karhulaskun viivästysmaksun hinnan
+	INSERT INTO laskurivi(selite, laskuid, hinta) VALUES(
+		'Viivästysmaksu',
+		bearBillId,
+		interest
+	);
+END
+$karhulasku$ LANGUAGE plpgsql;
+
+-- Tätä käytetään PUID-arvon luontiin
+CREATE OR REPLACE FUNCTION rand_puid() RETURNS text AS
+$$
+DECLARE
+	chars text[] := '{0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z}';
+	result text := '';
+	i integer := 0;
+	-- Tietohakemiston mukaan puid:n pituus on [32,40]
+	length integer := random()*(41-32)+32; -- 32 <= n < 41
+BEGIN
+	-- Generoidaan satunnainen puid, jonka pituus on välillä 32-40
+	for i in 1..length LOOP
+		result := result || chars[1+random()*(array_length(chars, 1)-1)];
+	END LOOP;
+
+	-- Tarkistetaan, onko vastaavaa puid:tä vielä olemassa, jos on luodaan uusi
+	IF exists(SELECT PUID FROM musiikkikappale WHERE PUID = result LIMIT 1) THEN
+		-- Kutsutaan funktiota rekursiivisesti, jolloin generoidaan uusi puid
+		result = rand_puid();	
+	ELSE
+		RETURN result;
+	END IF;
+
+END;
+$$ LANGUAGE plpgsql;
+
+-- Tarkistaa mainoskampanjan sekä mainoksen välisen xor-suhteen
+-- Jos mainoskampanjalle on asetettu profiili, siihen lisättävillä mainoksilla ei ole profiilia
+-- Toisaalta, jos mainoskampanjaan ei ole asetettu profiilia
+-- mainoksella täytyy olla profiili
+CREATE OR REPLACE FUNCTION check_mainoskampanja_mainos_profiili() RETURNS trigger AS
+$$
+DECLARE
+	kampanjaHasProfile boolean;
+BEGIN
+	kampanjaHasProfile := exists(SELECT profiiliId FROM mainoskampanja AS m WHERE m.kampanjaid = NEW.kampanjaId); 
+	-- NEW tarkoittaa siis uutta mainos-tauluun lisättävää/päivitettävää riviä
+	
+	if kampanjaHasProfile then
+		-- Mainoskampanjalla on profiili -> mainoksella ei saa olla profiilia
+		if NEW.profiiliid is not null then
+			RAISE EXCEPTION 'Mainoskampanjalla on jo profiili! Lisättävällä mainoksella tällöin ei saa olla profiilia. Uutta mainosta ei lisätty.';
+		end if;
+	ELSE
+		-- Mainoskampanjalla ei ole profiilia -> mainoksella täytyy olla profiili
+		if NEW.profiiliid = null then
+			RAISE EXCEPTION 'Mainoskampanjalla ei ole profiilia! Tällöin mainokselle täytyy asettaa profiili. Uutta mainosta ei lisätty.';
+		end if;
+	end if;
+
+	RETURN NEW;
+END;
+
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER check_mainoskampanja_mainos_profiili_tr BEFORE INSERT ON mainos
+	FOR EACH ROW EXECUTE PROCEDURE check_mainoskampanja_mainos_profiili();
