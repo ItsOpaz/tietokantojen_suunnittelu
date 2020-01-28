@@ -21,9 +21,9 @@ FOREIGN KEY(nimimerkki) REFERENCES kuuntelija(nimimerkki) ON UPDATE CASCADE ON D
 --huom onko kakkuri vaihtanut kuuntelijaID:n kuten puhuttiin? vaihdoin itse nyt IDn olemaan varchar
 CREATE TABLE soittolista (
 soittolistaID SERIAL PRIMARY KEY,
-kuuntelijaID VARCHAR,
+kuuntelijatunnus VARCHAR,
 nimi VARCHAR(40),
-FOREIGN KEY(kuuntelijaID) REFERENCES kuuntelija(nimimerkki) ON UPDATE CASCADE ON DELETE CASCADE
+FOREIGN KEY(kuuntelijatunnus) REFERENCES kuuntelija(nimimerkki) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE teos (
@@ -38,8 +38,11 @@ nimi VARCHAR(40),
 rooli VARCHAR(40)
 );
 
+-- PUID tietohakemistossa 32{M}40, Tein funktion, joka generoi automaattisesti
+-- satunnaisen merkkijonon
+-- select rand_puid();
 CREATE TABLE musiikkikappale (
-PUID SERIAL PRIMARY KEY,
+PUID TEXT PRIMARY KEY,
 teosID INTEGER,
 kesto TIME,
 aanitiedosto VARCHAR(40),
