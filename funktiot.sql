@@ -238,3 +238,104 @@ $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER check_mainoskampanja_mainos_profiili_tr BEFORE INSERT ON mainos
 	FOR EACH ROW EXECUTE PROCEDURE check_mainoskampanja_mainos_profiili();
+
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+
+-- Muuttaa time-tietotyypin sekunneiksi
+CREATE OR REPLACE FUNCTION to_seconds(t time)
+  RETURNS integer AS
+$body$ 
+DECLARE 
+    hs INTEGER;
+    ms INTEGER;
+    s INTEGER;
+BEGIN
+    SELECT (EXTRACT( HOUR FROM  t) * 60*60) INTO hs; 
+    SELECT (EXTRACT (MINUTES FROM t) * 60) INTO ms;
+    SELECT (EXTRACT (SECONDS from t)) INTO s;
+    SELECT (hs + ms + s) INTO s;
+    RETURN s;
+END;
+$body$ LANGUAGE 'plpgsql';
+
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+
+-- Aina, kun lisätään uusi esitys tarkistetaan onko saldoa jäljellä uuden esitykset tekemiseen
+-- Jos saldoa jäljellä alle mainoksen esitysajan verran mainoskampanjan tila asetetaan pysäytetyksi
+-- Luodaan samalla lasku?
+
+
+CREATE or replace function tarkasta_saldo() returns trigger as 
+$saldo$
+DECLARE
+	moneyLeft numeric;
+	adPrice int;
+	adLength time;
+	
+	kid int;
+
+BEGIN
+	-- Tässä tilanteessa new viittaa esitys-tauluun lisättyyn uuteen riviin
+	moneyLeft = (select maararahat from mainoskampanja mk, mainos m where mk.kampanjaid = m.kampanjaid and m.mainosid = new.mainosid);
+	adLength = (select pituus from mainos m where m.mainosid = new.mainosid);
+
+	-- mainos esitettiin, joten päivitetään mainoksen kokonaisesitysaikaa
+	update mainos m set esitysaika = cast((esitysaika + adLength::interval) as time) where m.mainosid = new.mainosid;
+
+	-- Nyt lasketaan mainoksesta aiheutuva kustannus ja vähennetään se määrärahoista
+
+	adPrice = ((select to_seconds(adLength)) * (select sekuntihinta from mainoskampanja mk, mainos m where mk.kampanjaid = m.kampanjaid and m.mainosid = new.mainosid));
+	raise notice 'ad price: %', adPrice;
+
+	-- kampanja id
+	kid = (select kampanjaid from mainos m where m.mainosid = new.mainosid);
+	-- Päivitetään määrärahoja
+	update mainoskampanja mk set maararahat = maararahat - adPrice where mk.kampanjaid = kid;
+	-- Mainoskampanjaan oma triggeri mikä katsoo, että rahat riittää vielä seuraavan mainoksen esittämiseen?
+
+	return new;
+
+END
+$saldo$ LANGUAGE plpgsql;
+
+create trigger tarkasta_saldo_tr after insert on esitys
+	for each row execute procedure tarkasta_saldo();
+
+
+	---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+
+
+create or replace function onko_kampanjalla_rahaa() returns trigger as 
+$body$
+DECLARE
+	maxAdLength int; --kalleimman mainoksen id
+	pricePerSek numeric;
+	totalmoney numeric;
+BEGIN
+
+	-- Valitaan kalleimman mainoksen pituus
+	maxAdLength = (select to_seconds( (select pituus from mainos order by pituus desc limit 1) ));
+	-- Tästä saadaan suurin mahdollinen rahamäärä, joka pitaa olla
+	pricePerSek = (select sekuntihinta from mainoskampanja where kampanjaid = new.kampanjaid);
+
+	totalmoney := pricePerSek*maxAdLength;
+	-- Jos rahaa ei ole, kampanja vedetään jäihin
+	if (totalmoney > maararahat) then
+		update mainoskampanja set tila = false where kampanjaid = new.kampanjaid;
+	end if;
+
+	return new;
+END
+$body$ LANGUAGE plpgsql;
+
+create trigger kampanjalla_rahaa_tr after insert or update on mainoskampanja
+	for each row execute procedure onko_kampanjalla_rahaa();

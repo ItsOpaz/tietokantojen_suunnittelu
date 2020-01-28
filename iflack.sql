@@ -165,8 +165,7 @@ CREATE TABLE esitys (
   kuuntelijaTunnus VARCHAR(30) REFERENCES kuuntelija(nimimerkki) ON UPDATE CASCADE ON DELETE NO ACTION,
   mainosId integer REFERENCES mainos(mainosId) ON UPDATE CASCADE ON DELETE NO ACTION,
   pvm DATE DEFAULT NOW(),
-  kloaika TIME DEFAULT NOW(),
-  UNIQUE(kuuntelijaTunnus, mainosId)
+  kloaika TIME DEFAULT NOW()
 );
 
 CREATE TABLE musiikintekija (
@@ -192,7 +191,7 @@ FOREIGN KEY(kuuntelijatunnus) REFERENCES kuuntelija(nimimerkki) ON UPDATE CASCAD
 CREATE TABLE teos (
 teosID SERIAL PRIMARY KEY,
 nimi VARCHAR(100),
-julkaisuvuosi DATE
+julkaisuvuosi smallint
 );
 
 CREATE TABLE musiikintekija (
