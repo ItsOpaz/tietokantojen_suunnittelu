@@ -80,13 +80,11 @@ CREATE TABLE profiili(
   ylaikaraja integer,
   CHECK(ylaikaraja > 0)
 );
--- Tämä ei tarkista vielä sitä xor- suhdetta profiilin ja mainoksen välillä
--- XOR suhteen tarkastus varmaan järkevin tehdä triggerillä
+
+
 CREATE TABLE mainoskampanja(
   kampanjaId SERIAL PRIMARY KEY,
-  laskuId integer,
-  FOREIGN Key(laskuId) REFERENCES lasku(laskuId) ON UPDATE CASCADE ON DELETE
-  SET NULL,
+  
     nimi VARCHAR(40),
     alkupvm DATE DEFAULT CURRENT_DATE,
     loppupvm DATE,

@@ -150,7 +150,124 @@ insert into esitys(kuuntelijaTunnus, mainosid) values(
   5
 );
 
-insert into yhdiste_profiili_kuuntelija(
+-------------------------------------------------------------
+-------------------SEURAAVA SETTI ---------------------------
+-------------------------------------------------------------
 
+SELECT lisaa_kayttaja('Matti', 'Virtanen', 'virma12', 'MasaTheMan69');
+-- Laskutusosoitteet
+SELECT lisaa_laskutusosoite(
+    'Koulukatu 2',
+    '60100',
+    'Seinäjoki',
+    'Suomi'
+);
+
+
+-- Yhteyshenkilöt
+INSERT INTO yhteyshenkilo(etunimi, sukunimi, email, puhelinnumero)
+VALUES(
+    'Toni',
+    'Heikkilä',
+    'toni.heikkila@mainosheikkila.com',
+    '0445783422'
+);
+
+-- Mainostajaan liittyvät lisäykset
+INSERT INTO mainostaja
+VALUES(
+    'FI84932743',
+    -- vat
+    'Mainosheikkilä',
+    -- nimi
+    6,
+    -- yht. hlö. id
+    5 -- laskutusosoite id
+);
+
+
+
+-- Kokeilkaa luoda mainoskampanja ilman profiilia ja lisätä siihen mainos ilman profiilia
+-- Pitäis tulla erroria
+INSERT INTO mainoskampanja (
+    
+    nimi,
+    loppupvm,
+    maaraRahat,
+    sekuntihinta
+    
+  )
+VALUES(
+    'Mainosheikkilän kampanja',
+    '2020-08-30',
+    120.00,
+    0.20
+  );
+
+INSERT INTO lasku (
+  kampanjaid,
+  lahetyspvm,
+  eraPvm,
+  tila,
+  viitenro,
+  korko
+)
+VALUES(
+  6,
+  '2020-1-28',
+  '2020-4-28',
+  false,
+  '582930468833',
+  8.0
+);
+
+-- laskuid, selite, hinta
+INSERT INTO laskurivi(laskuid, selite, hinta) VALUES(12, 'Imurimainoksen perusmaksu', 20.00);
+
+INSERT INTO jingle(tiedoston_sijainti, nimi) VALUES(
+  'https://mainostoimisto-masa.fi/mainokset/jingle/backgroung-pump-track.mp3',
+  'Background pump track'
+);
+
+INSERT INTO jingle(tiedoston_sijainti, nimi) VALUES(
+  'https://mainostoimisto-masa.fi/mainokset/jingle/backgroung-fast-track.mp3',
+  'Background fast track'
+);
+
+INSERT INTO jingle(tiedoston_sijainti, nimi) VALUES(
+  'https://mainoheikkila.fi/mainokset/jingles/mainos1-backtrack.mp3',
+  'Mainoksen ensimmäinen musiikkiraita'
+);
+
+
+INSERT INTO mainos(kampanjaId, nimi, pituus, kuvaus, esitysaika, jingleId, profiiliId) VALUES(
+  6,
+  'Moisturaising face wash',
+  '00:00:14',
+  'herkkä mainos kosteuttavasta kasvovoiteesta',
+  '00:00',
+  3,
+  6
+);
+
+
+INSERT into kuuntelija values(
+  'crawlingflour',
+  22,
+  'mies',
+  'Suomi',
+  'Seinäjoki',
+  'crawlingflour@cap.com'
+
+);
+
+INSERT into kuuntelija_kirjautumistiedot values (
+  'crawlingflour',
+  'IdontNeedUpvotes!'
+);
+
+insert into esitys(kuuntelijaTunnus, mainosid) values(
+  'crawlingflour',
+  22
 );
 

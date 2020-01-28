@@ -213,19 +213,20 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION check_mainoskampanja_mainos_profiili() RETURNS trigger AS
 $$
 DECLARE
-	kampanjaHasProfile boolean;
+	kampanjaHasProfile int;
 BEGIN
-	kampanjaHasProfile := exists(SELECT profiiliId FROM mainoskampanja AS m WHERE m.kampanjaid = NEW.kampanjaId); 
+	kampanjaHasProfile = (SELECT count(profiiliId) FROM mainoskampanja AS m WHERE m.kampanjaid = NEW.kampanjaId); 
 	-- NEW tarkoittaa siis uutta mainos-tauluun lisättävää/päivitettävää riviä
 	
-	if kampanjaHasProfile then
+	if kampanjaHasProfile > 0 then
 		-- Mainoskampanjalla on profiili -> mainoksella ei saa olla profiilia
 		if NEW.profiiliid is not null then
 			RAISE EXCEPTION 'Mainoskampanjalla on jo profiili! Lisättävällä mainoksella tällöin ei saa olla profiilia. Uutta mainosta ei lisätty.';
 		end if;
 	ELSE
 		-- Mainoskampanjalla ei ole profiilia -> mainoksella täytyy olla profiili
-		if NEW.profiiliid = null then
+		
+		if NEW.profiiliid is null then
 			RAISE EXCEPTION 'Mainoskampanjalla ei ole profiilia! Tällöin mainokselle täytyy asettaa profiili. Uutta mainosta ei lisätty.';
 		end if;
 	end if;
