@@ -1,24 +1,46 @@
 --kaikki loppuneet kampanjat joissa laskua ei vielä tehty
-CREATE OR REPLACE VIEW laskutettavat AS 
-    SELECT *
+CREATE VIEW laskutettavat AS 
+    SELECT m.kampanjaId, m.nimi
     FROM mainoskampanja m
-	WHERE tila = false;
 	INNER JOIN yhdiste_kampanja y
-	WHERE m.kampanjaId = y.kampanjaId
-	AND y.laskuId IS NULL;
+	ON m.kampanjaId = y.kampanjaId
+	WHERE y.laskuNro IS NULL
+	AND m.tila = false;
+	;
 	
 --kaikkien mainosten kuuntelukerrat
-CREATE OR REPLACE VIEW mainosten_kuuntelukerrat AS
-	SELECT mainosId, COUNT(mainosId) AS lkm
+CREATE VIEW mainosten_kuuntelukerrat AS
+	mainosId, COUNT(mainosId) AS lkm
 	FROM esitys
-	GROUP BY mainosId;
+	GROUP BY mainosId
+	;
 
 --kaikkien kampanjoiden mainosten tiedot, kuuntelukerrat ja kokonaishinnan
-CREATE OR REPLACE VIEW kampanjan_mainokset AS
-	SELECT m.nimi, m.mainosId,m.kampanjaId, m.pituus, mk.sekuntihinta, ma.lkm
+CREATE VIEW kampanjan_mainokset AS
+	m.nimi, m.mainosId,m.kampanjaId, m.pituus, mk.sekuntihinta, ma.lkm
 	, ma.lkm *sekuntihinta as kokhinta
 	FROM mainoskampanja mk
 	INNER JOIN mainos m
-	WHERE m.kampanjaId = mk.kampanjaId
+	ON m.kampanjaId = mk.kampanjaId
 	INNER JOIN mainosten_kuuntelukerrat ma
-	WHERE m.mainosId = ma.mainosId
+	ON m.mainosId = ma.mainosId
+	;
+
+--kaikkien kampanjoiden laskutustiedot
+CREATE VIEW laskutustiedot AS
+	yk.kampanjaId, yk.kayttajatunnus, yk.mainostajaId
+	, CONCAT(jk.etunimi, ' ',jk.sukunimi) as myyjä
+	, CONCAT(yh.etunimi, ' ',yh.sukunimi) as tilaaja
+	, m.nimi as mainostaja, m.laskutusosoiteId, mk.nimi as kampanja
+	FROM yhdiste_kampanja yk
+	INNER JOIN mainoskampanja mk
+	ON yk.kampanjaId = mk.kampanjaId
+	INNER JOIN jarjestelma_kayttaja jk
+	ON yk.kayttajatunnus = jk.kayttajatunnus
+	INNER JOIN mainostaja m
+	ON yk.mainostajaId = m.VAT
+	INNER JOIN yhteyshenkilo yh
+	ON m.yhteyshloId = yh.hloid
+	INNER JOIN laskutusosoite lo
+	ON m.laskutusosoiteId = lo.osoiteId
+	;

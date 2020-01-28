@@ -72,13 +72,21 @@ CREATE TABLE lasku(
 );
 CREATE TABLE profiili(
   profiiliId SERIAL PRIMARY KEY,
-  lahetysAika TIME,
+  alkulahetysAika TIME,
+  loppulahetysAika TIME,
   maa VARCHAR(20),
   paikkakunta VARCHAR(40),
   alaikaraja integer,
+  sukupuoli sukupuoli,
+  genre integer,
+  esittaja integer ,
+  kappale TEXT,
   CHECK(alaikaraja > 0),
   ylaikaraja integer,
-  CHECK(ylaikaraja > 0)
+  CHECK(ylaikaraja > 0),
+  FOREIGN KEY(genre) REFERENCES genre(genreID) ON UPDATE CASCADE ON DELETE SET NULL,
+  FOREIGN KEY(esittaja) REFERENCES musiikintekija(tekijaID) ON UPDATE CASCADE ON DELETE SET NULL,
+  FOREIGN KEY(kappale) REFERENCES musiikkikappale(puid) ON UPDATE CASCADE ON DELETE SET NULL
 );
 
 
