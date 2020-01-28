@@ -317,10 +317,12 @@ create trigger tarkasta_saldo_tr after insert on esitys
 create or replace function onko_kampanjalla_rahaa() returns trigger as 
 $body$
 DECLARE
-	maxAdLength int; --kalleimman mainoksen id
-	pricePerSek numeric;
-	totalmoney numeric;
 BEGIN
+
+	if (new.tila = false) then
+		return new;
+	end if;
+	
 	
 	if (new.maararahat < 0) then
 		update mainoskampanja set tila = false where kampanjaid = new.kampanjaid;
@@ -331,4 +333,4 @@ END
 $body$ LANGUAGE plpgsql;
 
 create trigger kampanjalla_rahaa_tr after insert or update on mainoskampanja
-	execute procedure onko_kampanjalla_rahaa();
+	for each row execute procedure onko_kampanjalla_rahaa();
