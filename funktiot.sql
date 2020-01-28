@@ -128,7 +128,7 @@ BEGIN
 		(SELECT kampanjaid, lahetyspvm, erapvm, tila, viitenro, korko from lasku WHERE laskuId = laskuid_)
 		RETURNING laskuid into bearBillId;
 	-- Päivitetään lasku
-	RAISE notice 'päivitetyn laskun id: %', bearBillId; -- DEBUG
+	--RAISE notice 'päivitetyn laskun id: %', bearBillId; -- DEBUG
 
 	-- Lisätään karhulaskuun uusi lasku
 	INSERT INTO karhulasku VALUES(
