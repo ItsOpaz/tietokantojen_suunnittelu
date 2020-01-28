@@ -321,15 +321,8 @@ DECLARE
 	pricePerSek numeric;
 	totalmoney numeric;
 BEGIN
-
-	-- Valitaan kalleimman mainoksen pituus
-	maxAdLength = (select to_seconds( (select pituus from mainos order by pituus desc limit 1) ));
-	-- Tästä saadaan suurin mahdollinen rahamäärä, joka pitaa olla
-	pricePerSek = (select sekuntihinta from mainoskampanja where kampanjaid = new.kampanjaid);
-
-	totalmoney := pricePerSek*maxAdLength;
-	-- Jos rahaa ei ole, kampanja vedetään jäihin
-	if (totalmoney > maararahat) then
+	
+	if (new.maararahat < 0) then
 		update mainoskampanja set tila = false where kampanjaid = new.kampanjaid;
 	end if;
 
@@ -338,4 +331,4 @@ END
 $body$ LANGUAGE plpgsql;
 
 create trigger kampanjalla_rahaa_tr after insert or update on mainoskampanja
-	for each row execute procedure onko_kampanjalla_rahaa();
+	execute procedure onko_kampanjalla_rahaa();
