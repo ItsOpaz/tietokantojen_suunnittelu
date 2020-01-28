@@ -1,4 +1,3 @@
-
 HUOM!
 
 Mainoskampanjassa ja laskussa vierasavaimet linkitetty molempiin suuntiin
@@ -26,6 +25,16 @@ mun mielestä siihen kannattais tehä triggeri, joka katsoo ennen poistamista, e
 lasku on maksettu. Jos on niin sillon voidaan poistaa toi kampanja.
 Lasku siis sais jäädä voimaan/poistettais siinä samalla
 
+Katsoin alkuperäistä tehtävänantoa ja siellä ei ollut kampanjan poistossa velvoitetta,
+että lasku pitäisi olla maksettu tai edes luotu 
+
+Laskun luonti funktio (generoidaan lasku id josta valittuun kampanjaan tulee
+yhdiste_kampanjaan laskuId, lisäksi 
+SELECT * FROM kampanjan_mainokset km 
+WHERE km.kampanjaId = (valitun kampanjanId))
+
+Tarkistus triggeri, jos tulee uusi esitys, kyseisen mainoksen kampanjan kaikkien 
+mainosten hinta pitää verrata kampanjan budjettiin (käytä kampanjan_mainokset näkymää)
 
 Mitä hienoa on toteutettu?
 
@@ -33,3 +42,7 @@ Mainoskampanjan voi poistaa vain, jos siihen liittyvät maksut on suoritettu,
 Eli siis jos laskun tila on maksettu, mainoskampanjan poistaminen aiheuttaa
 myös laskun ja laskurivien poiston.
 
+Mainoskampanjaa luodessa yhdiste_kampanja tauluun laskuId pitää asettaa NULL, 
+koska lasku voidaan luoda vasta kampanjan loputtua
+
+create viewit auttaa kyselyissä, ei vielä ajettu kantaan, eikä testattu

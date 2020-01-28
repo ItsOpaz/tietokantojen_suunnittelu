@@ -1,4 +1,4 @@
---Nipsun luontilauseet ja populoinnit 22.1.2020
+ --Nipsun luontilauseet ja populoinnit 22.1.2020
 --tsekkaa, että kaikki tietotyypit samoja kuin tietohakemistossa?
 --tietohakemistosta myös löytyy tauluja mitä relaatiokaaviossa ei ole
 --postinumeroiden täytynee olla varchar koska voi alkaa nollilla
@@ -14,22 +14,22 @@ postitoimipaikka VARCHAR(40)
 
 CREATE TABLE kuuntelija_kirjautumistiedot (
 nimimerkki VARCHAR(20) PRIMARY KEY,
-salasana VARCHAR(40),
-FOREIGN KEY(nimimerkki) REFERENCES kuuntelija(nimimerkki) ON UPDATE CASCADE ON DELETE CASCADE,
+salasana chkpass,
+FOREIGN KEY(nimimerkki) REFERENCES kuuntelija(nimimerkki) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
---huom onko kakkuri vaihtanut kuuntelijaID:n kuten puhuttiin?
+--huom onko kakkuri vaihtanut kuuntelijaID:n kuten puhuttiin? vaihdoin itse nyt IDn olemaan varchar
 CREATE TABLE soittolista (
 soittolistaID SERIAL PRIMARY KEY,
-kuuntelijaID INTEGER,
+kuuntelijatunnus VARCHAR,
 nimi VARCHAR(40),
-FOREIGN KEY(kuuntelijaID) REFERENCES kuuntelija(nimimerkki) ON UPDATE CASCADE ON DELETE CASCADE
+FOREIGN KEY(kuuntelijatunnus) REFERENCES kuuntelija(nimimerkki) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE teos (
 teosID SERIAL PRIMARY KEY,
 nimi VARCHAR(100),
-julkaisuvuosi YEAR
+julkaisuvuosi DATE
 );
 
 CREATE TABLE musiikintekija (
@@ -38,11 +38,14 @@ nimi VARCHAR(40),
 rooli VARCHAR(40)
 );
 
+-- PUID tietohakemistossa 32{M}40, Tein funktion, joka generoi automaattisesti
+-- satunnaisen merkkijonon
+-- select rand_puid();
 CREATE TABLE musiikkikappale (
-PUID SERIAL PRIMARY KEY,
+PUID TEXT PRIMARY KEY,
 teosID INTEGER,
 kesto TIME,
-äänitiedosto VARCHAR(40),
+aanitiedosto VARCHAR(40),
 FOREIGN KEY(teosID) REFERENCES teos(teosID) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
@@ -52,56 +55,69 @@ teosID INTEGER,
 FOREIGN KEY(teosID) REFERENCES teos(teosID) ON UPDATE CASCADE ON DELETE SET NULL
 );
 
-CREATE TABLE yhdiste_profiili_tekijä (
-profiiliID INTEGER PRIMARY KEY,
-tekijäID INTEGER PRIMARY KEY,
+CREATE TABLE yhdiste_profiili_tekija (
+profiiliID INTEGER,
+tekijaID INTEGER,
+PRIMARY KEY(profiiliID, tekijaID),
 FOREIGN KEY(profiiliID) REFERENCES profiili(profiiliID) ON UPDATE CASCADE ON DELETE CASCADE,
-FOREIGN KEY(tekijäID) REFERENCES musiikintekija(tekijäID) ON UPDATE CASCADE ON DELETE CASCADE
+FOREIGN KEY(tekijaID) REFERENCES musiikintekija(tekijaID) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE yhdiste_profiili_kuuntelija (
-profiiliID INTEGER PRIMARY KEY,
-nimimerkki VARCHAR(30) PRIMARY KEY,
+profiiliID INTEGER,
+nimimerkki VARCHAR(30),
+PRIMARY KEY(profiiliID, nimimerkki),
 FOREIGN KEY(profiiliID) REFERENCES profiili(profiiliID) ON UPDATE CASCADE ON DELETE CASCADE,
 FOREIGN KEY(nimimerkki) REFERENCES kuuntelija(nimimerkki) ON UPDATE CASCADE ON DELETE CASCADE
 ); 
 
 CREATE TABLE yhdiste_teos_genre (
-teosID INTEGER PRIMARY KEY,
-genreID INTEGER PRIMARY KEY,
+teosID INTEGER,
+genreID INTEGER,
+PRIMARY KEY(teosID, genreID),
 FOREIGN KEY(teosID) REFERENCES teos(teosID) ON UPDATE CASCADE ON DELETE CASCADE,
 FOREIGN KEY(genreID) REFERENCES genre(genreID) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE yhdiste_profiili_genre (
-profiiliID INTEGER PRIMARY KEY,
-genreID INTEGER PRIMARY KEY,
+profiiliID INTEGER,
+genreID INTEGER,
+PRIMARY KEY(profiiliID, genreID),
 FOREIGN KEY(profiiliID) REFERENCES profiili(profiiliID) ON UPDATE CASCADE ON DELETE CASCADE,
 FOREIGN KEY(genreID) REFERENCES genre(genreID) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 CREATE TABLE yhdiste_teos_soittolista (
-soittolistaID INTEGER PRIMARY KEY,
-teosID INTEGER PRIMARY KEY,
+soittolistaID INTEGER,
+teosID INTEGER,
+PRIMARY KEY(soittolistaID, teosID),
 FOREIGN KEY(soittolistaID) REFERENCES soittolista(soittolistaID) ON UPDATE CASCADE ON DELETE CASCADE,
 FOREIGN KEY(teosID) REFERENCES teos(teosID) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-CREATE TABLE yhdiste_teos_tekijä_rooli (
-teosID INTEGER PRIMARY KEY,
-tekijäID INTEGER PRIMARY KEY,
-rooliID INTEGER PRIMARY KEY,
+--en tiedä onko id ja nimi nyt sama juttu mut tein kuitenki ku muissakin on?
+CREATE TABLE musarooli (
+rooliID SERIAL PRIMARY KEY,
+roolin_nimi VARCHAR(30)
+);
+
+CREATE TABLE yhdiste_teos_tekija_rooli (
+teosID INTEGER,
+tekijaID INTEGER,
+rooliID INTEGER ,
+PRIMARY KEY(teosID, tekijaID, rooliID),
 FOREIGN KEY(teosID) REFERENCES teos(teosID) ON UPDATE CASCADE ON DELETE CASCADE,
-FOREIGN KEY(tekijäID) REFERENCES tekijä(tekijäID) ON UPDATE CASCADE ON DELETE NO ACTION,
-FOREIGN KEY(rooliID) REFERENCES rooli(rooliID) ON UPDATE CASCADE ON DELETE NO ACTION
+FOREIGN KEY(tekijaID) REFERENCES musiikintekija(tekijaID) ON UPDATE CASCADE ON DELETE NO ACTION,
+FOREIGN KEY(rooliID) REFERENCES musarooli(rooliID) ON UPDATE CASCADE ON DELETE NO ACTION
 );
 
 --järjestysnumerolle jokin parempi tietotyyppi?
 
 CREATE TABLE kokoelmateos (
-kokoelmaID INTEGER PRIMARY KEY,
-teosID INTEGER PRIMARY KEY,
-järjestysnumero NUMERIC,
+kokoelmaID INTEGER,
+teosID INTEGER,
+jarjestysnumero NUMERIC,
+PRIMARY KEY(kokoelmaID, teosID),
 FOREIGN KEY(kokoelmaID) REFERENCES kokoelma(kokoelmaID) ON UPDATE CASCADE ON DELETE CASCADE,
 FOREIGN KEY(teosID) REFERENCES teos(teosID) ON UPDATE CASCADE ON DELETE CASCADE
 );
@@ -109,21 +125,24 @@ FOREIGN KEY(teosID) REFERENCES teos(teosID) ON UPDATE CASCADE ON DELETE CASCADE
 --molemmat vierasavaimet viittaavat samaan, haittaako?
 
 CREATE TABLE karhulasku (
-karhulaskuNro INTEGER PRIMARY KEY,
-laskuNro INTEGER PRIMARY KEY,
-FOREIGN KEY(karhulaskuNro) REFERENCES lasku(laskuNro) ON UPDATE CASCADE ON DELETE CASCADE,
-FOREIGN KEY(laskuNro) REFERENCES lasku(laskuNro) ON UPDATE CASCADE ON DELETE NO ACTION
+karhulaskuId INTEGER,
+laskuId INTEGER,
+PRIMARY KEY(karhulaskuId, laskuId),
+FOREIGN KEY(karhulaskuId) REFERENCES lasku(laskuid) ON UPDATE CASCADE ON DELETE NO ACTION,
+FOREIGN KEY(laskuId) REFERENCES lasku(laskuid) ON UPDATE CASCADE ON DELETE NO ACTION
 );
 
---tähän keksin itse laskunron viite-eheyden kun puuttui, tsekkaa
+--tähän keksin itse laskuIdn viite-eheyden kun puuttui, tsekkaa
 
 CREATE TABLE yhdiste_kampanja (
-kampanjaID INTEGER PRIMARY KEY,
-mainostajaID INTEGER PRIMARY KEY,
-käyttäjätunnus VARCHAR(30) PRIMARY KEY,
-laskuNro INTEGER PRIMARY KEY,
+kampanjaID INTEGER,
+mainostajaID VARCHAR(30),
+kayttajatunnus VARCHAR(30),
+laskuId INTEGER,
+PRIMARY KEY(kampanjaID, mainostajaID, kayttajatunnus, laskuId),
 FOREIGN KEY(kampanjaID) REFERENCES mainoskampanja(kampanjaID) ON UPDATE CASCADE ON DELETE CASCADE,
-FOREIGN KEY(mainostajaID) REFERENCES mainostaja(mainostajaID) ON UPDATE CASCADE ON DELETE NO ACTION,
-FOREIGN KEY(käyttäjätunnus) REFERENCES järjestelmä_käyttäjä(käyttäjätunnus) ON UPDATE CASCADE ON DELETE NO ACTION,
-FOREIGN KEY(laskuNro) REFERENCES lasku(laskuNro) ON UPDATE CASCADE ON DELETE NO ACTION
+FOREIGN KEY(mainostajaID) REFERENCES mainostaja(VAT) ON UPDATE CASCADE ON DELETE NO ACTION,
+FOREIGN KEY(kayttajatunnus) REFERENCES jarjestelma_kayttaja(kayttaja_tunnus) ON UPDATE CASCADE ON DELETE NO ACTION,
+FOREIGN KEY(laskuId) REFERENCES lasku(laskuid) ON UPDATE CASCADE ON DELETE NO ACTION
 );
+
