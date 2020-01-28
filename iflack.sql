@@ -72,7 +72,8 @@ CREATE TABLE lasku(
 );
 CREATE TABLE profiili(
   profiiliId SERIAL PRIMARY KEY,
-  lahetysAika TIME,
+  alkulahetysAika TIME,
+  loppulahetysAika TIME,
   maa VARCHAR(20),
   paikkakunta VARCHAR(40),
   alaikaraja integer,
