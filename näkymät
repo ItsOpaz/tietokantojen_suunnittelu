@@ -5,16 +5,18 @@ CREATE OR REPLACE VIEW laskutettavat AS
 	WHERE tila = false;
 	INNER JOIN yhdiste_kampanja y
 	WHERE m.kampanjaId = y.kampanjaId
-	AND y.laskuId IS NULL;
+	AND y.laskuId IS NULL
+	;
 	
 --kaikkien mainosten kuuntelukerrat
-CREATE OR REPLACE VIEW mainosten_kuuntelukerrat AS
+CREATE VIEW mainosten_kuuntelukerrat AS
 	SELECT mainosId, COUNT(mainosId) AS lkm
 	FROM esitys
-	GROUP BY mainosId;
+	GROUP BY mainosId
+	;
 
 --kaikkien kampanjoiden mainosten tiedot, kuuntelukerrat ja kokonaishinnan
-CREATE OR REPLACE VIEW kampanjan_mainokset AS
+CREATE VIEW kampanjan_mainokset AS
 	SELECT m.nimi, m.mainosId,m.kampanjaId, m.pituus, mk.sekuntihinta, ma.lkm
 	, ma.lkm *sekuntihinta as kokhinta
 	FROM mainoskampanja mk
@@ -22,3 +24,18 @@ CREATE OR REPLACE VIEW kampanjan_mainokset AS
 	WHERE m.kampanjaId = mk.kampanjaId
 	INNER JOIN mainosten_kuuntelukerrat ma
 	WHERE m.mainosId = ma.mainosId
+	;
+
+--kaikkien kampanjoiden laskutustiedot
+CREATE VIEW laskutustiedot AS
+	SELECT * 
+	FROM yhdiste_kampanja yk
+	INNER JOIN mainoskampanja mk
+	ON yk.kampanjaId = mk.kampanjaId
+	INNER JOIN jarjestelma_kayttaja jk
+	ON yk.kayttajatunnus = jk.kayttajatunnus
+	INNER JOIN mainostaja m
+	ON yk.mainostajaId = m.mainostajaId
+	INNER JOIN laskutusosoite lo
+	ON m.laskutusosoiteId = lo.osoiteId
+	;
