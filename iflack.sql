@@ -15,7 +15,7 @@ CREATE TABLE jarjestelma_kayttaja (
   kayttajatunnus VARCHAR(30) PRIMARY KEY,
   etunimi VARCHAR NOT NULL,
   sukunimi VARCHAR NOT NULL,
-  tyyppi rooli,
+  tyyppi rooli NOT NULL,
   tila BOOLEAN
 );
 
@@ -278,12 +278,12 @@ FOREIGN KEY(teosID) REFERENCES teos(teosID) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 --molemmat vierasavaimet viittaavat samaan, haittaako?
-
+-- Miten tää karhulasku oikein toimii?
 CREATE TABLE karhulasku (
 karhulaskuId INTEGER,
 laskuId INTEGER,
-PRIMARY KEY(karhulaskuId, laskuId),
-FOREIGN KEY(karhulaskuId) REFERENCES lasku(laskuid) ON UPDATE CASCADE ON DELETE NO ACTION,
+viivastysmaksu numeric,
+PRIMARY KEY(karhulaskuId),
 FOREIGN KEY(laskuId) REFERENCES lasku(laskuid) ON UPDATE CASCADE ON DELETE NO ACTION
 );
 

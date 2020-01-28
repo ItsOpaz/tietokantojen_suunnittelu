@@ -20,11 +20,6 @@ Mitä pitää vielä tehdä:
 - populointi
 - käteviä näkymiä esim. näkyy kampanja, laskun loppusumma jne. samassa taulussa
 
-Esim mainoskampanjan poistaminen ei onnistu ennenkuin lasku on poistettu, mutta
-mun mielestä siihen kannattais tehä triggeri, joka katsoo ennen poistamista, että
-lasku on maksettu. Jos on niin sillon voidaan poistaa toi kampanja.
-Lasku siis sais jäädä voimaan/poistettais siinä samalla
-
 Katsoin alkuperäistä tehtävänantoa ja siellä ei ollut kampanjan poistossa velvoitetta,
 että lasku pitäisi olla maksettu tai edes luotu 
 
