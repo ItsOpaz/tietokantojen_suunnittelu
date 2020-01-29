@@ -306,4 +306,89 @@ insert into esitys(kuuntelijaTunnus, mainosid) values(
   'markalapanen',
   22
 );
+INSERT INTO mainos(kampanjaId, nimi, pituus, kuvaus, esitysaika, jingleId, profiiliID) VALUES(
+  6,
+  'toothpaste 9000',
+  '00:00:20',
+  'hammastahna hampaattomille',
+  '00:00',
+  4,
+  3
+);
+INSERT INTO mainos(kampanjaId, nimi, pituus, kuvaus, esitysaika, jingleId, profiiliID) VALUES(
+  6,
+  'hiusvaha proxmega',
+  '00:00:14',
+  'vahvahiusvaha',
+  '00:00',
+  3,
+  3
+);
+INSERT INTO mainostaja(vat, nimi, yhteysHloId, laskutusosoiteId)
+	VALUES('FI19964988',
+		'Testiyritys oy',
+		7,
+		 6);
+SELECT lisaa_laskutusosoite('Hermiankatu 5', '33720', 'Tampere', 'Suomi');
+INSERT INTO yhteyshenkilo(etunimi, sukunimi, email, puhelinnumero)
+
+	VALUES(
+    
+	 'Masa',
+   
+	 'Meikalainen',
+    
+	 'masa69@gmail.com',
+   
+ 	 '0408679549'
+);
+
+
+SELECT lisaa_laskutusosoite('Hatanpään valtaväylä 13', '33900', 'Tampere', 'Suomi');
+INSERT INTO yhteyshenkilo(etunimi, sukunimi, email, puhelinnumero)
+
+	VALUES(
+    
+	 'Maiju',
+   
+	 'Mahdoton',
+    
+	 'maijudaa@gmail.com',
+   
+ 	 '0404983751'
+);
+
+
+SELECT lisaa_laskutusosoite('Satakunnankatu 14', '33210', 'Tampere', 'Suomi');
+INSERT INTO yhteyshenkilo(etunimi, sukunimi, email, puhelinnumero)
+
+	VALUES(
+    
+	 'Essi',
+   
+	 'Esimerkillinen',
+    
+	 'essi.esimerkillinen@gmail.com',
+   
+ 	 '0405927186'
+);
+INSERT INTO mainos(kampanjaId, nimi, pituus, kuvaus, esitysaika, jingleId) VALUES(
+  5,
+  'Miele P6060 astianpesukone',
+  '00:00:15',
+  'Uuden pesukone mainos, joka kertoo pesukoneen ominaisuuksista',
+  '00:00',
+  2
+
+);
+INSERT INTO mainos(kampanjaId, nimi, pituus, kuvaus, esitysaika, jingleId) VALUES(
+  5,
+  'Miele P7060 vessanpönttö',
+  '00:00:30',
+  'Uuden vessanpöntön mainos, joka kertoo vessanpöntön ominaisuuksista',
+  '00:00',
+  2
+);
+
+
 
