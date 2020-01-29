@@ -282,6 +282,8 @@ FOREIGN KEY(karhulaskuId) REFERENCES lasku(laskuid) ON UPDATE CASCADE ON DELETE 
 FOREIGN KEY(laskuId) REFERENCES lasku(laskuid) ON UPDATE CASCADE ON DELETE NO ACTION
 );
 
+-- Lasku olis ollut järkevämpi yhdistää suoraan kampanjaan, mutta valmiiden funktioiden ja
+-- näkymien takia muuttaminen on hankalampaa, kuin nykyisen tilan käyttäminen
 CREATE TABLE yhdiste_kampanja (
 kampanjaID INTEGER,
 mainostajaID VARCHAR(30),
