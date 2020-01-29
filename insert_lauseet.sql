@@ -390,5 +390,6 @@ INSERT INTO mainos(kampanjaId, nimi, pituus, kuvaus, esitysaika, jingleId) VALUE
   2
 );
 
-
+-- lisätään karhulasku
+select lisaa_karhulasku(13);
 
