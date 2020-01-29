@@ -5,12 +5,13 @@
 
 	
 */
--- Järjestelmän käyttäjä
--- Pitääköhän mainosmyyjä ja sihteeri erotella jotenki?
--- Eli pitääkö esim tähän laittaa rooli? tms.
+
 CREATE TYPE rooli AS ENUM('sihteeri', 'myyjä');
 CREATE TYPE sukupuoli AS ENUM('nainen', 'mies', 'muu');
 
+-- Järjestelmän käyttäjä
+-- Pitääköhän mainosmyyjä ja sihteeri erotella jotenki?
+-- Eli pitääkö esim tähän laittaa rooli? tms.
 CREATE TABLE jarjestelma_kayttaja (
   kayttajatunnus VARCHAR(30) PRIMARY KEY,
   etunimi VARCHAR NOT NULL,
@@ -67,7 +68,7 @@ CREATE TABLE lasku(
   eraPvm DATE,
   tila boolean,
   viitenro VARCHAR(20),
-  korko decimal(5, 2),
+  viivastysmaksu numeric DEFAULT NULL,
   FOREIGN KEY(kampanjaId) REFERENCES mainoskampanja(kampanjaId) ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 CREATE TABLE profiili(
@@ -107,18 +108,7 @@ CREATE TABLE mainoskampanja(
   SET
     NULL
 );
--- Muutin laskurivin ja laskun vierasavaimen suunnan
--- Nyt laskurivi ottaa vierasavaimekseen laskuId:n
--- Lisäksi mietin, että kampanjaId olisi viisaampi siirtää lasku-relaatioon
--- Miksi kampanjaId:tä tarvittaisiin laskurivin yhteydessä?
--- Mun mielestä olis parempi jos siirtäis sen laskuun, en toki vielä näin tehnyt
-CREATE TABLE laskurivi(
-  riviId SERIAL PRIMARY KEY,
-  laskuId int,
-  selite VARCHAR(40),
-  hinta numeric(8, 2),
-  FOREIGN KEY(laskuId) REFERENCES lasku(laskuId) ON DELETE CASCADE
-);
+
 CREATE TABLE jingle (
   jingleID SERIAL PRIMARY KEY,
   tiedoston_sijainti TEXT,
@@ -289,7 +279,6 @@ FOREIGN KEY(teosID) REFERENCES teos(teosID) ON UPDATE CASCADE ON DELETE CASCADE
 CREATE TABLE karhulasku (
 karhulaskuId INTEGER,
 laskuId INTEGER,
-viivastysmaksu numeric,
 PRIMARY KEY(karhulaskuId),
 FOREIGN KEY(laskuId) REFERENCES lasku(laskuid) ON UPDATE CASCADE ON DELETE NO ACTION
 );
