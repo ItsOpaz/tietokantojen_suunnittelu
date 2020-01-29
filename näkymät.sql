@@ -1,3 +1,9 @@
+/*
+Luodut näkymät erityisesti laskutuksen helpottamiseen. Lisäksi mahdollisesti
+tarpeellinen näkymä joka palauttaa kaikki mainokset käyttäjälle voi näyttää, mutta
+mahdollisesti melko monimutkainen
+*/
+
 -- kaikki loppuneet kampanjat joissa laskua ei vielä tehty
 -- helpottaa laskutuksessa, kun halutaan lista kampanjoista joihin voidaan 
 -- luoda lasku
