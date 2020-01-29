@@ -391,4 +391,5 @@ INSERT INTO mainos(kampanjaId, nimi, pituus, kuvaus, esitysaika, jingleId) VALUE
 );
 
 
+INSERT INTO karhulasku (12, 12, 5.0);
 

@@ -140,7 +140,7 @@ CREATE TABLE lasku(
   eraPvm DATE,
   tila boolean,
   viitenro VARCHAR(20),
-  viivastysmaksu numeric DEFAULT NULL,
+  viivastysmaksu numeric DEFAULT NULL
 );
 
 CREATE TABLE jingle (
