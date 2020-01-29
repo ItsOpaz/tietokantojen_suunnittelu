@@ -6,12 +6,11 @@
 	
 */
 
+-- uudet tietotyypit roolille ja sukupuolelle, jotta helpompi käsitellä
 CREATE TYPE rooli AS ENUM('sihteeri', 'myyjä');
 CREATE TYPE sukupuoli AS ENUM('nainen', 'mies', 'muu');
 
 -- Järjestelmän käyttäjä
--- Pitääköhän mainosmyyjä ja sihteeri erotella jotenki?
--- Eli pitääkö esim tähän laittaa rooli? tms.
 CREATE TABLE jarjestelma_kayttaja (
   kayttajatunnus VARCHAR(30) PRIMARY KEY,
   etunimi VARCHAR NOT NULL,
@@ -30,8 +29,10 @@ CREATE TABLE jarjestelma_kirjautumistiedot (
 
 CREATE TABLE postitoimipaikka(
   postinumero VARCHAR(8) PRIMARY KEY,
+  -- tarkistetaan onko postinumero numeroita (mahdollinen ehkä tehdä suoraan
+  -- käyttöliittymään)
   check(postinumero ~ '^[0-9]+$'),
-  pstoimipaikka VARCHAR(40)
+  postoimipaikka VARCHAR(40)
 );
 
 CREATE TABLE laskutusosoite(
@@ -42,7 +43,6 @@ CREATE TABLE laskutusosoite(
   FOREIGN KEY(postinumero) REFERENCES postitoimipaikka(postinumero)
 );
 
--- Vois tehä funktion, joka automaattisesti etsii id:n kun sille antaa nimen/katuosoitteen/jotain muuta
 CREATE TABLE yhteyshenkilo(
   hloId SERIAL PRIMARY KEY,
   etunimi VARCHAR(30),
@@ -51,10 +51,7 @@ CREATE TABLE yhteyshenkilo(
   puhelinnumero VARCHAR(30)
 );
 
--- Eikös tässä voi olla tilanne, jossa mainostajalla ei ole yhteyshenkilöä?
 -- Jos poistetaan yhteyshenkilö, tilalle jää null- arvo
--- oliko tää sallittua 
--- pitäis olla sallittu, koska ei voida vaihtaa yhteyshenkilöö poistamatta edellistä
 CREATE TABLE mainostaja(
   vat VARCHAR(30) PRIMARY KEY,
   nimi VARCHAR(30),
@@ -81,7 +78,7 @@ nimi VARCHAR(40),
 rooli VARCHAR(40)
 );
 
--- PUID tietohakemistossa 32{M}40, Tein funktion, joka generoi automaattisesti
+-- PUID tietohakemistossa 32{M}40, Tehty funktio, joka generoi automaattisesti
 -- satunnaisen merkkijonon
 -- select rand_puid();
 CREATE TABLE musiikkikappale (
@@ -120,25 +117,26 @@ CREATE TABLE profiili(
 
 CREATE TABLE mainoskampanja(
   kampanjaId SERIAL PRIMARY KEY,
-  
-    nimi VARCHAR(40),
-    alkupvm DATE DEFAULT CURRENT_DATE,
-    loppupvm DATE,
-    maaraRahat numeric(8, 2),
-    -- Miljoona suurin luku, tuleeko ongelmia?
-    sekuntihinta numeric(4, 2),
-    -- Ei varmaankaan yli 100€ sekuntihintaa?
-    tila boolean DEFAULT true NOT NULL,
-    -- enabled/disabled
-    profiiliId integer,
-    FOREIGN Key(profiiliId) REFERENCES profiili(profiiliId) ON UPDATE CASCADE ON DELETE
-  SET
-    NULL
+  nimi VARCHAR(40),
+  alkupvm DATE DEFAULT CURRENT_DATE,
+  loppupvm DATE,
+  -- oletetaan, että ei yli miljoonan kampanjoita 
+  maaraRahat numeric(8, 2),
+  -- oletetaan että sekuntihinta ei yli 99, koska ei kukaan osta
+  sekuntihinta numeric(4, 2),
+  -- true = kampanja aktiivinen, false = lopetettu
+  tila boolean DEFAULT true NOT NULL,
+  profiiliId integer,
+  FOREIGN Key(profiiliId) REFERENCES profiili(profiiliId) ON UPDATE CASCADE ON DELETE SET NULL
 );
 
+-- laskussa viivästysmaksu, joka tulee vain jos laskusta tehdään karhulasku, joka
+-- on normi lasku, mutta yhdistetty alkuperäiseen laskuun karhulasku taulussa
+-- ratkaisu tehty, jotta laskuja on helppo ketjuttaa
 CREATE TABLE lasku(
   laskuId SERIAL PRIMARY KEY,
-  lahetyspvm DATE,
+  -- laskun lähetetään oletettavasti luontipäivänä
+  lahetyspvm DATE DEFAULT NOW(),
   eraPvm DATE,
   tila boolean,
   viitenro VARCHAR(20),
@@ -151,8 +149,6 @@ CREATE TABLE jingle (
   nimi TEXT
 );
 
--- HUOM! Tässä ei tuota mainoksen viite-eheyttä oltu mietitty
--- Päätin sit että update ja delete on cascade, saa muuttaa
 CREATE TABLE mainos(
   mainosId SERIAL PRIMARY KEY,
   kampanjaId int,
@@ -170,19 +166,21 @@ CREATE TABLE mainos(
     NULL,
     UNIQUE(kampanjaId, jingleId, profiiliId)
 );
+
 CREATE TABLE kuuntelija(
   nimimerkki VARCHAR(30) PRIMARY KEY,
   ika integer,
+  -- oletetaan, ettei kuuntelija riko ikäennätyksiä yli 25 vuodella
   CHECK(
     ika > 0
     and ika < 150
   ),
-  -- tää järkevin varmaa määrittämällä jotkut arvot mitä sukupuoli voi saada tai booleanilla
   sukupuoli sukupuoli,
   maa VARCHAR(20),
   paikkakunta VARCHAR(40),
   sahkoposti VARCHAR(40)
 );
+
 CREATE TABLE esitys (
   esitysId SERIAL PRIMARY KEY,
   kuuntelijaTunnus VARCHAR(30) REFERENCES kuuntelija(nimimerkki) ON UPDATE CASCADE ON DELETE NO ACTION,
@@ -251,7 +249,6 @@ FOREIGN KEY(soittolistaID) REFERENCES soittolista(soittolistaID) ON UPDATE CASCA
 FOREIGN KEY(teosID) REFERENCES teos(teosID) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
---en tiedä onko id ja nimi nyt sama juttu mut tein kuitenki ku muissakin on?
 CREATE TABLE musarooli (
 rooliID SERIAL PRIMARY KEY,
 roolin_nimi VARCHAR(30)
@@ -267,8 +264,6 @@ FOREIGN KEY(tekijaID) REFERENCES musiikintekija(tekijaID) ON UPDATE CASCADE ON D
 FOREIGN KEY(rooliID) REFERENCES musarooli(rooliID) ON UPDATE CASCADE ON DELETE NO ACTION
 );
 
---järjestysnumerolle jokin parempi tietotyyppi?
-
 CREATE TABLE kokoelmateos (
 kokoelmaID INTEGER,
 teosID INTEGER,
@@ -278,8 +273,7 @@ FOREIGN KEY(kokoelmaID) REFERENCES kokoelma(kokoelmaID) ON UPDATE CASCADE ON DEL
 FOREIGN KEY(teosID) REFERENCES teos(teosID) ON UPDATE CASCADE ON DELETE CASCADE
 );
 
---molemmat vierasavaimet viittaavat samaan, haittaako?
--- Miten tää karhulasku oikein toimii?
+-- yhdistää karhulaskun ja alkuperäisen laskun
 CREATE TABLE karhulasku (
 karhulaskuId INTEGER,
 laskuId INTEGER,
@@ -287,8 +281,6 @@ PRIMARY KEY(karhulaskuId, laskuId),
 FOREIGN KEY(karhulaskuId) REFERENCES lasku(laskuid) ON UPDATE CASCADE ON DELETE NO ACTION
 FOREIGN KEY(laskuId) REFERENCES lasku(laskuid) ON UPDATE CASCADE ON DELETE NO ACTION
 );
-
---tähän keksin itse laskuIdn viite-eheyden kun puuttui, tsekkaa
 
 CREATE TABLE yhdiste_kampanja (
 kampanjaID INTEGER,
