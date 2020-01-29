@@ -1,3 +1,6 @@
+-- myyjä ja sihteeri roolit luotu ja tarvittavat oikeudet oikeisiin 
+-- tauluihin ja näkymiin, kirjautumisvaihtoehdoissa vielä mietittävää
+
 CREATE ROLE sihteeri NOLOGIN;
 CREATE ROLE myyja NOLOGIN;
 
