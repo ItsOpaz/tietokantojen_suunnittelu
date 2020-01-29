@@ -24,7 +24,7 @@ CREATE EXTENSION chkpass;
 CREATE TABLE jarjestelma_kirjautumistiedot (
   kayttajatunnus VARCHAR(30) PRIMARY KEY,
   salasana chkpass NOT NULL,
-  FOREIGN KEY(kayttaja_tunnus) REFERENCES jarjestelma_kayttaja(kayttaja_tunnus) ON DELETE CASCADE ON UPDATE CASCADE
+  FOREIGN KEY(kayttajatunnus) REFERENCES jarjestelma_kayttaja(kayttajatunnus) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE postitoimipaikka(
@@ -292,6 +292,6 @@ laskuId INTEGER DEFAULT NULL,
 PRIMARY KEY(kampanjaID, mainostajaID, kayttajatunnus, laskuId),
 FOREIGN KEY(kampanjaID) REFERENCES mainoskampanja(kampanjaID) ON UPDATE CASCADE ON DELETE CASCADE,
 FOREIGN KEY(mainostajaID) REFERENCES mainostaja(VAT) ON UPDATE CASCADE ON DELETE NO ACTION,
-FOREIGN KEY(kayttajatunnus) REFERENCES jarjestelma_kayttaja(kayttaja_tunnus) ON UPDATE CASCADE ON DELETE NO ACTION,
+FOREIGN KEY(kayttajatunnus) REFERENCES jarjestelma_kayttaja(kayttajatunnus) ON UPDATE CASCADE ON DELETE NO ACTION,
 FOREIGN KEY(laskuId) REFERENCES lasku(laskuid) ON UPDATE CASCADE ON DELETE NO ACTION
 );
