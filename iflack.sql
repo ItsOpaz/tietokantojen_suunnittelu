@@ -33,6 +33,7 @@ CREATE TABLE postitoimipaikka(
   check(postinumero ~ '^[0-9]+$'),
   pstoimipaikka VARCHAR(40)
 );
+
 CREATE TABLE laskutusosoite(
   osoiteId SERIAL PRIMARY KEY,
   postinumero VARCHAR(8),
@@ -40,6 +41,7 @@ CREATE TABLE laskutusosoite(
   maa VARCHAR(20),
   FOREIGN KEY(postinumero) REFERENCES postitoimipaikka(postinumero)
 );
+
 -- Vois tehä funktion, joka automaattisesti etsii id:n kun sille antaa nimen/katuosoitteen/jotain muuta
 CREATE TABLE yhteyshenkilo(
   hloId SERIAL PRIMARY KEY,
@@ -48,6 +50,7 @@ CREATE TABLE yhteyshenkilo(
   email VARCHAR(40),
   puhelinnumero VARCHAR(30)
 );
+
 -- Eikös tässä voi olla tilanne, jossa mainostajalla ei ole yhteyshenkilöä?
 -- Jos poistetaan yhteyshenkilö, tilalle jää null- arvo
 -- oliko tää sallittua 
@@ -60,17 +63,41 @@ CREATE TABLE mainostaja(
   FOREIGN KEY(laskutusosoiteId) REFERENCES laskutusosoite(osoiteId) ON UPDATE CASCADE ON DELETE CASCADE,
   FOREIGN KEY(yhteysHloId) REFERENCES yhteyshenkilo(hloId) ON UPDATE CASCADE ON DELETE SET NULL
 );
--- Experimental
-CREATE TABLE lasku(
-  laskuId SERIAL PRIMARY KEY,
-  kampanjaId int,
-  lahetyspvm DATE,
-  eraPvm DATE,
-  tila boolean,
-  viitenro VARCHAR(20),
-  viivastysmaksu numeric DEFAULT NULL,
-  FOREIGN KEY(kampanjaId) REFERENCES mainoskampanja(kampanjaId) ON UPDATE NO ACTION ON DELETE NO ACTION
+
+CREATE TABLE genre(
+  genreID SERIAL PRIMARY KEY,
+  nimi VARCHAR(50)
 );
+
+CREATE TABLE teos (
+teosID SERIAL PRIMARY KEY,
+nimi VARCHAR(100),
+julkaisuvuosi smallint
+);
+
+CREATE TABLE musiikintekija (
+tekijaID SERIAL PRIMARY KEY,
+nimi VARCHAR(40),
+rooli VARCHAR(40)
+);
+
+-- PUID tietohakemistossa 32{M}40, Tein funktion, joka generoi automaattisesti
+-- satunnaisen merkkijonon
+-- select rand_puid();
+CREATE TABLE musiikkikappale (
+PUID TEXT PRIMARY KEY,
+teosID INTEGER,
+kesto TIME,
+aanitiedosto VARCHAR(40),
+FOREIGN KEY(teosID) REFERENCES teos(teosID) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE kokoelma (
+kokoelmaID SERIAL PRIMARY KEY,
+teosID INTEGER,
+FOREIGN KEY(teosID) REFERENCES teos(teosID) ON UPDATE CASCADE ON DELETE SET NULL
+);
+
 CREATE TABLE profiili(
   profiiliId SERIAL PRIMARY KEY,
   alkulahetysAika TIME,
@@ -109,15 +136,21 @@ CREATE TABLE mainoskampanja(
     NULL
 );
 
+CREATE TABLE lasku(
+  laskuId SERIAL PRIMARY KEY,
+  lahetyspvm DATE,
+  eraPvm DATE,
+  tila boolean,
+  viitenro VARCHAR(20),
+  viivastysmaksu numeric DEFAULT NULL,
+);
+
 CREATE TABLE jingle (
   jingleID SERIAL PRIMARY KEY,
   tiedoston_sijainti TEXT,
   nimi TEXT
 );
-CREATE TABLE genre(
-  genreID SERIAL PRIMARY KEY,
-  nimi VARCHAR(50)
-);
+
 -- HUOM! Tässä ei tuota mainoksen viite-eheyttä oltu mietitty
 -- Päätin sit että update ja delete on cascade, saa muuttaa
 CREATE TABLE mainos(
@@ -176,35 +209,6 @@ soittolistaID SERIAL PRIMARY KEY,
 kuuntelijatunnus VARCHAR,
 nimi VARCHAR(40),
 FOREIGN KEY(kuuntelijatunnus) REFERENCES kuuntelija(nimimerkki) ON UPDATE CASCADE ON DELETE CASCADE
-);
-
-CREATE TABLE teos (
-teosID SERIAL PRIMARY KEY,
-nimi VARCHAR(100),
-julkaisuvuosi smallint
-);
-
-CREATE TABLE musiikintekija (
-tekijaID SERIAL PRIMARY KEY,
-nimi VARCHAR(40),
-rooli VARCHAR(40)
-);
-
--- PUID tietohakemistossa 32{M}40, Tein funktion, joka generoi automaattisesti
--- satunnaisen merkkijonon
--- select rand_puid();
-CREATE TABLE musiikkikappale (
-PUID TEXT PRIMARY KEY,
-teosID INTEGER,
-kesto TIME,
-aanitiedosto VARCHAR(40),
-FOREIGN KEY(teosID) REFERENCES teos(teosID) ON UPDATE CASCADE ON DELETE CASCADE
-);
-
-CREATE TABLE kokoelma (
-kokoelmaID SERIAL PRIMARY KEY,
-teosID INTEGER,
-FOREIGN KEY(teosID) REFERENCES teos(teosID) ON UPDATE CASCADE ON DELETE SET NULL
 );
 
 CREATE TABLE yhdiste_profiili_tekija (
@@ -279,7 +283,8 @@ FOREIGN KEY(teosID) REFERENCES teos(teosID) ON UPDATE CASCADE ON DELETE CASCADE
 CREATE TABLE karhulasku (
 karhulaskuId INTEGER,
 laskuId INTEGER,
-PRIMARY KEY(karhulaskuId),
+PRIMARY KEY(karhulaskuId, laskuId),
+FOREIGN KEY(karhulaskuId) REFERENCES lasku(laskuid) ON UPDATE CASCADE ON DELETE NO ACTION
 FOREIGN KEY(laskuId) REFERENCES lasku(laskuid) ON UPDATE CASCADE ON DELETE NO ACTION
 );
 
