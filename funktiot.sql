@@ -30,29 +30,39 @@ CREATE OR REPLACE FUNCTION lisaa_kayttaja(VARCHAR, VARCHAR, VARCHAR(30), chkpass
 	$func$ LANGUAGE plpgsql;
 
 
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+
 -- käyttö: SELECT add_user(etunimi, sukunimi, kayttaja_tunnus, salasana);
 
 -- Tämä ei osaa vielä käsitellä väärässä muodossa olevia postinumeroja
 -- Tarviiko sitä edes tarkistaa?
 
--- laskuid, selite, hinta, kampanjaid
-CREATE OR REPLACE FUNCTION lisaa_laskurivi(int, VARCHAR, NUMERIC, int) 
+-- laskuid, selite, hinta
+CREATE OR REPLACE FUNCTION lisaa_laskurivi(int, VARCHAR, NUMERIC) 
 	RETURNS boolean AS
 	$func$
+	DECLARE
+
+		riviid_ int;
 	
 	BEGIN
-		INSERT INTO laskurivi(selite, hinta, kampanjaid) VALUES(
-            $2,$3,$4
-
-        );
-
-        UPDATE lasku SET riviId = (SELECT max(riviId) FROM laskurivi WHERE selite = $2)
-        
-        WHERE laskuId = $1;
+		-- Lisää uuden laskurivin
+		INSERT INTO laskurivi(laskuid, selite, hinta) VALUES(
+            $1, $2 ,$3
+        ) RETURNING riviid AS riviid_;
 
         RETURN FOUND;
     END
 	$func$ LANGUAGE plpgsql;
+
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+
 
 -- Tällä voi lisätä kivasti ja helposti uusia laskutusosoitteita
 -- Jos postinumero on jo olemassa, ei tarvi siitä murehtia
@@ -80,6 +90,12 @@ CREATE OR REPLACE FUNCTION lisaa_laskutusosoite(VARCHAR, VARCHAR, VARCHAR, VARCH
 		);
 	END
 	$$ LANGUAGE plpgsql;
+
+
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 
 -- Ei salli mainoskampanjan poistamista, mikäli laskua ei ole maksettu
 -- Jos lasku on maksettu, ja mainoskampanjaa ollaan poistamassa,
@@ -111,6 +127,12 @@ $kampanja_poisto_func$ LANGUAGE plpgsql;
 CREATE TRIGGER check_mainoskampanja_del_tr BEFORE DELETE ON mainoskampanja
 	FOR EACH ROW EXECUTE PROCEDURE kampanja_poisto_func();
 
+
+
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
 
 -- Kopioi alkuperäisen laskun
 -- Kopioi alkuperäisen laskun laskurivit ja muuttaa niiden hinnat
@@ -148,6 +170,11 @@ BEGIN
 END
 $karhulasku$ LANGUAGE plpgsql;
 
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+
 -- Tätä käytetään PUID-arvon luontiin
 CREATE OR REPLACE FUNCTION rand_puid() RETURNS text AS
 $$
@@ -174,6 +201,11 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+
 -- Tarkistaa mainoskampanjan sekä mainoksen välisen xor-suhteen
 -- Jos mainoskampanjalle on asetettu profiili, siihen lisättävillä mainoksilla ei ole profiilia
 -- Toisaalta, jos mainoskampanjaan ei ole asetettu profiilia
@@ -181,19 +213,20 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION check_mainoskampanja_mainos_profiili() RETURNS trigger AS
 $$
 DECLARE
-	kampanjaHasProfile boolean;
+	kampanjaHasProfile int;
 BEGIN
-	kampanjaHasProfile := exists(SELECT profiiliId FROM mainoskampanja AS m WHERE m.kampanjaid = NEW.kampanjaId); 
+	kampanjaHasProfile = (SELECT count(profiiliId) FROM mainoskampanja AS m WHERE m.kampanjaid = NEW.kampanjaId); 
 	-- NEW tarkoittaa siis uutta mainos-tauluun lisättävää/päivitettävää riviä
 	
-	if kampanjaHasProfile then
+	if kampanjaHasProfile > 0 then
 		-- Mainoskampanjalla on profiili -> mainoksella ei saa olla profiilia
 		if NEW.profiiliid is not null then
 			RAISE EXCEPTION 'Mainoskampanjalla on jo profiili! Lisättävällä mainoksella tällöin ei saa olla profiilia. Uutta mainosta ei lisätty.';
 		end if;
 	ELSE
 		-- Mainoskampanjalla ei ole profiilia -> mainoksella täytyy olla profiili
-		if NEW.profiiliid = null then
+		
+		if NEW.profiiliid is null then
 			RAISE EXCEPTION 'Mainoskampanjalla ei ole profiilia! Tällöin mainokselle täytyy asettaa profiili. Uutta mainosta ei lisätty.';
 		end if;
 	end if;
@@ -205,3 +238,99 @@ $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER check_mainoskampanja_mainos_profiili_tr BEFORE INSERT ON mainos
 	FOR EACH ROW EXECUTE PROCEDURE check_mainoskampanja_mainos_profiili();
+
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+
+-- Muuttaa time-tietotyypin sekunneiksi
+CREATE OR REPLACE FUNCTION to_seconds(t time)
+  RETURNS integer AS
+$body$ 
+DECLARE 
+    hs INTEGER;
+    ms INTEGER;
+    s INTEGER;
+BEGIN
+    SELECT (EXTRACT( HOUR FROM  t) * 60*60) INTO hs; 
+    SELECT (EXTRACT (MINUTES FROM t) * 60) INTO ms;
+    SELECT (EXTRACT (SECONDS from t)) INTO s;
+    SELECT (hs + ms + s) INTO s;
+    RETURN s;
+END;
+$body$ LANGUAGE 'plpgsql';
+
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+
+-- Aina, kun lisätään uusi esitys tarkistetaan onko saldoa jäljellä uuden esitykset tekemiseen
+-- Jos saldoa jäljellä alle mainoksen esitysajan verran mainoskampanjan tila asetetaan pysäytetyksi
+-- Luodaan samalla lasku?
+
+
+CREATE or replace function tarkasta_saldo() returns trigger as 
+$saldo$
+DECLARE
+	moneyLeft numeric;
+	adPrice int;
+	adLength time;
+	
+	kid int;
+
+BEGIN
+	-- Tässä tilanteessa new viittaa esitys-tauluun lisättyyn uuteen riviin
+	moneyLeft = (select maararahat from mainoskampanja mk, mainos m where mk.kampanjaid = m.kampanjaid and m.mainosid = new.mainosid);
+	adLength = (select pituus from mainos m where m.mainosid = new.mainosid);
+
+	-- mainos esitettiin, joten päivitetään mainoksen kokonaisesitysaikaa
+	update mainos m set esitysaika = cast((esitysaika + adLength::interval) as time) where m.mainosid = new.mainosid;
+
+	-- Nyt lasketaan mainoksesta aiheutuva kustannus ja vähennetään se määrärahoista
+
+	adPrice = ((select to_seconds(adLength)) * (select sekuntihinta from mainoskampanja mk, mainos m where mk.kampanjaid = m.kampanjaid and m.mainosid = new.mainosid));
+	raise notice 'ad price: %', adPrice;
+
+	-- kampanja id
+	kid = (select kampanjaid from mainos m where m.mainosid = new.mainosid);
+	-- Päivitetään määrärahoja
+	update mainoskampanja mk set maararahat = maararahat - adPrice where mk.kampanjaid = kid;
+	-- Mainoskampanjaan oma triggeri mikä katsoo, että rahat riittää vielä seuraavan mainoksen esittämiseen?
+
+	return new;
+
+END
+$saldo$ LANGUAGE plpgsql;
+
+create trigger tarkasta_saldo_tr after insert on esitys
+	for each row execute procedure tarkasta_saldo();
+
+
+	---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------
+
+
+create or replace function onko_kampanjalla_rahaa() returns trigger as 
+$body$
+DECLARE
+BEGIN
+
+	if (new.tila = false) then
+		return new;
+	end if;
+	
+	
+	if (new.maararahat < 0) then
+		update mainoskampanja set tila = false where kampanjaid = new.kampanjaid;
+	end if;
+
+	return new;
+END
+$body$ LANGUAGE plpgsql;
+
+create trigger kampanjalla_rahaa_tr after insert or update on mainoskampanja
+	for each row execute procedure onko_kampanjalla_rahaa();
