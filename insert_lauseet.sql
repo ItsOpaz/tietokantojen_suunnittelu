@@ -306,6 +306,7 @@ insert into esitys(kuuntelijaTunnus, mainosid) values(
   'markalapanen',
   22
 );
+--listäään uusi mainos, joka yhdistetään jingle ja profiili, koska mainoskamppanjalla ei ole profiilia
 INSERT INTO mainos(kampanjaId, nimi, pituus, kuvaus, esitysaika, jingleId, profiiliID) VALUES(
   6,
   'toothpaste 9000',
@@ -315,6 +316,7 @@ INSERT INTO mainos(kampanjaId, nimi, pituus, kuvaus, esitysaika, jingleId, profi
   4,
   3
 );
+-- Sama kuin ylempi
 INSERT INTO mainos(kampanjaId, nimi, pituus, kuvaus, esitysaika, jingleId, profiiliID) VALUES(
   6,
   'hiusvaha proxmega',
@@ -324,12 +326,12 @@ INSERT INTO mainos(kampanjaId, nimi, pituus, kuvaus, esitysaika, jingleId, profi
   3,
   3
 );
-INSERT INTO mainostaja(vat, nimi, yhteysHloId, laskutusosoiteId)
-	VALUES('FI19964988',
-		'Testiyritys oy',
-		7,
-		 6);
+--Lisätään muutama laskutusosoite
 SELECT lisaa_laskutusosoite('Hermiankatu 5', '33720', 'Tampere', 'Suomi');
+SELECT lisaa_laskutusosoite('Hatanpään valtaväylä 13', '33900', 'Tampere', 'Suomi');
+SELECT lisaa_laskutusosoite('Satakunnankatu 14', '33210', 'Tampere', 'Suomi');
+
+
 INSERT INTO yhteyshenkilo(etunimi, sukunimi, email, puhelinnumero)
 
 	VALUES(
@@ -344,7 +346,7 @@ INSERT INTO yhteyshenkilo(etunimi, sukunimi, email, puhelinnumero)
 );
 
 
-SELECT lisaa_laskutusosoite('Hatanpään valtaväylä 13', '33900', 'Tampere', 'Suomi');
+
 INSERT INTO yhteyshenkilo(etunimi, sukunimi, email, puhelinnumero)
 
 	VALUES(
@@ -359,7 +361,7 @@ INSERT INTO yhteyshenkilo(etunimi, sukunimi, email, puhelinnumero)
 );
 
 
-SELECT lisaa_laskutusosoite('Satakunnankatu 14', '33210', 'Tampere', 'Suomi');
+
 INSERT INTO yhteyshenkilo(etunimi, sukunimi, email, puhelinnumero)
 
 	VALUES(
@@ -372,6 +374,13 @@ INSERT INTO yhteyshenkilo(etunimi, sukunimi, email, puhelinnumero)
    
  	 '0405927186'
 );
+--Lisätään uusi mainostaja ja annetaan sille yhteyshenkilö ja laskutusosoite
+INSERT INTO mainostaja(vat, nimi, yhteysHloId, laskutusosoiteId)
+	VALUES('FI19964988',
+		'Testiyritys oy',
+		7,
+		 6);
+--Lisätään pari uutta mainosta
 INSERT INTO mainos(kampanjaId, nimi, pituus, kuvaus, esitysaika, jingleId) VALUES(
   5,
   'Miele P6060 astianpesukone',
