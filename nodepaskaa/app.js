@@ -4,8 +4,15 @@ const pg = require('pg');
 var conString = "postgres://sqlmanager:keittovesa@localhost:5432/iflac";
 var client = new pg.Client(conString);
 client.connect();
-var query = client.query('SELECT * FROM mainos');
-console.log(query.rows);
+const query = client.query('SELECT * FROM mainos');
+query.on('row', (row) => {
+      console.log(row);
+    });
+    // After all data is returned, close connection and return results
+query.on('end', () => {
+    done();
+    return res.json(results);
+    });
 app.get( '/' ,(req, res) => {
   res.sendFile(__dirname+'/views/home.html');
 });
