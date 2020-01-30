@@ -1,10 +1,12 @@
 const express = require('express');
-const pg = require('pg');
 const app = express();
-
-var conString = "localhost:5432";
-
-var client = new pg.Client(conString);
+const { Client } = require('pg');
+client = new Client({
+    host: 'localhost:5432'
+    user: 'sqlmanager',
+    password: 'keittovesa',
+    database: 'iflac',
+});
 client.connect();
 var query = client.query('SELECT * FROM mainos');
 console.log(query);
