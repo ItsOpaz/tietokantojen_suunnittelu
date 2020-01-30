@@ -5,9 +5,7 @@ var conString = "postgres://sqlmanager:keittovesa@localhost:5432/iflac";
 var client = new pg.Client(conString);
 client.connect();
 var query = client.query('SELECT * FROM mainos');
-query.on('row', function(row) {
-    console.log(row);
-});
+console.log(query.rows);
 app.get( '/' ,(req, res) => {
   res.sendFile(__dirname+'/views/home.html');
 });
