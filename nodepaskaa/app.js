@@ -4,13 +4,16 @@ const pg = require('pg');
 var conString = "postgres://sqlmanager:keittovesa@localhost:5432/iflac";
 var client = new pg.Client(conString);
 client.connect();
-client.query(('SELECT * FROM mainos'), function (err, result, fields) {
+
+app.get( '/' ,(req, res) => {
+   client.query(('SELECT * FROM mainos'), function (err, result, fields) {
     if (err) throw err;
     console.log(result.rows);
-    
+    res.write(results.rows);
+    res.end();
   });
-app.get( '/' ,(req, res) => {
-  res.sendFile(__dirname+'/views/home.html');
+  //res.sendFile(__dirname+'/views/home.html')
+  
 });
 
 
