@@ -36,35 +36,66 @@ VALUES(
     4 -- laskutusosoite id
 );
 
-INSERT INTO profiili (lahetysaika, maa, paikkakunta, alaikaraja, ylaikaraja)
+insert into genre(nimi) values('Metalli');
+insert into genre(nimi) values('Pop');
+insert into genre(nimi) values('Elektroninen');
+insert into genre(nimi) values('Jazz');
+
+insert into musiikintekija(nimi) values('Metallica');
+insert into musiikintekija(nimi) values('K-Pop');
+insert into musiikintekija(nimi) values('Deadmau');
+insert into musiikintekija(nimi) values('3TM');
+
+insert into teos(nimi, julkaisuvuosi) values ('Enter sandman', 1991);
+insert into teos(nimi, julkaisuvuosi) values ('Dalla Dalla', 2019);
+insert into teos(nimi, julkaisuvuosi) values ('Ghosts N Stuff', 2009);
+insert into teos(nimi, julkaisuvuosi) values ('Lake', 2019);
+
+INSERT INTO profiili (alkulahetysaika, loppulahetysaika, maa, paikkakunta, alaikaraja, ylaikaraja, sukupuoli, genre, esittaja, kappale)
 VALUES
   (
-    '00:00',
+    '10:00',
+    '19:00',
     'Suomi',
     'Tampere',
     6,
+    null,
+    'mies',
+    2,
+    null,
     null
 );
 
-INSERT INTO profiili (lahetysaika, maa, paikkakunta, alaikaraja, ylaikaraja)
+INSERT INTO profiili (alkulahetysaika, loppulahetysaika, maa, paikkakunta, alaikaraja, ylaikaraja, sukupuoli, genre, esittaja, kappale)
 VALUES
   (
-    '17:30',
-    'Suomi',
-    'Seinäjoki',
-    18,
-    35
-);
-
-INSERT INTO profiili (lahetysaika, maa, paikkakunta, alaikaraja, ylaikaraja)
-VALUES
-  (
-    '00:00',
+    '15:00',
+    '23:00',
     'Suomi',
     'Helsinki',
-    6,
-    16
+    10,
+    18,
+    'nainen',
+    3,
+    null,
+    null
 );
+
+INSERT INTO profiili (alkulahetysaika, loppulahetysaika, maa, paikkakunta, alaikaraja, ylaikaraja, sukupuoli, genre, esittaja, kappale)
+VALUES
+  (
+    '21:00',
+    '05:00',
+    'Suomi',
+    'Tampere',
+    18,
+    45,
+    'mies',
+    4,
+    null,
+    null
+);
+
 
 -- Kokeilkaa luoda mainoskampanja ilman profiilia ja lisätä siihen mainos ilman profiilia
 -- Pitäis tulla erroria
@@ -270,4 +301,94 @@ insert into esitys(kuuntelijaTunnus, mainosid) values(
   'crawlingflour',
   22
 );
+
+insert into esitys(kuuntelijaTunnus, mainosid) values(
+  'markalapanen',
+  22
+);
+INSERT INTO mainos(kampanjaId, nimi, pituus, kuvaus, esitysaika, jingleId, profiiliID) VALUES(
+  6,
+  'toothpaste 9000',
+  '00:00:20',
+  'hammastahna hampaattomille',
+  '00:00',
+  4,
+  3
+);
+INSERT INTO mainos(kampanjaId, nimi, pituus, kuvaus, esitysaika, jingleId, profiiliID) VALUES(
+  6,
+  'hiusvaha proxmega',
+  '00:00:14',
+  'vahvahiusvaha',
+  '00:00',
+  3,
+  3
+);
+INSERT INTO mainostaja(vat, nimi, yhteysHloId, laskutusosoiteId)
+	VALUES('FI19964988',
+		'Testiyritys oy',
+		7,
+		 6);
+SELECT lisaa_laskutusosoite('Hermiankatu 5', '33720', 'Tampere', 'Suomi');
+INSERT INTO yhteyshenkilo(etunimi, sukunimi, email, puhelinnumero)
+
+	VALUES(
+    
+	 'Masa',
+   
+	 'Meikalainen',
+    
+	 'masa69@gmail.com',
+   
+ 	 '0408679549'
+);
+
+
+SELECT lisaa_laskutusosoite('Hatanpään valtaväylä 13', '33900', 'Tampere', 'Suomi');
+INSERT INTO yhteyshenkilo(etunimi, sukunimi, email, puhelinnumero)
+
+	VALUES(
+    
+	 'Maiju',
+   
+	 'Mahdoton',
+    
+	 'maijudaa@gmail.com',
+   
+ 	 '0404983751'
+);
+
+
+SELECT lisaa_laskutusosoite('Satakunnankatu 14', '33210', 'Tampere', 'Suomi');
+INSERT INTO yhteyshenkilo(etunimi, sukunimi, email, puhelinnumero)
+
+	VALUES(
+    
+	 'Essi',
+   
+	 'Esimerkillinen',
+    
+	 'essi.esimerkillinen@gmail.com',
+   
+ 	 '0405927186'
+);
+INSERT INTO mainos(kampanjaId, nimi, pituus, kuvaus, esitysaika, jingleId) VALUES(
+  5,
+  'Miele P6060 astianpesukone',
+  '00:00:15',
+  'Uuden pesukone mainos, joka kertoo pesukoneen ominaisuuksista',
+  '00:00',
+  2
+
+);
+INSERT INTO mainos(kampanjaId, nimi, pituus, kuvaus, esitysaika, jingleId) VALUES(
+  5,
+  'Miele P7060 vessanpönttö',
+  '00:00:30',
+  'Uuden vessanpöntön mainos, joka kertoo vessanpöntön ominaisuuksista',
+  '00:00',
+  2
+);
+
+
 

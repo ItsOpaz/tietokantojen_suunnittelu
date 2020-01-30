@@ -1,3 +1,19 @@
+MUUTOKSET
+
+28.1.2020
+- Esitykseen lisätty triggeri, joka päivittää mainoksen esitysajan, sekä vähentää mainoksen hinnan määrärahoista
+- mainoskampanjaan lisätty triggeri, joka seuraa, että on riittävästi rahaa
+- Laitetaanko kampanja jäihin, kun rahat menevät miinukselle vai sitten kun ei ole varaa maksaa kalleimman mainoksen esitystä?
+
+Muutoksia 27.1.2020
+- PUID muokattu oikeaan muotoon 32{M}40
+- Lisätty funktio, joka generoi tämän PUID:n
+- Jinglen tiedoston_sijainti tietotyypiksi text
+- Mainoskampanjan tilan default-arvoksi muutettu true
+
+
+
+------------------------------------------------------
 HUOM!
 
 Mainoskampanjassa ja laskussa vierasavaimet linkitetty molempiin suuntiin

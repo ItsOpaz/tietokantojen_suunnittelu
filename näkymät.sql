@@ -1,4 +1,12 @@
---kaikki loppuneet kampanjat joissa laskua ei vielä tehty
+/*
+Luodut näkymät erityisesti laskutuksen helpottamiseen. Lisäksi mahdollisesti
+tarpeellinen näkymä joka palauttaa kaikki mainokset käyttäjälle voi näyttää, mutta
+mahdollisesti melko monimutkainen
+*/
+
+-- kaikki loppuneet kampanjat joissa laskua ei vielä tehty
+-- helpottaa laskutuksessa, kun halutaan lista kampanjoista joihin voidaan 
+-- luoda lasku
 CREATE VIEW laskutettavat AS 
     SELECT m.kampanjaId, m.nimi
     FROM mainoskampanja m
@@ -8,14 +16,16 @@ CREATE VIEW laskutettavat AS
 	AND m.tila = false;
 	;
 	
---kaikkien mainosten kuuntelukerrat
+-- kaikkien mainosten kuuntelukerrat, auttaa mainoskampan mainosten tietojen 
+-- hakemisessa
 CREATE VIEW mainosten_kuuntelukerrat AS
 	mainosId, COUNT(mainosId) AS lkm
 	FROM esitys
 	GROUP BY mainosId
 	;
 
---kaikkien kampanjoiden mainosten tiedot, kuuntelukerrat ja kokonaishinnan
+-- kaikkien kampanjoiden mainosten tiedot, kuuntelukerrat ja kokonaishinnan
+-- auttaa laskun tekemisessä, kun tiedot saadaan kaikilta kampanjan mainoksilta
 CREATE VIEW kampanjan_mainokset AS
 	m.nimi, m.mainosId,m.kampanjaId, m.pituus, mk.sekuntihinta, ma.lkm
 	, ma.lkm *sekuntihinta as kokhinta
@@ -26,7 +36,9 @@ CREATE VIEW kampanjan_mainokset AS
 	ON m.mainosId = ma.mainosId
 	;
 
---kaikkien kampanjoiden laskutustiedot
+-- kaikkien kampanjoiden laskutustiedot
+-- helpottaa kun kampanjan tarvittavat laskutustiedot saadaan helposti yhdellä
+-- yksinkertaisella kyselyllä
 CREATE VIEW laskutustiedot AS
 	yk.kampanjaId, yk.kayttajatunnus, yk.mainostajaId
 	, CONCAT(jk.etunimi, ' ',jk.sukunimi) as myyjä
