@@ -10,6 +10,8 @@
 -tämä lisäys pitää heti näkyä laskulistassa (mutta laskulistaa ei kai tarvitse näyttää screenillä?)
 --> tällä hetkellä laskuissamme ei ole summaa? (koska laskurivitaulu poistettiin?)
         Olli: summa lasketaan mainoskampanjan_mainokset taulun mainosten kokonaishinnoista
+        Joonas: Pointti tässä siis se, että kun lasku lähetetään, niin siinä ei ole kokonaissummaa
+                lisätäänkö siis laskuun "summa" sarake vai antaako olla näi miten on?
 
 1.5.2 Laskun muokkaaminen
 -käyttäjä valitsee UI:sta "muokkaa" ja antaa uuden arvon. 
@@ -20,6 +22,8 @@
 -pitänee tehdä vielä kantaan view, jossa kaikki tiedot haluttavista asioista (katso malli 1.5.3 kohdasta)
         Olli: laskutustiedot ja mainoskampanjan_mainokset viewit palauttaa juuri nämä,
             - täytyy lisätä profiilista haettava lähetysaika vielä tähän
+        Joonas: Pohdittiin sellaista asiaa, että esim laskun tilanteessa näkymässä ei näy kokonaissummaa vai katsonko väärää näkymää?
+                Summa siis löytyy jostain näkymästä, mutta sieltä puuttui sit jotain muuta
 -view tallennetaan tietorakenteeseen, ja sitten ne haetaan UI näkyviin halutussa mallimuodossa
 -kun käyttäjä klikkaa "lähetä" niin laskutauluun päivitetään lähetyspvm
 -laskun "lähetys" ei varmaankaan oikeasti sitten tee mitään sähköpostia?
