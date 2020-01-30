@@ -9,7 +9,7 @@ app.get( '/' ,(req, res) => {
    client.query(('SELECT * FROM mainos'), function (err, result, fields) {
     if (err) throw err;
     console.log(result.rows);
-    res.write(result.rows);
+    res.write(JSON.stringify(result.rows));
   });
   //res.sendFile(__dirname+'/views/home.html')
   
