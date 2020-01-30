@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const { Client } = require('pg');
 client = new Client({
-    host: 'localhost:5432'
+    host: 'localhost:5432',
     user: 'sqlmanager',
     password: 'keittovesa',
     database: 'iflac',
