@@ -1,0 +1,18 @@
+{
+  "main": "lasse_esim.js",
+  "dependencies": {
+    "express": "~4.16.2",
+    "pg": "~7.3.0",
+    "body-parser": "~1.18.2",
+    "pug": "~2.0.0-rc.4"
+  },
+  "name": "tikasunode",
+  "version": "0.0.0",
+  "description": "Example for Tietokantojen suunnittelu.",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Antti Luoto",
+  "license": "ISC"
+}

@@ -1,0 +1,100 @@
+
+
+
+html
+  head
+    title= title
+    //- Inline Javascript example
+    script.
+      function myFunction() {
+        window.alert("Näin voi kirjoittaa omia funktioita jos tarvitsee.")
+      }
+    //- Include Javasript libraries:  
+    script(src="https://code.jquery.com/jquery-3.2.1.min.js")
+    script(src="http://code.jquery.com/ui/jquery-ui-git.js")
+    script.
+      $( function() {
+        $( "#datepicker" ).datepicker({
+          dateFormat: "dd-mm-yy"
+        });      
+      } );
+  
+
+  body
+    h1= title
+    a(href="/toinensivu") Linkki tokalle sivulle.
+    
+    p 
+
+    button(onclick="myFunction()") Inline Javascript -esimerkki
+
+    h2 Rajoitteet UI:ssa
+
+    p Joitakin rajoitteita UI:ssa saa HTML:n puolelta (ja HTML5:llä lisää). Estääkö tämä kuitenkaan lähettämästä laittomia syötteitä kantaan?
+    p Vain viisi merkkiä kenttään: 
+      input(type="text" maxlength=5)
+
+    //- You can use HTML5 date form as well but it does not work with Firefox
+    form(name="dateform", action="/date" method="post")
+      p FF ei tue HTML5:n date -input typeä mutta sitä saa käyttää. Tässä on käytössä Javascript ja jQuery: 
+        input(type="text", id="datepicker", name="date")
+        input(type="submit", name="execquery", value="Date picker -esimerkki")      
+
+
+
+
+    h3 Näitä FF:kin tukee: 
+
+    //- Pipe character | allows writing raw HTML
+    p Luku väliltä 1-5 (kirjoitettu raakana HTML:nä esimerkin vuoksi jos menee hermot puggiin)
+      | <input type="number" name="quantity" min="1" max="5">
+
+    p Kolmekirjaiminen maakoodi (regular expression) ja hoveroimalla vinkki:
+      | <input type="text" name="country_code" pattern="[A-Za-z]{3}" title="Three letter country code">  
+
+    p
+    //- Create a drop down menu.
+    form(name="dropdownform", action="/dropdown", method="post")
+      select(name="drop")
+        option(value="drop") Drop
+        option(value="down") Down
+        option(value="menu") Menu
+        
+        //- Add items to menu
+        //- by iterating the query results.
+        //- The result contains a field named 'eka'.
+        if dropdown 
+          each row in dropdown
+            option(value=row.eka) #{row.eka}
+
+        input(type="submit", name="execquery", value="Suorita Drop down -toiminto")
+
+
+    //- Create a text area form.
+    form(name="queryform", action="/", method="post")
+      textarea(name="query", rows="6", cols="60") #{query}
+      br
+      input(type="submit", name="execquery", value="Suorita Text area -toiminto")
+
+  //- Print error message
+  if error  
+    p #{error}
+
+  //- Print the results in a html table by iterating the query results.
+  else if result 
+    br
+    table
+      thead
+        tr
+          //- First print field names as table headers.
+          each field in result.fields
+            th: p= field.name
+      tbody
+        //- Then print values in the resulting rows.
+        each row in result.rows
+          tr
+            each value in row
+              td: p= value
+
+  
+
