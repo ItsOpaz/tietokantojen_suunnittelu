@@ -135,12 +135,14 @@ CREATE TABLE mainoskampanja(
 -- ratkaisu tehty, jotta laskuja on helppo ketjuttaa
 CREATE TABLE lasku(
   laskuId SERIAL PRIMARY KEY,
+  kampanjaid int,
   -- laskun lähetetään oletettavasti luontipäivänä
   lahetyspvm DATE DEFAULT NOW(),
   eraPvm DATE,
   tila boolean,
   viitenro VARCHAR(20),
-  viivastysmaksu numeric DEFAULT NULL
+  viivastysmaksu numeric DEFAULT NULL,
+  FOREIGN key(kampanjaid) REFERENCES mainoskampanja(kampanjaid) on delete no action
 );
 
 CREATE TABLE jingle (
