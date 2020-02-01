@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const pg = require('pg');
-var conString = "postgres://postgres:130m3ga11@localhost:5432/tika";
+var conString = "postgres://postgres:asdsad@localhost:5432/tika";
 var client = new pg.Client(conString);
 client.connect();
 
