@@ -4,12 +4,20 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "nodemonConfig": {
+    "delay": 500
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
-    "pg": "^7.18.1"
+    "pg": "^7.18.1",
+    "pug": "^2.0.4"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
   }
 }
