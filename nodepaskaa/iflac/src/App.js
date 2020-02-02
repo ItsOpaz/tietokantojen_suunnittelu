@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-
+import './backend.js';
 import { Route, Link } from 'react-router-dom'
 import Login from './Login';
 import Home from './Home';
