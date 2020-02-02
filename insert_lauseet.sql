@@ -133,7 +133,7 @@ VALUES(
   false,
   '123452346',
   8.0
-);
+1);
 
 -- laskuid, selite, hinta, kampanjaid
 INSERT INTO laskurivi(laskuid, selite, hinta) VALUES(12, 'Imurimainoksen perusmaksu', 20.00);
