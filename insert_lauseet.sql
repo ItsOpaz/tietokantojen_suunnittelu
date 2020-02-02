@@ -100,7 +100,7 @@ VALUES
 -- Kokeilkaa luoda mainoskampanja ilman profiilia ja lisätä siihen mainos ilman profiilia
 -- Pitäis tulla erroria
 INSERT INTO mainoskampanja (
-    laskuId,
+  
     nimi,
     loppupvm,
     maaraRahat,
@@ -109,13 +109,12 @@ INSERT INTO mainoskampanja (
     profiiliId
   )
 VALUES(
-    1,
     'Masan mainoskampanja',
     '2020-08-30',
     100.00,
     0.20,
     false,
-    4
+    2
   );
 
 INSERT INTO lasku (
@@ -123,17 +122,16 @@ INSERT INTO lasku (
   lahetyspvm,
   eraPvm,
   tila,
-  viitenro,
-  korko
+  viitenro
+  
 )
 VALUES(
-  5,
-  '2020-1-27',
+  1,
+  null,
   '2020-4-27',
   false,
-  '123452346',
-  8.0
-1);
+  '123452346'
+);
 
 -- laskuid, selite, hinta, kampanjaid
 INSERT INTO laskurivi(laskuid, selite, hinta) VALUES(12, 'Imurimainoksen perusmaksu', 20.00);
