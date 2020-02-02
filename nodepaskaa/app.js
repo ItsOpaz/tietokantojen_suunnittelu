@@ -5,7 +5,7 @@ const parser = require('body-parser')
 const hbs = require('express-handlebars')
 
 
-const conString = "postgres://postgres:admin@localhost:5432/tika";
+const conString = "postgres://sqlmanager:keittovesa@localhost:5432/iflac";
 const client = new pg.Client(conString);
 app.engine('hbs', hbs({extname: 'hbs', defaultLayout: 'home.hbs', layoutDir: __dirname+ '/views/'}));
 app.set('view engine', 'hbs')
