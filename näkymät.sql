@@ -56,3 +56,19 @@ CREATE VIEW laskutustiedot AS
 	INNER JOIN laskutusosoite lo
 	ON m.laskutusosoiteId = lo.osoiteId
 	;
+
+--näkymä jossa kaikki mainosesitykset, ongelma on kuitenkin että miten saadaan
+--oikeat kappaleet listaan mukaan
+CREATE VIEW mainoksen_esitykset AS 
+    SELECT m.mainosId,
+	e.pvm as esityspäivä,
+	e.kloaika as esitysaika,
+	k.sukupuoli,
+	k.ika,
+	k.maa,
+	k.paikkakunta
+    FROM mainos m
+	INNER JOIN esitys e
+	ON m.mainosId = e.mainosId
+	INNER JOIN kuuntelija k
+	ON e.kuuntelijaTunnus = nimimerkki;
