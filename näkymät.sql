@@ -28,7 +28,7 @@ CREATE VIEW mainosten_kuuntelukerrat AS
 -- auttaa laskun tekemisessä, kun tiedot saadaan kaikilta kampanjan mainoksilta
 CREATE VIEW kampanjan_mainokset AS
 	m.nimi, m.mainosId,m.kampanjaId, m.pituus, mk.sekuntihinta, ma.lkm
-	, ma.lkm *sekuntihinta as kokhinta
+	, ma.lkm *mk.sekuntihinta *m.pituus as kokhinta
 	FROM mainoskampanja mk
 	INNER JOIN mainos m
 	ON m.kampanjaId = mk.kampanjaId
