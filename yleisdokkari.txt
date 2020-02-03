@@ -50,6 +50,7 @@
 1.7 Mainosesitysraportin lähettäminen  (taloussihteeri tai mainosmyyjä, pitänee toteuttaa?)
 -tämä helppo tehdä viewillä, joka palauttaa kaikki esitykset ja funktiolla
 -funktio SELECT (syötetyt parametrit) FROM VIEW where mainosId tai kampanjaId on tietyt
+-tässä ongelma, sillä esitystä ei ole linkitetty kappaleeseen, vaikka pitäis olla
 
 
 
