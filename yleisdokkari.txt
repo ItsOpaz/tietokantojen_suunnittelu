@@ -13,7 +13,8 @@
         Joonas: Pointti tässä siis se, että kun lasku lähetetään, niin siinä ei ole kokonaissummaa
                 lisätäänkö siis laskuun "summa" sarake vai antaako olla näi miten on?
         Olli: kun haetaan kaikki kampanjan mainokset, saadaan hinta per mainos 
-        SELECT SUM(kokhinta) FROM kampanjan_mainokset WHERE kampanjaId = valitunkampanjan id;
+            SELECT SUM(kokhinta) FROM kampanjan_mainokset WHERE kampanjaId = valitunkampanjan id;
+            tällä saadaan si kokonaishinta kampanjalle
 
 1.5.2 Laskun muokkaaminen
 -käyttäjä valitsee UI:sta "muokkaa" ja antaa uuden arvon. 
