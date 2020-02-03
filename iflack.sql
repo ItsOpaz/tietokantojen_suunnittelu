@@ -19,11 +19,11 @@ CREATE TABLE jarjestelma_kayttaja (
   tila BOOLEAN
 );
 
-CREATE EXTENSION chkpass;
+--CREATE EXTENSION chkpass;
 -- Kirjautumistiedot
 CREATE TABLE jarjestelma_kirjautumistiedot (
   kayttajatunnus VARCHAR(30) PRIMARY KEY,
-  salasana chkpass NOT NULL,
+  salasana text NOT NULL,
   FOREIGN KEY(kayttajatunnus) REFERENCES jarjestelma_kayttaja(kayttajatunnus) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
