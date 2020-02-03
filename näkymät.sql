@@ -61,7 +61,7 @@ CREATE VIEW laskutustiedot AS
 --oikeat kappaleet listaan mukaan
 CREATE VIEW mainoksen_esitykset AS 
     SELECT m.mainosId,
-	e.pvm as esityspäivä,
+	e.pvm as esityspaiva,
 	e.kloaika as esitysaika,
 	k.sukupuoli,
 	k.ika,
