@@ -4,11 +4,15 @@ const pg = require('pg');
 const parser = require('body-parser')
 const hbs = require('express-handlebars')
 
+const PORT = 8000
 
 const conString = "postgres://postgres:postgres@localhost:5432/tikasu";
 const client = new pg.Client(conString);
 app.engine('hbs', hbs({ extname: 'hbs', defaultLayout: 'home.hbs', layoutDir: __dirname + '/views/' }));
 app.set('view engine', 'hbs')
+
+const urlencodedParser = parser.urlencoded({ extended: false })
+
 
 client.connect();
 
