@@ -2,7 +2,7 @@
 // ========
 
 module.exports = {
-    
+
     // runDBQuery - connect to postgresql database and execute transaction using connection pool
     // Parameters:
     // query: SQL query to be executed
@@ -14,17 +14,17 @@ module.exports = {
     runDbQuery: function runDbQuery(query, buildHtml, res, resultCollector, postQuery) {
 
         const { Pool } = require('pg')
-        const connectionString = "postgres://admin:admin@localhost:5432/mydb";
+        const connectionString = "postgres://postgres:hilla123@localhost:5432/iflac";
         const pool = new Pool({
-          connectionString: connectionString,
+            connectionString: connectionString,
         })
 
         // get a pg client from the connection pool
         pool.connect((err, client, done) => {
 
-            if(!client) {
-                if(buildHtml != undefined) {
-                    buildHtml(query, undefined, res, 
+            if (!client) {
+                if (buildHtml != undefined) {
+                    buildHtml(query, undefined, res,
                         "Error: No database connection", resultCollector);
                 }
                 return;
@@ -34,15 +34,15 @@ module.exports = {
                 if (err) {
                     console.error('Error in transaction', err.stack)
                     client.query('ROLLBACK', (err) => {
-                      if (err) {
-                        console.error('Error rolling back client', err.stack)
-                      }
-                      // release the client back to the pool
-                      done()
+                        if (err) {
+                            console.error('Error rolling back client', err.stack)
+                        }
+                        // release the client back to the pool
+                        done()
                     })
 
                     // render HTML with the error message
-                    if(buildHtml != undefined) {
+                    if (buildHtml != undefined) {
                         buildHtml(query, undefined, res, err, resultCollector);
                     }
                 }
@@ -71,10 +71,10 @@ module.exports = {
                                 // release the client back to the pool
                                 done()
                             })
-                        // render HTML with result
-                        if(buildHtml != undefined) {
-                            buildHtml(query, result, res, undefined, resultCollector, postQuery);
-                        }
+                            // render HTML with result
+                            if (buildHtml != undefined) {
+                                buildHtml(query, result, res, undefined, resultCollector, postQuery);
+                            }
                         });
                     });
                 });
