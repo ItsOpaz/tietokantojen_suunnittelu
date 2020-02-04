@@ -1,30 +1,19 @@
 const express = require('express');
 const app = express();
 const pg = require('pg');
-const parser = require('body-parser')
-const hbs = require('express-handlebars')
-<<<<<<< HEAD
+const parser = require('body-parser');
+const hbs = require('express-handlebars');
 app.use(parser.json());
 app.use(parser.urlencoded({ extended: true }));
 const conString = "postgres://postgres:admin@localhost:5432/tika";
-=======
-
-const PORT = 8000
-
-const conString = "postgres://postgres:hilla123@localhost:5432/iflac";
->>>>>>> def71181a7a378b95516dc1b557986cf1bcfc165
 const client = new pg.Client(conString);
 app.engine('hbs', hbs({ extname: 'hbs', defaultLayout: 'home.hbs', layoutDir: __dirname + '/views/' }));
 app.set('view engine', 'hbs')
 
-<<<<<<< HEAD
-
-=======
 const urlencodedParser = parser.urlencoded({ extended: false })
-
+const PORT = 8000
 
 client.connect();
->>>>>>> def71181a7a378b95516dc1b557986cf1bcfc165
 
 app.get('/mainokset', (req, res) => {
   client.connect();
@@ -35,13 +24,8 @@ app.get('/mainokset', (req, res) => {
     var asdd = JSON.parse(JSON.stringify(result.rows));
     console.log(asdd);
     var nakki = asdd[0].mainosid;
-<<<<<<< HEAD
     res.render(__dirname+'/views/layouts/home.hbs',{asdd});
     console.log(result.rows);
-=======
-    res.render(__dirname + '/views/layouts/home.hbs', { asdd });
-
->>>>>>> def71181a7a378b95516dc1b557986cf1bcfc165
   });
 });
 app.get('/lisaa', (req, res) => {
@@ -49,7 +33,6 @@ app.get('/lisaa', (req, res) => {
   res.render(__dirname + '/views/sivut/lisaa.hbs', { layout: false });
 
 });
-<<<<<<< HEAD
 app.post('/lisaa', (req,res)=>{
    client.connect();
    console.log(req.body);
@@ -64,12 +47,6 @@ app.post('/lisaa', (req,res)=>{
 
    });
    res.redirect('/mainokset')
-=======
-app.post('/lisaa', urlencodedParser, (req, res) => {
-  console.log(req.body);
-
-
->>>>>>> def71181a7a378b95516dc1b557986cf1bcfc165
 });
 
 
@@ -85,6 +62,7 @@ app.post('/login', urlencodedParser, (req, res) => {
   // Chekataan kannasta, että onko kayttajatunnus ja salasana oikein
   client.query('select * from jarjestelma_kirjautumistiedot where kayttajatunnus=\'' + kayttajatunnus + '\' and ' + 'salasana=\'' + salasana + '\'', (err, result) => {
     if (err) {
+      console.log("kirjautuminen epäonnistui");
       res.render(__dirname + '/views/sivut/login.hbs', { layout: false, kayttajatunnus: "", salasana: "" })
     }
 
