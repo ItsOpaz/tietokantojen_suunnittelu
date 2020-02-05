@@ -7,7 +7,7 @@ const Handlebars = require('handlebars')
 
 const PORT = 8000
 
-const conString = "postgres://postgres:postgres@localhost:5432/tikasu";
+const conString = "postgres://sqlmanager:keittovesa@localhost:5432/iflac";
 const client = new pg.Client(conString);
 app.engine('hbs', hbs({ extname: 'hbs', defaultLayout: 'home.hbs', layoutDir: __dirname + '/views/' }));
 app.set('view engine', 'hbs')
