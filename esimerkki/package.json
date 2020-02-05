@@ -1,10 +1,10 @@
 {
   "main": "lasse_esim.js",
   "dependencies": {
-    "express": "~4.16.2",
-    "pg": "~7.3.0",
-    "body-parser": "~1.18.2",
-    "pug": "~2.0.0-rc.4"
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "pg": "^7.3.0",
+    "pug": "^2.0.4"
   },
   "name": "tikasunode",
   "version": "0.0.0",

@@ -4,7 +4,7 @@
 // Install required packages (see package.json) by running: npm install
 //
 // Edit connectionString in util.js with your postgresql information: 
-// var connectionString = "postgres://user:pass@localhost:port/dbname";
+//var connectionString = "postgres://user:pass@localhost:port/dbname";
 //
 // Start node server: node lasse_esim.js
 // Quick test in linux-desktop.cc.tut.fi on command line by typing: curl tkannatX.cs.tut.fi:8888
@@ -18,8 +18,8 @@
 // CREATE TABLE esimerkki (eka INTEGER, toka INTEGER);
 // INSERT INTO esimerkki VALUES (1, 2);
 // INSERT INTO esimerkki VALUES (3, 4);
-const defaultQuery = "SELECT * FROM esimerkki";
-const dropDownQuery = "SELECT eka from esimerkki";
+const defaultQuery = "SELECT * FROM mainos";
+const dropDownQuery = "SELECT kayttajatunnus from jarjestelma_kirjautumistiedot";
 
 var util = require('./util');
 var express = require('express');
@@ -33,7 +33,7 @@ app.set('view engine', 'pug');
 
 // route - HTTP GET to http://tkannatX.cs.tut.fi:8888/    
 app.get('/', function (req, res) {
-    
+
     // resultCollector collects the contents that will be rendered on the WWW page.
     var resultCollector = {};
 
@@ -51,7 +51,7 @@ app.get('/', function (req, res) {
 // resultCollector: collecting content to be rendered
 function buildDropdown(query, dbResult, res, err, resultCollector, postQuery) {
 
-    if(dbResult && 'rows' in dbResult) {
+    if (dbResult && 'rows' in dbResult) {
         resultCollector.dropdown = dbResult.rows;
     }
     // continue with a query written on the textfield.
@@ -82,8 +82,8 @@ function buildHtml(query, dbResult, res, err, resultCollector) {
 app.get('/toinensivu', function (req, res) {
 
     // rendering without resultCollector
-    res.render('toinensivu', { 
-        title: 'Toinen sivu', 
+    res.render('toinensivu', {
+        title: 'Toinen sivu',
         message: 'Toisen sivun teksti'
     });
 });
@@ -93,8 +93,8 @@ app.post('/dropdown', function (req, res) {
 
     var resultCollector = {};
 
-    if(req.body.drop == "drop" || req.body.drop == "down" || req.body.drop == "menu") {
-        util.runDbQuery("SELECT NOW() --This is an example: " + req.body.drop, 
+    if (req.body.drop == "drop" || req.body.drop == "down" || req.body.drop == "menu") {
+        util.runDbQuery("SELECT NOW() --This is an example: " + req.body.drop,
             buildHtml, res, resultCollector, req.body.query);
     }
     else {
@@ -103,7 +103,7 @@ app.post('/dropdown', function (req, res) {
         // Using parameterized queries is recommended instead.
         util.runDbQuery("SELECT eka FROM esimerkki WHERE eka = " + req.body.drop,
             buildHtml, res, resultCollector, req.body.query);
-    }    
+    }
 });
 
 
@@ -122,7 +122,7 @@ app.post('/', function (req, res) {
 
     // Use builDropdown function as a callback function
     // because it needs to be executed after the db query.   
-    util.runDbQuery(dropDownQuery, buildDropdown, res, resultCollector, req.body.query);    
+    util.runDbQuery(dropDownQuery, buildDropdown, res, resultCollector, req.body.query);
 });
 
 
