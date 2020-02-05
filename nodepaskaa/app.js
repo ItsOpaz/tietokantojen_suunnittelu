@@ -5,7 +5,7 @@ const parser = require('body-parser');
 const hbs = require('express-handlebars');
 app.use(parser.json());
 app.use(parser.urlencoded({ extended: true }));
-const conString = "postgres://postgres:admin@localhost:5432/tika";
+const conString = "postgres://sqlmanager:keittovesa@localhost:5432/iflac";
 const client = new pg.Client(conString);
 app.engine('hbs', hbs({ extname: 'hbs', defaultLayout: 'home.hbs', layoutDir: __dirname + '/views/' }));
 app.set('view engine', 'hbs')
@@ -69,7 +69,7 @@ app.post('/login', urlencodedParser, (req, res) => {
     try {
       if (result.rows.length > 0) {
         console.log('kirjautuminen onnistui')
-        res.redirect('mainokset')
+        res.redirect('/views/sivut/mainokset')
         // res.render(__dirname + '/views/sivut/lisaa.hbs', { layout: false })
       }
 
@@ -82,4 +82,4 @@ app.post('/login', urlencodedParser, (req, res) => {
 
 })
 app.listen(PORT, () =>
-  console.log("testi servuu portilla: " + PORT));
+  console.log("Localhost listening on port: " + PORT));
