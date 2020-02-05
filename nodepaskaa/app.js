@@ -13,7 +13,7 @@ app.engine('hbs', hbs({ extname: 'hbs', defaultLayout: 'home.hbs', layoutDir: __
 app.set('view engine', 'hbs')
 
 const urlencodedParser = parser.urlencoded({ extended: false })
-const PORT = 8000
+
 
 client.connect();
 
