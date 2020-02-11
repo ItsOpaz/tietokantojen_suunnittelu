@@ -7,7 +7,7 @@ const Handlebars = require('handlebars')
 
 const PORT = 8000
 
-const conString = "postgres://sqlmanager:keittovesa@localhost:5432/iflac";
+const conString = "postgres://postgres:hilla123@localhost:5432/iflac";
 const client = new pg.Client(conString);
 app.engine('hbs', hbs({ extname: 'hbs', defaultLayout: 'home.hbs', layoutDir: __dirname + '/views/' }));
 app.set('view engine', 'hbs')
@@ -82,10 +82,21 @@ app.post('/login', urlencodedParser, (req, res) => {
   })
 })
 
-Handlebars.registerHelper("each", function (items, options) {
-  const campaignList = items.map(item => "<li>" + options.fn(item) + "</li>");
-  return "<ul>\n" + campaignList.join("\n") + "\n</ul>";
+Handlebars.registerHelper("each_with", function (items, attr, value, options) {
+
+
+  let result = ""
+  for (let i = 0; i < items.length; i++) {
+    if (items[i][attr] == value) {
+
+      result += options.fn(items[i])
+    }
+  }
+
+  return result
+
 });
+
 
 app.get('/kampanjat', (req, res) => {
 
@@ -93,16 +104,15 @@ app.get('/kampanjat', (req, res) => {
     if (err) throw err;
 
 
-    console.log(result)
     if (result.rowCount > 0) {
 
       res.render(__dirname + '/views/sivut/kampanjat.hbs', {
         layout: false, data: result.rows
       })
     }
-
   })
-
 })
+
+
 app.listen(PORT, () =>
   console.log("Localhost listening on port: " + PORT));

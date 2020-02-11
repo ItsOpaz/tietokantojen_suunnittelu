@@ -1,21 +1,79 @@
-<h1>Iflac kampanjat</h1>
+<html>
+
+<head>
 
 
-<div id='content-wrapper'>
+    <script>
 
-    <div class='rajaus'>
-        rajauspaskaa
-    </div>
+        let content = []
+        window.onload = () => {
+        }
 
-    <div class='kampanjat'>
-        {{#each data}}
-        <div class="comment">
-            {{{nimi}}}
+        const handleClick = (kampanjaid, nimi) => {
+            console.log(kampanjaid, nimi)
+        }
+
+    </script>
+
+</head>
+
+<body>
+
+
+    <h1>Iflac kampanjat</h1>
+    <style>
+        .nav li {
+            list-style: none;
+            float: left;
+            margin: 5px 10px;
+        }
+
+        .list-element {
+            list-style: none;
+        }
+
+        .list-element:hover {
+            background-color: #666666;
+            cursor: pointer;
+        }
+    </style>
+    <ul class="nav">
+        <li><a href="mainokset">mainokset</a></li>
+        <li><a href="mainostajat">mainostajat</a></li>
+        <li><a href="kuukausiraportit">kuukausiraportit</a></li>
+        <li><a href="laskutus">laskutus</a></li>
+
+    </ul>
+
+
+
+    <div class='content-wrapper'>
+        <br>
+        <h4>Kampanjat</h4>
+
+        <form action="kampanja" method="post">
+            <label for="name-filter">Etsin kampanjan nimellä</label>
+            <input type="text" name="name-filter">
+            <input type="button" value="etsi">
+
+        </form>
+
+        <div class='kampanjat'>
+            {{#each_with data 'nimi' 'testikampanja'}}
+            <ul>
+                <li class="list-element" onclick="handleClick('{{kampanjaid}}', '{{nimi}}')"> {{{nimi}}} </li>
+
+            </ul>
+            {{/each_with}}
         </div>
-        {{/each}}
+
+
+        <div class="selected">
+
+
+        </div>
     </div>
 
-    <div class='spesific-kampanja'>
-        Paska kampanja
-    </div>
-</div>
+</body>
+
+</html>
