@@ -82,20 +82,32 @@ app.post('/login', urlencodedParser, (req, res) => {
   })
 })
 
-Handlebars.registerHelper("each_with", function (items, attr, value, options) {
-
+Handlebars.registerHelper("each_with", function (items, attr, options, value = "") {
 
   let result = ""
-  for (let i = 0; i < items.length; i++) {
-    if (items[i][attr] == value) {
 
+  console.log(value)
+
+  if (value) {
+    for (let i = 0; i < items.length; i++) {
+      if (items[i][attr] == value) {
+
+        result += options.fn(items[i])
+      }
+    }
+
+  } else {
+
+    for (let i = 0; i < items.length; i++) {
       result += options.fn(items[i])
     }
+
   }
 
   return result
 
 });
+
 
 
 app.get('/kampanjat', (req, res) => {
@@ -111,6 +123,16 @@ app.get('/kampanjat', (req, res) => {
       })
     }
   })
+})
+
+app.get('/kampanjat/:id', (req, res) => {
+
+})
+
+app.post('/kampanjat/:id', (req, res) => {
+
+  // Päivitä kampanja?
+  let query = `select `;
 })
 
 

@@ -2,25 +2,17 @@
 
 <head>
 
-
     <script>
-
         let content = []
         window.onload = () => {
+
         }
 
         const handleClick = (kampanjaid, nimi) => {
-            console.log(kampanjaid, nimi)
+            document.getElementById('1').innerHTML = nimi
         }
-
     </script>
 
-</head>
-
-<body>
-
-
-    <h1>Iflac kampanjat</h1>
     <style>
         .nav li {
             list-style: none;
@@ -36,7 +28,27 @@
             background-color: #666666;
             cursor: pointer;
         }
+
+        .selected {
+            margin: 100px 100px;
+        }
+
+        .selected ul {
+            list-style: none;
+        }
+
+        td {
+            padding: 25px 25px;
+        }
     </style>
+
+</head>
+
+<body>
+
+
+    <h1>Iflac kampanjat</h1>
+
     <ul class="nav">
         <li><a href="mainokset">mainokset</a></li>
         <li><a href="mainostajat">mainostajat</a></li>
@@ -52,14 +64,14 @@
         <h4>Kampanjat</h4>
 
         <form action="kampanja" method="post">
-            <label for="name-filter">Etsin kampanjan nimellä</label>
+            <label for="name-filter">Etsi kampanjan nimellä</label>
             <input type="text" name="name-filter">
             <input type="button" value="etsi">
 
         </form>
 
-        <div class='kampanjat'>
-            {{#each_with data 'nimi' 'testikampanja'}}
+        <div id='kampanjat'>
+            {{#each_with data 'nimi' }}
             <ul>
                 <li class="list-element" onclick="handleClick('{{kampanjaid}}', '{{nimi}}')"> {{{nimi}}} </li>
 
@@ -70,6 +82,19 @@
 
         <div class="selected">
 
+            <div class="btns">
+                <button>tiedot</button>
+                <button>profiili</button>
+                <button>mainokset</button>
+                <button>muokkaa</button>
+                <button>poista</button>
+                <button>käynnistä/pysäytä</button>
+            </div>
+            <ul>
+                <li>
+                    <h3 id="1"></h3>
+                </li>
+            </ul>
 
         </div>
     </div>
