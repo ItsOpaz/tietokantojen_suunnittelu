@@ -1,11 +1,38 @@
 <title></title>
-</head>
+<style>
+.ylabaari {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: 	silver;
 
+}
+
+li.ylabaari  {
+  float: left;
+
+}
+
+li a {
+
+  display: block;
+  color: black;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+</style>
 <body>
-  <h1>Iflac megahimo sivusto</h1>
-  {{#each asdd}}
-  <p>{{this.nimi}}</p>
-  {{/each}}
+  <div class="">
+    <ul class="ylabaari">
+      <li class="ylabaari"><a href="/laskutus">laskutus</a> <br></li>
+      <li class="ylabaari"><a href="/mainokset">mainokset</a> <br></li>
+      <li class="ylabaari"><a href="/kampanjat">Mainoskampanjat</a> <br></li>
+      <li class="ylabaari"><a href="/lisaa">lisaa mainos</a> <br></li>
+    </ul>
+  </div>
+  <img src="https://kuvat.huuto.net/v1/50b4/6222baebd744d7e21b1721988a5/368116420-m.jpg" style="width:100%;height:90%;">
 </body>
 
 </html>

@@ -18,6 +18,9 @@ app.use(parser.json());
 
 
 client.connect();
+app.get('/', (req, res) =>{
+  res.render(__dirname+'/views/layouts/home.hbs')
+})
 app.get('/mainokset', (req, res) => {
 
   client.query(('SELECT * FROM mainos'), function (err, result, fields) {
@@ -26,7 +29,7 @@ app.get('/mainokset', (req, res) => {
     if (err) throw err;
     var asdd = JSON.parse(JSON.stringify(result.rows));
     console.log(asdd);
-    res.render(__dirname + '/views/layouts/home.hbs', { asdd });
+    res.render(__dirname + '/views/sivut/mainokset.hbs', { data :asdd, layout:false });
   });
 });
 app.get('/lisaa', (req, res) => {
