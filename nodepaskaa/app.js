@@ -158,6 +158,29 @@ app.post('/lisaalasku', (req, res) =>{
     else (console.log("succes"));
   });
 })
+app.get('/poistalasku', (req, res) =>{
+  client.query(('SELECT * FROM lasku'), function (err, result, fields) {
+
+    const asd = result.rows;
+    if (err) throw err;
+    var laskut = JSON.parse(JSON.stringify(result.rows));
+    console.log(laskut);
+    res.render(__dirname+'/views/sivut/poistalasku.hbs',{laskut, layout: false})
+  });
+})
+app.post('/poistalasku', (req, res) => {
+  console.log(req.body.laskuid);
+  var poistettava = req.body.laskuid;
+  const querystring = `DELETE FROM lasku WHERE laskuID = ${poistettava}`;
+  console.log(querystring);
+  client.query(querystring, (err, result) => {
+    if (err) throw err;
+    else {
+      console.log('succes');
+      res.redirect('/laskutus')
+    }
+  });
+})
 app.get('/kampanjat/:id', (req, res) => {
 
 })
