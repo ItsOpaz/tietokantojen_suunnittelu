@@ -28,7 +28,7 @@ CREATE VIEW mainosten_kuuntelukerrat AS
 -- auttaa laskun tekemisessä, kun tiedot saadaan kaikilta kampanjan mainoksilta
 CREATE VIEW kampanjan_mainokset AS
 	m.nimi, m.mainosId,m.kampanjaId, m.pituus, mk.sekuntihinta, ma.lkm
-	, ma.lkm *sekuntihinta as kokhinta
+	, ma.lkm *mk.sekuntihinta *to_seconds(m.pituus) as kokhinta
 	FROM mainoskampanja mk
 	INNER JOIN mainos m
 	ON m.kampanjaId = mk.kampanjaId
@@ -55,4 +55,30 @@ CREATE VIEW laskutustiedot AS
 	ON m.yhteyshloId = yh.hloid
 	INNER JOIN laskutusosoite lo
 	ON m.laskutusosoiteId = lo.osoiteId
+	;
+
+--näkymä jossa kaikki mainosesitykset, ongelma on kuitenkin että miten saadaan
+--oikeat kappaleet listaan mukaan
+CREATE VIEW mainoksen_esitykset AS 
+    SELECT m.mainosId,
+	e.pvm as esityspaiva,
+	e.kloaika as esitysaika,
+	k.sukupuoli,
+	k.ika,
+	k.maa,
+	k.paikkakunta
+    FROM mainos m
+	INNER JOIN esitys e
+	ON m.mainosId = e.mainosId
+	INNER JOIN kuuntelija k
+	ON e.kuuntelijaTunnus = nimimerkki;
+
+-- palauttaa kampanjoiden hinnat
+CREATE VIEW kampanjahinnat AS
+	DISTINCT(k.kampanjaId), k.nimi,
+	SUM(km.kokhinta)
+	FROM mainoskampanja k
+	INNER JOIN kampanjan_mainokset km
+	ON km.kampanjaId = k.kampanjaId
+	GROUP BY k.kampanjaId
 	;
