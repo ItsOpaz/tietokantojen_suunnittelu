@@ -342,7 +342,7 @@ declare
 	lasku int;
 BEGIN
 	lasku = (select laskuid from lasku where kampanjaid = new.kampanjaid);
-	insert into yhdiste_kampanja values(new.kampanjaid, new.mainostajaid, null lasku);
+	insert into yhdiste_kampanja values(new.kampanjaid, new.mainostajaid, null, lasku);
 end
 $$ LANGUAGE plpgsql;
 

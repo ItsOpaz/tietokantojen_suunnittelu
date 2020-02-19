@@ -40,7 +40,7 @@ CREATE VIEW kampanjan_mainokset AS
 -- helpottaa kun kampanjan tarvittavat laskutustiedot saadaan helposti yhdellä
 -- yksinkertaisella kyselyllä
 CREATE VIEW laskutustiedot AS
-	yk.kampanjaId, yk.kayttajatunnus, yk.mainostajaId
+	yk.kampanjaId, l.laskuid, yk.kayttajatunnus, yk.mainostajaId
 	, CONCAT(jk.etunimi, ' ',jk.sukunimi) as myyjä
 	, CONCAT(yh.etunimi, ' ',yh.sukunimi) as tilaaja
 	, m.nimi as mainostaja, m.laskutusosoiteId, mk.nimi as kampanja
@@ -50,11 +50,13 @@ CREATE VIEW laskutustiedot AS
 	INNER JOIN jarjestelma_kayttaja jk
 	ON yk.kayttajatunnus = jk.kayttajatunnus
 	INNER JOIN mainostaja m
-	ON yk.mainostajaId = m.VAT
+	ON yk.mainostajaId = m.VAT 
 	INNER JOIN yhteyshenkilo yh
 	ON m.yhteyshloId = yh.hloid
 	INNER JOIN laskutusosoite lo
 	ON m.laskutusosoiteId = lo.osoiteId
+	INNER JOIN lasku l
+	on l.kampanjaid = yk.kampanjaid
 	;
 
 --näkymä jossa kaikki mainosesitykset, ongelma on kuitenkin että miten saadaan
@@ -82,3 +84,5 @@ CREATE VIEW kampanjahinnat AS
 	ON km.kampanjaId = k.kampanjaId
 	GROUP BY k.kampanjaId
 	;
+
+create view 
