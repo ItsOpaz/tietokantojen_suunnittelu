@@ -130,6 +130,9 @@ CREATE TABLE mainoskampanja(
   FOREIGN Key(profiiliId) REFERENCES profiili(profiiliId) ON UPDATE CASCADE ON DELETE SET NULL
 );
 
+alter table mainoskampanja add column mainostajaid varchar(30);
+alter table mainoskampanja add CONSTRAINT mainostajaid_fk FOREIGN key(mainostajaid) references mainostaja(vat);
+
 -- laskussa viivästysmaksu, joka tulee vain jos laskusta tehdään karhulasku, joka
 -- on normi lasku, mutta yhdistetty alkuperäiseen laskuun karhulasku taulussa
 -- ratkaisu tehty, jotta laskuja on helppo ketjuttaa

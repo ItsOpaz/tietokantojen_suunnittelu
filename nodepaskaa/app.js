@@ -7,7 +7,7 @@ const Handlebars = require('handlebars')
 
 const PORT = 8000
 
-const conString = "postgres://postgres:admin@localhost:5432/tika";
+const conString = "postgres://postgres:hilla123@localhost:5432/iflac";
 const client = new pg.Client(conString);
 app.engine('hbs', hbs({ extname: 'hbs', defaultLayout: 'home.hbs', layoutDir: __dirname + '/views/' }));
 app.set('view engine', 'hbs')
@@ -144,3 +144,9 @@ app.post('/kampanjat/:id', (req, res) => {
 
 app.listen(PORT, () =>
   console.log("Localhost listening on port: " + PORT));
+
+
+const vittu = () => {
+  console.log('vittu')
+
+}

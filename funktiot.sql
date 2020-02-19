@@ -334,3 +334,18 @@ $body$ LANGUAGE plpgsql;
 
 create trigger kampanjalla_rahaa_tr after insert or update on mainoskampanja
 	for each row execute procedure onko_kampanjalla_rahaa();
+
+
+create or replace function yhdista_kampanja() returns trigger as
+$$
+declare
+	lasku int;
+BEGIN
+	lasku = (select laskuid from lasku where kampanjaid = new.kampanjaid);
+	insert into yhdiste_kampanja values(new.kampanjaid, new.mainostajaid, null lasku);
+end
+$$ LANGUAGE plpgsql;
+
+
+create trigger yhdista_kampanja_tr after insert on mainoskampanja
+	for each row execute procedure yhdista_kampanja();
