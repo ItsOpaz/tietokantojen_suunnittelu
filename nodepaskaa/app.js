@@ -18,6 +18,9 @@ app.use(parser.json());
 
 
 client.connect();
+app.get('/', (req, res) =>{
+  res.render(__dirname+'/views/layouts/home.hbs')
+})
 app.get('/mainokset', (req, res) => {
 
   client.query(('SELECT * FROM mainos'), function (err, result, fields) {
@@ -26,7 +29,7 @@ app.get('/mainokset', (req, res) => {
     if (err) throw err;
     var asdd = JSON.parse(JSON.stringify(result.rows));
     console.log(asdd);
-    res.render(__dirname + '/views/layouts/home.hbs', { asdd });
+    res.render(__dirname + '/views/sivut/mainokset.hbs', { data :asdd, layout:false });
   });
 });
 app.get('/lisaa', (req, res) => {
@@ -50,7 +53,17 @@ app.post('/lisaa', (req, res) => {
   });
   res.redirect('/mainokset')
 });
+app.get('/laskutus', (req, res) => {
+  client.query(('SELECT * FROM lasku'), function (err, result, fields) {
 
+    const asd = result.rows;
+    if (err) throw err;
+    var laskut = JSON.parse(JSON.stringify(result.rows));
+    console.log(laskut);
+    res.render(__dirname+'/views/sivut/laskutus.hbs',{laskut, layout: false})
+  });
+
+})
 
 app.get('/login', (req, res) => {
 
@@ -102,13 +115,14 @@ Handlebars.registerHelper("each_with", function (items, attr, options, value = "
       }
     }
 
-  } else {
-
-    for (let i = 0; i < items.length; i++) {
-      result += options.fn(items[i])
-    }
-
   }
+  // else {
+  //
+  //   for (let i = 0; i < items.length; i++) {
+  //     result += options.fn(items[i])
+  //   }
+  //
+  // }
 
   return result
 
@@ -130,7 +144,46 @@ app.get('/kampanjat', (req, res) => {
     }
   })
 })
+//get request laskun lisäämiselle
+app.get('/lisaalasku', (req, res) =>{
+  res.render(__dirname + '/views/sivut/lisaalasku.hbs', { layout: false });
+})
+app.post('/lisaalasku', (req, res) =>{
+  console.log(req.body);
+  var querystring = `INSERT INTO lasku( lahetyspvm, eraPvm, tila, viitenro, viivastysmaksu)
+   VALUES('${req.body.lahetyspvm}', '${req.body.erapvm}', ${req.body.tila},
+   '${req.body.viitenro}', ${req.body.viivastysmaksu} )`
+  console.log(querystring);
+  client.query(querystring, (err, result) => {
+    if (err) {
+      throw err;
+    }
+    else (console.log("succes"));
+  });
+})
+app.get('/poistalasku', (req, res) =>{
+  client.query(('SELECT * FROM lasku'), function (err, result, fields) {
 
+    const asd = result.rows;
+    if (err) throw err;
+    var laskut = JSON.parse(JSON.stringify(result.rows));
+    console.log(laskut);
+    res.render(__dirname+'/views/sivut/poistalasku.hbs',{laskut, layout: false})
+  });
+})
+app.post('/poistalasku', (req, res) => {
+  console.log(req.body.laskuid);
+  var poistettava = req.body.laskuid;
+  const querystring = `DELETE FROM lasku WHERE laskuID = ${poistettava}`;
+  console.log(querystring);
+  client.query(querystring, (err, result) => {
+    if (err) throw err;
+    else {
+      console.log('succes');
+      res.redirect('/laskutus')
+    }
+  });
+})
 app.get('/kampanjat/:id', (req, res) => {
 
 })

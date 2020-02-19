@@ -1,0 +1,21 @@
+<div class="">
+  <h3>Poista Lasku</h3>
+  <div class="laskut">
+    {{#each laskut}}
+    <ul>
+      <h4>Lasku{{@index}}</h2>
+      <li>{{this.laskuid}}</li>
+      <li>{{this.lahetyspvm}}</li>
+      <li>{{this.erapvm}}</li>
+      <li>{{this.tila}}</li>
+      <li>{{this.viitenro}}</li>
+      <li>{{this.viivastysmaksu}}</li>
+      <form method="POST" action="poistalasku">
+        <input type="hidden" name="laskuid" value="{{this.laskuid}}" >
+          <button type="submit" class="button">Remove</button>
+                    </form>
+
+    </ul>
+    {{/each}}
+  </div>
+</div>
