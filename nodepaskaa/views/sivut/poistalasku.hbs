@@ -1,5 +1,44 @@
 <div class="">
-  <h3>Poista Lasku</h3>
+
+  <style>
+  .ylabaari {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+  }
+
+  li.ylabaari  {
+    float: left;
+  }
+
+  li a {
+
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+  }
+
+  /* Change the link color to #111 (black) on hover */
+
+  </style>
+  <body>
+      <div class="">
+        <ul class="ylabaari">
+          <li class="ylabaari"><a href="/">Etusivu</a> <br></li>
+          <li class="ylabaari"><a href="/laskutus">Laskutus</a> <br></li>
+          <li class="ylabaari"><a href="/lisaalasku">Lisää lasku</a> <br></li>
+          <li class="ylabaari"><a href="#">Muokkaa laskua</a> <br></li>
+          <li class="ylabaari"><a href="#">Lähetä lasku</a> <br></li>
+          <li class="ylabaari"><a href="#">Tee karhulasku</a> <br></li>
+        </ul>
+      </div>
+      <div class="">
+        <h3>Poista Lasku</h3>
+      </div>
   <div class="laskut">
     {{#each laskut}}
     <ul>
@@ -10,6 +49,8 @@
       <li>{{this.tila}}</li>
       <li>{{this.viitenro}}</li>
       <li>{{this.viivastysmaksu}}</li>
+      <li>{{this.kampanjaid}}</li>
+
       <form method="POST" action="poistalasku">
         <input type="hidden" name="laskuid" value="{{this.laskuid}}" >
           <button type="submit" class="button">Remove</button>

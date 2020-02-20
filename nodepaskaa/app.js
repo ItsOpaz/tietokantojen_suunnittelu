@@ -7,7 +7,7 @@ const Handlebars = require('handlebars')
 
 const PORT = 8000
 
-const conString = "postgres://postgres:admin@localhost:5432/tika";
+const conString = "postgres://postgres:admin@localhost:5432/iflac";
 const client = new pg.Client(conString);
 app.engine('hbs', hbs({ extname: 'hbs', defaultLayout: 'home.hbs', layoutDir: __dirname + '/views/' }));
 app.set('view engine', 'hbs')
@@ -54,15 +54,79 @@ app.post('/lisaa', (req, res) => {
   res.redirect('/mainokset')
 });
 app.get('/laskutus', (req, res) => {
-  client.query(('SELECT * FROM lasku'), function (err, result, fields) {
-
-    const asd = result.rows;
+  client.query(('SELECT * FROM laskutustiedot'), function (err, result, fields) {
     if (err) throw err;
-    var laskut = JSON.parse(JSON.stringify(result.rows));
-    console.log(laskut);
-    res.render(__dirname+'/views/sivut/laskutus.hbs',{laskut, layout: false})
-  });
+    const asd = result.rows;
 
+    var laskut = JSON.parse(JSON.stringify(result.rows));
+
+    res.render(__dirname+'/views/sivut/laskutus.hbs',{laskut, layout: false})
+
+  });
+})
+app.post('/laskutus', (req, res) => {
+  console.log(req.body);
+
+  if(req.body.laskunumero == "all"){
+    client.query(('SELECT * FROM laskutustiedot'), function (err, result) {
+      if (err) throw err;
+      const asd = result.rows;
+      laskut = JSON.parse(JSON.stringify(result.rows));
+      res.render(__dirname+'/views/sivut/laskutus.hbs',{laskut, layout: false});
+    }
+  )
+  }
+ else {
+   if(req.body.mainostaja != null){
+     console.log(req.body.mainostaja);
+     client.query((`SELECT * FROM laskutustiedot WHERE mainostaja = '${req.body.mainostaja}'` ), function (err, result) {
+       if (err) throw err;
+       const asd = result.rows;
+       laskut = JSON.parse(JSON.stringify(result.rows));
+       res.render(__dirname+'/views/sivut/laskutus.hbs',{laskut, layout: false});
+     }
+   );
+ }
+ else{
+   if(req.body.laskunumero > 1){
+      var list = [];
+      client.query((`SELECT * FROM lasku WHERE laskuid = ${req.body.laskunumero}`), function(err, result){
+        if(err) throw err;
+        var lasku = JSON.parse(JSON.stringify( result.rows));
+        client.query(('SELECT * FROM laskutustiedot'), function (err, result) {
+          if (err) throw err;
+          laskut = JSON.parse(JSON.stringify(result.rows));
+          var z ;
+          for (x of laskut){
+            if(x.laskuid == req.body.laskunumero){
+              lasku[0].tilaaja = x.tilaaja;
+              lasku[0].mainostaja = x.mainostaja;
+              lasku[0].laskutusosoiteid = x.laskutusosoiteid;
+              lasku[0].mainoskampanja = x.kampanja;
+              z = x.laskutusosoiteid;
+            }
+          }
+          console.log(z);
+          client.query((`SELECT * FROM laskutusosoite WHERE osoiteid = ${z}`), function(err, result) {
+
+            var pars = JSON.parse(JSON.stringify(result.rows));
+            console.log(pars);
+            if (err) throw err;
+            lasku[0].osoite = pars[0].katuosoite;
+            lasku[0].postinumero = pars[0].postinumero;
+            lasku[0].maa = pars[0].maa;
+            console.log(lasku);
+          })
+          client.query((`SELECT * FROM laskutusosoite WHERE `))
+          console.log( JSON.stringify(lasku, null, "    ") );
+          res.render(__dirname+'/views/sivut/laskutus.hbs',{laskut,lasku, layout: false});
+
+          }
+        );
+      });
+  }
+  }
+  }
 })
 
 app.get('/login', (req, res) => {
@@ -150,8 +214,8 @@ app.get('/lisaalasku', (req, res) =>{
 })
 app.post('/lisaalasku', (req, res) =>{
   console.log(req.body);
-  var querystring = `INSERT INTO lasku( lahetyspvm, eraPvm, tila, viitenro, viivastysmaksu)
-   VALUES('${req.body.lahetyspvm}', '${req.body.erapvm}', ${req.body.tila},
+  var querystring = `INSERT INTO lasku(kampanjaid, lahetyspvm, eraPvm, tila, viitenro, viivastysmaksu)
+   VALUES(${req.body.mainoskampanja}, '${req.body.lahetyspvm}', '${req.body.erapvm}', ${req.body.tila},
    '${req.body.viitenro}', ${req.body.viivastysmaksu} )`
   console.log(querystring);
   client.query(querystring, (err, result) => {
@@ -160,8 +224,10 @@ app.post('/lisaalasku', (req, res) =>{
     }
     else (console.log("succes"));
   });
+  res.redirect('/laskutus')
 })
 app.get('/poistalasku', (req, res) =>{
+  console.log(req.body);
   client.query(('SELECT * FROM lasku'), function (err, result, fields) {
 
     const asd = result.rows;

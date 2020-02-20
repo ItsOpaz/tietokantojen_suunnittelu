@@ -19,7 +19,15 @@ li a {
   padding: 14px 16px;
   text-decoration: none;
 }
-
+.laskulista {
+  float : left;
+  width 25%;
+  margin-right: 10%;
+}
+.center {
+  float : left;
+  width: 25% ;
+}
 /* Change the link color to #111 (black) on hover */
 
 </style>
@@ -34,17 +42,57 @@ li a {
       <li class="ylabaari"><a href="#">Tee karhulasku</a> <br></li>
     </ul>
   </div>
-  <div class="">
-    {{#each laskut}}
-    <ul>
-      <h4>Lasku{{@index}}</h2>
-      <li>{{this.laskuid}}</li>
-      <li>{{this.lahetyspvm}}</li>
-      <li>{{this.erapvm}}</li>
-      <li>{{this.tila}}</li>
-      <li>{{this.viitenro}}</li>
-      <li>{{this.viivastysmaksu}}</li>
-    </ul>
-    {{/each}}
+  <div class="hakuformi">
+    <form class="" action="laskutus" method="post">
+      <label for="laskunnumero">Laskun numero</label>
+      <input type="number" name="laskunumero" value="" id ="laskunumero">
+
+      <button type="submit" name="button">Hae</button>
+    </form>
+    <form class="" action="laskutus" method="post">
+      <label for="laskunnumero">Mainostajan nimi</label>
+      <input type="text" name="mainostaja" value="" id ="mainostaja">
+      <button type="submit" name="button">Hae</button>
+    </form>
+    <form class="" action="laskutus" method="post">
+      <input type="hidden" name="laskunumero" value="all" >
+      <button type="submit" name="button">Näytä kaikki</button>
+    </form>
+
+    </div>
+    <div class="laskulista">
+      <h1>Laskulista:</h1>
+      {{#each laskut}}
+      <ul>
+          <li>laskun numero: {{this.laskuid}}</li>
+          <li>mainostaja: {{this.mainostaja}}</li>
+          <form class="" action="laskutus" method="post">
+            <input type="hidden" name="laskunumero" value="{{this.laskuid}}">
+            <button type="submit" name="button">Valitse aktiiviseksi</button>
+          </form>
+
+      </ul>
+      {{/each}}
+    </div>
+    <div class="center">
+      <h1>Aktiivinen lasku:</h1>
+      {{#each lasku}}
+      <ul>
+          <li>laskun numero: {{this.laskuid}}</li>
+          <li>eräpäivä: {{this.erapvm}}</li>
+          <li>tila: {{this.tila}}</li>
+          <li>viitenumero: {{this.viitenro}}</li>
+          <li>viivastysmaksu: {{this.viivastysmaksu}}</li>
+          <li>mainostaja: {{this.mainostaja}}</li>
+          <li>vastaanottaja: {{this.tilaaja}}</li>
+          <li>laskutusosoite: {{this.laskutusosoiteid}}</li>
+          <li>mainoskampanja: {{this.mainoskampanja}}</li>
+          <li>Laskutusosoite: {{this.osoite}}, {{this.postinumero}}, {{this.maa}}</li>
+          <a href="/poistalasku/:id">POISTA TÄÄ!</a>
+
+      </ul>
+      {{/each}}
+    </div>
+
   </div>
 </body>
