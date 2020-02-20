@@ -263,3 +263,9 @@ app.post('/kampanjat/:id', (req, res) => {
 
 app.listen(PORT, () =>
   console.log("Localhost listening on port: " + PORT));
+
+
+const vittu = () => {
+  console.log('vittu')
+
+}

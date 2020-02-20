@@ -12,6 +12,7 @@
         Olli: summa lasketaan mainoskampanjan_mainokset taulun mainosten kokonaishinnoista
         Joonas: Pointti tässä siis se, että kun lasku lähetetään, niin siinä ei ole kokonaissummaa
                 lisätäänkö siis laskuun "summa" sarake vai antaako olla näi miten on?
+        Olli: kampanjahinnat taulusta löytyy kampanjaId:llä kampanjan kokonaishinta
 
 1.5.2 Laskun muokkaaminen
 -käyttäjä valitsee UI:sta "muokkaa" ja antaa uuden arvon. 
@@ -50,6 +51,7 @@
 1.7 Mainosesitysraportin lähettäminen  (taloussihteeri tai mainosmyyjä, pitänee toteuttaa?)
 -tämä helppo tehdä viewillä, joka palauttaa kaikki esitykset ja funktiolla
 -funktio SELECT (syötetyt parametrit) FROM VIEW where mainosId tai kampanjaId on tietyt
+-tässä ongelma, sillä esitystä ei ole linkitetty kappaleeseen, vaikka pitäis olla
 
 
 
