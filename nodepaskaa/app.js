@@ -236,9 +236,21 @@ app.post('/lisaalasku', (req, res) =>{
     client.query((qstring), function(err, result){
       if(err) throw err;
       console.log('succesful insert');
+      res.redirect('/laskutus')
     })
   console.log(qstring);
 
+})
+app.get('/muokkaalasku/:id', (req, res) =>{
+    console.log('keeneri'+req.params.id);
+    var qstring = `SELECT * FROM lasku WHERE laskuid = ${req.params.id}`;
+    console.log(qstring);
+    client.query((qstring), function(err, result){
+      if (err) throw err;
+      var lasku = JSON.parse(JSON.stringify(result.rows));
+      console.log(lasku);
+      res.render(__dirname+'/views/sivut/muokkaalasku.hbs',{lasku, layout: false})
+    })
 })
 app.get('/poistalasku', (req, res) =>{
   console.log(req.body);
