@@ -21,8 +21,6 @@ li a {
   text-decoration: none;
 }
 
-/* Change the link color to #111 (black) on hover */
-
 </style>
 <body>
     <div class="">
@@ -35,24 +33,20 @@ li a {
         <li class="ylabaari"><a href="#">Tee karhulasku</a> <br></li>
       </ul>
     </div>
-  <form class="" action="lisaalasku" method="post" >
-    <label for="">mainoskampanja</label>
-    <input type="number" name="mainoskampanja" value="" id="mainoskampanja"><br>
-    <label for="">lahetyspvm</label>
-    <input type="date" name="lahetyspvm" value="" id="lahetyspvm"><br>
-    <label for="">erapvm</label>
-    <input type="date" name="erapvm" value="" id="erapvm"><br>
-    <label for="">maksettu</label>
-    <select class="jotai" name="tila" type="text" required id= "tila">
-      <option value="true">true</option>
-      <option value="false">false</option>
-    </select> <br>
-    <label for="">viitenro</label>
-    <input type="text" name="viitenro" value="" id="viitenro" maxlength="20"><br>
-    <label for="">viivastysmaksu</label>
-    <input type="number" name="viivastysmaksu" value="" id="viivastysmaksu"><br>
+    <div class="">
+      {{#each kampanjat}}
+      <ul>
+        <li>Kampanjan nimi: {{this.nimi}}</li>
+        <form class="" action="lisaalasku" method="post">
+          <label for="erapaiva">Eräpäivä:</label> <input type="date" name="erapaiva" value="" required>
+          <label for="viitenro">Viitenumero:</label> <input type="text" name="viitenro" value=""maxlength="20" required>
 
-    <button type="submit" name="button">Submit</button>
-  </form>
+          <input type="hidden" name="kampanjaid" value="{{this.kampanjaid}}">
+          <button type="submit" name="button">Lisää lasku</button>
+        </form>
+
+      </ul>
+      {{/each}}
+    </div>
 </body>
 </html>

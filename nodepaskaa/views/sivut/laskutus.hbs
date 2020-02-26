@@ -62,6 +62,7 @@ li a {
     </div>
     <div class="laskulista">
       <h1>Laskulista:</h1>
+      {{#if laskut}}
       {{#each laskut}}
       <ul>
           <li>laskun numero: {{this.laskuid}}</li>
@@ -73,6 +74,10 @@ li a {
 
       </ul>
       {{/each}}
+
+      {{else}}
+      <p>Ei mainoskampanjoita tällä nimellä</p>
+      {{/if}}
     </div>
     <div class="center">
       <h1>Aktiivinen lasku:</h1>
