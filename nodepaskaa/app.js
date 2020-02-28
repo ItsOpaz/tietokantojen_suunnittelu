@@ -252,6 +252,23 @@ app.get('/muokkaalasku/:id', (req, res) =>{
       res.render(__dirname+'/views/sivut/muokkaalasku.hbs',{lasku, layout: false})
     })
 })
+app.post('/muokkaalasku/:id', (req, res) => {
+  console.log(req.body);
+  var query = `UPDATE lasku
+               SET lahetyspvm = '${req.body.lahetyspvm}',
+               erapvm = '${req.body.eraPvm}',
+               tila = ${req.body.tila},
+               viitenro = '${req.body.viitenro}',
+               viivastysmaksu = ${req.body.viivastysmaksu}
+               `
+  console.log(query);
+  client.query((query), (err, result) => {
+    if(err) throw err;
+    else {
+      console.log("succesful update");
+    }
+  })
+})
 app.get('/poistalasku', (req, res) =>{
   console.log(req.body);
   client.query(('SELECT * FROM lasku'), function (err, result, fields) {

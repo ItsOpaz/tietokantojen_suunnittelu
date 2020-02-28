@@ -44,12 +44,15 @@ li a {
 <div class="">
   {{#each lasku}}
   <form class="" action="muokkaalasku" method="post">
-     <label for="kampanjaid">KampanjaID:</label><input type="text" name="kampanjaid" value="{{this.kampanjaid}}"> <br>
-     <label for="lahetyspvm">Lähetyspäivämäärä</label><input type="date" name="lahetyspvm" value="{{this.lahetyspvm}}"><br>
-     <label for="eraPvm ">Eräpäivämäärä</label><input type="date" name="eraPvm " value="{{this.erapvm}}"><br>
-     <label for="tila">Laskun tila</label><input type="text" name="tila" value="{{this.tila}}"><br>
-     <label for="viitenro ">Viitenumero</label><input type="text" name="viitenro" value="{{this.viitenro}}"><br>
-     <label for="viivastysmaksu">Viivästysmaksu:</label><input type="number" name="viivastysmaksu" value="{{this.viivastysmaksu}}"><br>
+     <label for="lahetyspvm">Lähetyspäivämäärä</label><input type="date" name="lahetyspvm"  required><label for="">Alkuperäinen: {{this.lahetyspvm}}</label> <br>
+     <label for="eraPvm ">Eräpäivämäärä</label><input type="date" name="eraPvm" value="{{this.erapvm}}" required><label for="">Alkuperäinen: {{this.erapvm}}</label><br>
+     <label for="tila">Maksettu:</label> <select name="tila" type="text" required>
+                          <option value="true">true</option>
+                          <option value="false">false</option>
+      </select><br>
+     <label for="viitenro ">Viitenumero</label><input type="text" name="viitenro" value="{{this.viitenro}}" required><br>
+     <label for="viivastysmaksu">Viivästysmaksu:</label><input type="number" name="viivastysmaksu" value="{{this.viivastysmaksu}}" ><br>
+     <button type="'submit'" name="button">Submit</button>
   </form>
   {{/each}}
 </div>
