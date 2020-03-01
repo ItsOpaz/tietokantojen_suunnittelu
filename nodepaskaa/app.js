@@ -310,7 +310,6 @@ app.get('/lahetalasku/:id', (req, res )=>{
         tiedot[0].lahetyspvm = paivat[0].lahetyspvm;
         tiedot[0].erapvm = paivat[0].erapvm;
         console.log(tiedot);
-        res.render(__dirname+'/views/sivut/laskulahetys.hbs',{tiedot, layout: false})
         client.query((`SELECT * FROM laskutusosoite WHERE osoiteid = ${tiedot[0].laskutusosoiteid}`), (err, result) =>{
             if (err) throw(err)
             var osote = JSON.parse(JSON.stringify(result.rows));
@@ -319,15 +318,36 @@ app.get('/lahetalasku/:id', (req, res )=>{
             tiedot[0].postinumero = osote[0].postinumero;
             client.query((`SELECT * FROM mainoskampanja WHERE kampanjaid = ${tiedot[0].kampanjaid}`), (err, result)=>{
               var datra = JSON.parse(JSON.stringify(result.rows));
+              console.log(datra);
               tiedot[0].alkupvm = datra[0].alkupvm;
               tiedot[0].loppupvm = datra[0].loppupvm;
               tiedot[0].maararahat = datra[0].maararahat;
               tiedot[0].sekuntihinta = datra[0].sekuntihinta;
+              client.query((`SELECT * FROM profiili WHERE profiiliid = ${datra[0].profiiliid}`), (err, result) =>{
+                var profiili = JSON.parse(JSON.stringify(result.rows));
+                console.log(profiili);
+                tiedot[0].alkuaika = profiili[0].alkulahetysaika;
+                tiedot[0].loppuaika = profiili[0].loppulahetysaika;
+              })
               client.query((`SELECT * FROM mainos WHERE kampanjaid = ${tiedot[0].kampanjaid}`), (err, result) =>{
                 var mainokset = JSON.parse(JSON.stringify(result.rows));
-                tiedot[0].kampanjat = mainokset;
-                console.log(tiedot[0].kampanjat);
+                for(x of mainokset){
+                  client.query((`SELECT * FROM mainosten_kuuntelukerrat WHERE mainosid = ${x.mainosid}`), (err, result) =>{
+                    console.log(x);
+                    var kuuntelukerrat = JSON.parse(JSON.stringify(result.rows));
+                    if(kuuntelukerrat === ""){
+                      x.kuuntelukerrat = parseInt(kuuntelukerrat[0].lkm);
+                    }
+                    else{
+                      x.kuuntelukerrat = 4;
+                    }
 
+                  })
+                }
+                tiedot[0].kampanjat = mainokset;
+
+
+                res.render(__dirname+'/views/sivut/laskulahetys.hbs',{tiedot, layout: false})
               })
             })
         })

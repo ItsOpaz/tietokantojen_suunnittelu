@@ -62,8 +62,14 @@ li a {
     <p>Sekuntihinta: {{this.sekuntihinta}}€/s</p>
     <p>Määrärahat: {{this.maararahat}}€</p>
     <h4>Esitetyt mainokset:</h4>
+    <p>---------------------------------</p>
     {{#each this.kampanjat}}
-      <p>{{this.kampanja}}</p>
+      <p>Mainos {{@index}}: {{this.nimi}}</p>
+      <p>Lähetysaika: {{../this.alkuaika}}-{{../this.loppuaika}}</p>
+      <p>Mainoksen pituus: {{this.pituus}}</p>
+      <p>Vastaanotettu: {{this.kuuntelukerrat}} kertaa</p>
+      <p>Mainoksen hinta: </p>
+      <br>
     {{/each}}
     {{/each}}
   </div>
