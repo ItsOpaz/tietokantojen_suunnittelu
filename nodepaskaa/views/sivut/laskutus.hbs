@@ -93,7 +93,9 @@ li a {
           <li>laskutusosoite: {{this.laskutusosoiteid}}</li>
           <li>mainoskampanja: {{this.mainoskampanja}}</li>
           <li>Laskutusosoite: {{this.osoite}}, {{this.postinumero}}, {{this.maa}}</li>
-          <a href="/muokkaalasku/{{this.laskuid}}">MUOKKAA TÄÄ!</a>
+          <button type="button" name="button1"> <a href="/muokkaalasku/{{this.laskuid}}">MUOKKAA TÄÄ!</a></button><br>
+          <button type="button" name="button2"> <a href="/poistalasku/{{this.laskuid}}">POISTA TÄÄ!</a></button><br>
+          <button type="button" name="button3"> <a href="/lahetalasku/{{this.laskuid}}">LÄHETÄ TÄÄ!</a></button>
 
       </ul>
       {{/each}}

@@ -44,13 +44,14 @@ li a {
 <div class="">
   {{#each lasku}}
   <form class="" action="muokkaalasku" method="post">
+     <input type="hidden" name="laskuid" value="{{this.laskuid}}">
      <label for="lahetyspvm">Lähetyspäivämäärä</label><input type="date" name="lahetyspvm"  required><label for="">Alkuperäinen: {{this.lahetyspvm}}</label> <br>
      <label for="eraPvm ">Eräpäivämäärä</label><input type="date" name="eraPvm" value="{{this.erapvm}}" required><label for="">Alkuperäinen: {{this.erapvm}}</label><br>
      <label for="tila">Maksettu:</label> <select name="tila" type="text" required>
                           <option value="true">true</option>
                           <option value="false">false</option>
       </select><br>
-     <label for="viitenro ">Viitenumero</label><input type="text" name="viitenro" value="{{this.viitenro}}" required><br>
+     <label for="viitenro ">Viitenumero</label><input type="text" name="viitenro" value="{{this.viitenro}}" required maxlength="20"><br>
      <label for="viivastysmaksu">Viivästysmaksu:</label><input type="number" name="viivastysmaksu" value="{{this.viivastysmaksu}}" ><br>
      <button type="'submit'" name="button">Submit</button>
   </form>

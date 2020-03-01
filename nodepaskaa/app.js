@@ -260,18 +260,20 @@ app.post('/muokkaalasku/:id', (req, res) => {
                tila = ${req.body.tila},
                viitenro = '${req.body.viitenro}',
                viivastysmaksu = ${req.body.viivastysmaksu}
+               WHERE laskuid = ${req.body.laskuid}
                `
   console.log(query);
   client.query((query), (err, result) => {
     if(err) throw err;
     else {
       console.log("succesful update");
+      res.redirect('/laskutus')
     }
   })
 })
-app.get('/poistalasku', (req, res) =>{
+app.get('/poistalasku/:id', (req, res) =>{
   console.log(req.body);
-  client.query(('SELECT * FROM lasku'), function (err, result, fields) {
+  client.query((`SELECT * FROM lasku WHERE laskuid = ${req.params.id}`), function (err, result, fields) {
 
     const asd = result.rows;
     if (err) throw err;
@@ -280,18 +282,59 @@ app.get('/poistalasku', (req, res) =>{
     res.render(__dirname+'/views/sivut/poistalasku.hbs',{laskut, layout: false})
   });
 })
-app.post('/poistalasku', (req, res) => {
-  console.log(req.body.laskuid);
-  var poistettava = req.body.laskuid;
-  const querystring = `DELETE FROM lasku WHERE laskuID = ${poistettava}`;
-  console.log(querystring);
-  client.query(querystring, (err, result) => {
-    if (err) throw err;
+app.post('/poistalasku/:id', (req, res) => {
+  console.log(req.body);
+  if(req.body.vastaus == "Ei"){
+    res.redirect('/laskutus');
+  }
+  else {
+    var query = `DELETE FROM lasku WHERE laskuid = ${req.body.laskuid}`;
+    client.query((query), (err, result) =>{
+      if (err) throw err;
+      else{
+        res.redirect('/laskutus');
+      }
+    })
+  }
+})
+app.get('/lahetalasku/:id', (req, res )=>{
+  console.log(req.params.id);
+  client.query((`SELECT * FROM laskutustiedot WHERE laskuid = ${req.params.id}`), (err, result) => {
+    if(err) throw err;
     else {
-      console.log('succes');
-      res.redirect('/laskutus')
+      var tiedot = JSON.parse(JSON.stringify(result.rows));
+      console.log(tiedot);
+      client.query((`SELECT lahetyspvm, erapvm FROM lasku WHERE laskuid = ${req.params.id}`), (err, result) =>{
+        if(err) throw err;
+        var paivat = JSON.parse(JSON.stringify(result.rows));
+        tiedot[0].lahetyspvm = paivat[0].lahetyspvm;
+        tiedot[0].erapvm = paivat[0].erapvm;
+        console.log(tiedot);
+        res.render(__dirname+'/views/sivut/laskulahetys.hbs',{tiedot, layout: false})
+        client.query((`SELECT * FROM laskutusosoite WHERE osoiteid = ${tiedot[0].laskutusosoiteid}`), (err, result) =>{
+            if (err) throw(err)
+            var osote = JSON.parse(JSON.stringify(result.rows));
+            console.log(result.rows);
+            tiedot[0].laskutusosoite = osote[0].katuosoite;
+            tiedot[0].postinumero = osote[0].postinumero;
+            client.query((`SELECT * FROM mainoskampanja WHERE kampanjaid = ${tiedot[0].kampanjaid}`), (err, result)=>{
+              var datra = JSON.parse(JSON.stringify(result.rows));
+              tiedot[0].alkupvm = datra[0].alkupvm;
+              tiedot[0].loppupvm = datra[0].loppupvm;
+              tiedot[0].maararahat = datra[0].maararahat;
+              tiedot[0].sekuntihinta = datra[0].sekuntihinta;
+              client.query((`SELECT * FROM mainos WHERE kampanjaid = ${tiedot[0].kampanjaid}`), (err, result) =>{
+                var mainokset = JSON.parse(JSON.stringify(result.rows));
+                tiedot[0].kampanjat = mainokset;
+                console.log(tiedot[0].kampanjat);
+
+              })
+            })
+        })
+      })
     }
-  });
+  })
+
 })
 app.get('/kampanjat/:id', (req, res) => {
 
