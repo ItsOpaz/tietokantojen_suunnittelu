@@ -303,50 +303,60 @@ app.get('/lahetalasku/:id', (req, res )=>{
     if(err) throw err;
     else {
       var tiedot = JSON.parse(JSON.stringify(result.rows));
-      console.log(tiedot);
+
       client.query((`SELECT lahetyspvm, erapvm FROM lasku WHERE laskuid = ${req.params.id}`), (err, result) =>{
         if(err) throw err;
         var paivat = JSON.parse(JSON.stringify(result.rows));
         tiedot[0].lahetyspvm = paivat[0].lahetyspvm;
         tiedot[0].erapvm = paivat[0].erapvm;
-        console.log(tiedot);
+
         client.query((`SELECT * FROM laskutusosoite WHERE osoiteid = ${tiedot[0].laskutusosoiteid}`), (err, result) =>{
             if (err) throw(err)
             var osote = JSON.parse(JSON.stringify(result.rows));
-            console.log(result.rows);
+
             tiedot[0].laskutusosoite = osote[0].katuosoite;
             tiedot[0].postinumero = osote[0].postinumero;
             client.query((`SELECT * FROM mainoskampanja WHERE kampanjaid = ${tiedot[0].kampanjaid}`), (err, result)=>{
               var datra = JSON.parse(JSON.stringify(result.rows));
-              console.log(datra);
+
               tiedot[0].alkupvm = datra[0].alkupvm;
               tiedot[0].loppupvm = datra[0].loppupvm;
               tiedot[0].maararahat = datra[0].maararahat;
               tiedot[0].sekuntihinta = datra[0].sekuntihinta;
               client.query((`SELECT * FROM profiili WHERE profiiliid = ${datra[0].profiiliid}`), (err, result) =>{
                 var profiili = JSON.parse(JSON.stringify(result.rows));
-                console.log(profiili);
+
                 tiedot[0].alkuaika = profiili[0].alkulahetysaika;
                 tiedot[0].loppuaika = profiili[0].loppulahetysaika;
               })
               client.query((`SELECT * FROM mainos WHERE kampanjaid = ${tiedot[0].kampanjaid}`), (err, result) =>{
-                var mainokset = JSON.parse(JSON.stringify(result.rows));
-                for(x of mainokset){
-                  client.query((`SELECT * FROM mainosten_kuuntelukerrat WHERE mainosid = ${x.mainosid}`), (err, result) =>{
-                    console.log(x);
+                let mainokset = JSON.parse(JSON.stringify(result.rows));
+                for(let x in mainokset){
+                  client.query((`SELECT * FROM mainosten_kuuntelukerrat WHERE mainosid = ${mainokset[x].mainosid}`), (err, result) =>{
                     var kuuntelukerrat = JSON.parse(JSON.stringify(result.rows));
-                    if(kuuntelukerrat === ""){
-                      x.kuuntelukerrat = parseInt(kuuntelukerrat[0].lkm);
+                    console.log(kuuntelukerrat);
+                    if(kuuntelukerrat != ""){
+                      console.log(parseFloat(tiedot[0].sekuntihinta));
+                      let kuuntelut = parseInt(kuuntelukerrat[0].lkm)
+                      let tt=mainokset[x].pituus.split(":");
+                      let sec=tt[0]*3600+tt[1]*60+tt[2]*1;
+                      console.log(sec);
+                      let yhe_hinta = parseFloat(tiedot[0].sekuntihinta) * sec;
+                      console.log(yhe_hinta);
+                      mainokset[x].kuuntelukerrat = kuuntelut;
+                      let koko_hinta = kuuntelut * yhe_hinta;
+                      console.log(koko_hinta);
+                      mainokset[x].mainoksen_hinta = koko_hinta.toString();
                     }
                     else{
-                      x.kuuntelukerrat = 4;
+                      mainokset[x].kuuntelukerrat = 0;
+                      mainokset[x].mainoksen_hinta = 0;
                     }
-
                   })
                 }
-                tiedot[0].kampanjat = mainokset;
 
-
+                tiedot[0].mainokset = mainokset;
+                console.log(tiedot[0].mainokset);
                 res.render(__dirname+'/views/sivut/laskulahetys.hbs',{tiedot, layout: false})
               })
             })
