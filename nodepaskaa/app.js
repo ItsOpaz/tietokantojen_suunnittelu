@@ -4,6 +4,10 @@ const pg = require('pg');
 const parser = require('body-parser')
 const hbs = require('express-handlebars')
 const Handlebars = require('handlebars')
+const passport = require('passport')
+const flash = require('express-flash')
+const session = require('express-session')
+
 
 const PORT = 8000
 
@@ -12,14 +16,38 @@ const client = new pg.Client(conString);
 app.engine('hbs', hbs({ extname: 'hbs', defaultLayout: 'home.hbs', layoutDir: __dirname + '/views/' }));
 app.set('view engine', 'hbs')
 
-const urlencodedParser = parser.urlencoded({ extended: false })
 app.use(parser.urlencoded({ extended: false }));
 app.use(parser.json());
 
+app.use(flash())
+app.use(session({
+  secret: "super_secret_key",
+  resave: false,
+  saveUninitialized: false
+}))
+
+app.use(passport.initialize())
+app.use(passport.session())
+
 
 client.connect();
-app.get('/', (req, res) =>{
-  res.render(__dirname+'/views/layouts/home.hbs')
+
+const initPassport = require("./passport-config")
+initPassport(passport, (user) => {
+  const query = 'select * from jarjestelma_kirjautumistiedot where kayttajatunnus=\'' + user + '\''
+  client.query(query, (err, result) => {
+    if (err) { throw err }
+
+    console.log(result)
+
+    return result[0]
+  })
+
+})
+
+
+app.get('/', (req, res) => {
+  res.render(__dirname + '/views/layouts/home.hbs')
 })
 app.get('/mainokset', (req, res) => {
 
@@ -29,7 +57,7 @@ app.get('/mainokset', (req, res) => {
     if (err) throw err;
     var asdd = JSON.parse(JSON.stringify(result.rows));
     console.log(asdd);
-    res.render(__dirname + '/views/sivut/mainokset.hbs', { data :asdd, layout:false });
+    res.render(__dirname + '/views/sivut/mainokset.hbs', { data: asdd, layout: false });
   });
 });
 app.get('/lisaa', (req, res) => {
@@ -60,7 +88,7 @@ app.get('/laskutus', (req, res) => {
     if (err) throw err;
     var laskut = JSON.parse(JSON.stringify(result.rows));
     console.log(laskut);
-    res.render(__dirname+'/views/sivut/laskutus.hbs',{laskut, layout: false})
+    res.render(__dirname + '/views/sivut/laskutus.hbs', { laskut, layout: false })
   });
 
 })
@@ -71,35 +99,41 @@ app.get('/login', (req, res) => {
 
 })
 
-app.post('/login', urlencodedParser, (req, res) => {
-  const { kayttajatunnus, salasana } = req.body
+app.post('/login', passport.authenticate('local', {
+  successRedirect: '/',
+  failureRedirect: '/login',
+  failureFlash: false
+}))
 
-  // Chekataan kannasta, että onko kayttajatunnus ja salasana oikein
-  client.query('select * from jarjestelma_kirjautumistiedot where kayttajatunnus=\'' + kayttajatunnus + '\' and ' + 'salasana=\'' + salasana + '\'', (err, result) => {
+// app.post('/login', urlencodedParser, (req, res) => {
+//   const { kayttajatunnus, salasana } = req.body
 
-    // if (err) {
-    //   console.log("kirjautuminen epäonnistui");
-    //   res.render(__dirname + '/views/sivut/login.hbs', { layout: false, kayttajatunnus: "", salasana: "" })
-    // }
+//   // Chekataan kannasta, että onko kayttajatunnus ja salasana oikein
+//   client.query('select * from jarjestelma_kirjautumistiedot where kayttajatunnus=\'' + kayttajatunnus + '\' and ' + 'salasana=\'' + salasana + '\'', (err, result) => {
 
-    try {
+//     // if (err) {
+//     //   console.log("kirjautuminen epäonnistui");
+//     //   res.render(__dirname + '/views/sivut/login.hbs', { layout: false, kayttajatunnus: "", salasana: "" })
+//     // }
 
-      if (result.rows.length > 0) {
-        console.log('kirjautuminen onnistui')
-        res.redirect('/mainokset')
-        // res.render(__dirname + '/views/sivut/lisaa.hbs', { layout: false })
-      }
-      else {
-        console.log("Käyttäjätunnusta tai salasanaa ei löydetty");
-        res.redirect("/login")
-      }
+//     try {
 
-    } catch (error) {
-      console.log('vittusaatana: ' + error)
+//       if (result.rows.length > 0) {
+//         console.log('kirjautuminen onnistui')
+//         res.redirect('/mainokset')
+//         // res.render(__dirname + '/views/sivut/lisaa.hbs', { layout: false })
+//       }
+//       else {
+//         console.log("Käyttäjätunnusta tai salasanaa ei löydetty");
+//         res.redirect("/login")
+//       }
 
-    }
-  })
-})
+//     } catch (error) {
+//       console.log('vittusaatana: ' + error)
+
+//     }
+//   })
+// })
 
 Handlebars.registerHelper("each_with", function (items, attr, options, value = "") {
 
@@ -145,10 +179,10 @@ app.get('/kampanjat', (req, res) => {
   })
 })
 //get request laskun lisäämiselle
-app.get('/lisaalasku', (req, res) =>{
+app.get('/lisaalasku', (req, res) => {
   res.render(__dirname + '/views/sivut/lisaalasku.hbs', { layout: false });
 })
-app.post('/lisaalasku', (req, res) =>{
+app.post('/lisaalasku', (req, res) => {
   console.log(req.body);
   var querystring = `INSERT INTO lasku( lahetyspvm, eraPvm, tila, viitenro, viivastysmaksu)
    VALUES('${req.body.lahetyspvm}', '${req.body.erapvm}', ${req.body.tila},
@@ -161,14 +195,14 @@ app.post('/lisaalasku', (req, res) =>{
     else (console.log("succes"));
   });
 })
-app.get('/poistalasku', (req, res) =>{
+app.get('/poistalasku', (req, res) => {
   client.query(('SELECT * FROM lasku'), function (err, result, fields) {
 
     const asd = result.rows;
     if (err) throw err;
     var laskut = JSON.parse(JSON.stringify(result.rows));
     console.log(laskut);
-    res.render(__dirname+'/views/sivut/poistalasku.hbs',{laskut, layout: false})
+    res.render(__dirname + '/views/sivut/poistalasku.hbs', { laskut, layout: false })
   });
 })
 app.post('/poistalasku', (req, res) => {
