@@ -328,37 +328,38 @@ app.get('/lahetalasku/:id', (req, res )=>{
 
                 tiedot[0].alkuaika = profiili[0].alkulahetysaika;
                 tiedot[0].loppuaika = profiili[0].loppulahetysaika;
-              })
+
               client.query((`SELECT * FROM mainos WHERE kampanjaid = ${tiedot[0].kampanjaid}`), (err, result) =>{
-                let mainokset = JSON.parse(JSON.stringify(result.rows));
-                for(let x in mainokset){
+                var mainokset = JSON.parse(JSON.stringify(result.rows));
+                tiedot[0].mainokset = mainokset;
+                res.render(__dirname+'/views/sivut/laskulahetys.hbs',{tiedot : tiedot, layout: false});
+                console.log(mainokset);
+                for(let x = 0; x < mainokset.length; x++){
                   client.query((`SELECT * FROM mainosten_kuuntelukerrat WHERE mainosid = ${mainokset[x].mainosid}`), (err, result) =>{
-                    var kuuntelukerrat = JSON.parse(JSON.stringify(result.rows));
-                    console.log(kuuntelukerrat);
-                    if(kuuntelukerrat != ""){
+                    var kuuntelukerratt = JSON.parse(JSON.stringify(result.rows));
+                    console.log(kuuntelukerratt);
+                    if(kuuntelukerratt != ""){
                       console.log(parseFloat(tiedot[0].sekuntihinta));
-                      let kuuntelut = parseInt(kuuntelukerrat[0].lkm)
-                      let tt=mainokset[x].pituus.split(":");
-                      let sec=tt[0]*3600+tt[1]*60+tt[2]*1;
+                      var kuuntelut = parseInt(kuuntelukerratt[0].lkm)
+                      var tt=mainokset[x].pituus.split(":");
+                      var sec=tt[0]*3600+tt[1]*60+tt[2]*1;
                       console.log(sec);
-                      let yhe_hinta = parseFloat(tiedot[0].sekuntihinta) * sec;
+                      var yhe_hinta = parseFloat(tiedot[0].sekuntihinta) * sec;
                       console.log(yhe_hinta);
                       mainokset[x].kuuntelukerrat = kuuntelut;
-                      let koko_hinta = kuuntelut * yhe_hinta;
+                      var koko_hinta = kuuntelut * yhe_hinta;
+                      koko_hinta = koko_hinta.toString()
                       console.log(koko_hinta);
-                      mainokset[x].mainoksen_hinta = koko_hinta.toString();
+                      mainokset[x].mainoksen_hinta = koko_hinta;
                     }
                     else{
                       mainokset[x].kuuntelukerrat = 0;
-                      mainokset[x].mainoksen_hinta = 0;
+                      mainokset[x].mainoksen_hinta = 0
                     }
                   })
                 }
-
-                tiedot[0].mainokset = mainokset;
-                console.log(tiedot[0].mainokset);
-                res.render(__dirname+'/views/sivut/laskulahetys.hbs',{tiedot, layout: false})
               })
+            })
             })
         })
       })
