@@ -1,23 +1,52 @@
 <title>Lisaa Lasku</title>
-</head>
+<style>
+.ylabaari {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+}
+
+li.ylabaari  {
+  float: left;
+}
+
+li a {
+
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+</style>
 <body>
-  <form class="" action="lisaalasku" method="post" >
+    <div class="">
+      <ul class="ylabaari">
+        <li class="ylabaari"><a href="/">Etusivu</a> <br></li>
+        <li class="ylabaari"><a href="/laskutus">Laskutus</a> <br></li>
+        <li class="ylabaari"><a href="#">Muokkaa laskua</a> <br></li>
+        <li class="ylabaari"><a href="#">Lähetä lasku</a> <br></li>
+        <li class="ylabaari"><a href="/poistalasku">Poista lasku</a> <br></li>
+        <li class="ylabaari"><a href="#">Tee karhulasku</a> <br></li>
+      </ul>
+    </div>
+    <div class="">
+      {{#each kampanjat}}
+      <ul>
+        <li>Kampanjan nimi: {{this.nimi}}</li>
+        <form class="" action="lisaalasku" method="post">
+          <label for="erapaiva">Eräpäivä:</label> <input type="date" name="erapaiva" value="" required>
+          <label for="viitenro">Viitenumero:</label> <input type="text" name="viitenro" value=""maxlength="20" required>
 
-    <label for="">lahetyspvm</label>
-    <input type="date" name="lahetyspvm" value="" id="lahetyspvm"><br>
-    <label for="">erapvm</label>
-    <input type="date" name="erapvm" value="" id="erapvm"><br>
-    <label for="">maksettu</label>
-    <select class="jotai" name="tila" type="text" required id= "tila">
-      <option value="true">true</option>
-      <option value="false">false</option>
-    </select> <br>
-    <label for="">viitenro</label>
-    <input type="text" name="viitenro" value="" id="viitenro" maxlength="20"><br>
-    <label for="">viivastysmaksu</label>
-    <input type="number" name="viivastysmaksu" value="" id="viivastysmaksu"><br>
+          <input type="hidden" name="kampanjaid" value="{{this.kampanjaid}}">
+          <button type="submit" name="button">Lisää lasku</button>
+        </form>
 
-    <button type="submit" name="button">Submit</button>
-  </form>
+      </ul>
+      {{/each}}
+    </div>
 </body>
 </html>

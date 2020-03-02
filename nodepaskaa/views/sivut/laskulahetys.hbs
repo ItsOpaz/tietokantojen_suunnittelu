@@ -1,0 +1,75 @@
+<style>
+.ylabaari {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+}
+
+li.ylabaari  {
+  float: left;
+}
+
+li a {
+
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+.laskulista {
+  float : left;
+  width 25%;
+  margin-right: 10%;
+}
+.center {
+  float : left;
+  width: 25% ;
+}
+/* Change the link color to #111 (black) on hover */
+
+</style>
+  <div class="">
+    <ul class="ylabaari">
+      <li class="ylabaari"><a href="/">Etusivu</a> <br></li>
+      <li class="ylabaari"><a href="/lisaalasku">Lisää lasku</a> <br></li>
+      <li class="ylabaari"><a href="#">Muokkaa laskua</a> <br></li>
+      <li class="ylabaari"><a href="#">Lähetä lasku</a> <br></li>
+      <li class="ylabaari"><a href="/poistalasku">Poista lasku</a> <br></li>
+      <li class="ylabaari"><a href="#">Tee karhulasku</a> <br></li>
+    </ul>
+  </div>
+  <div class="asd">
+    {{#each tiedot as | item i|}}
+    <h3>LASKU {{this.lahetyspvm}}</h3>
+    <p>================================</p>
+    <h4>Mainoskampanjan myyjä: </h4>
+    <p>{{this.myyjä}}</p>
+    <p>I-Flac Oy</p>
+    <p>Korkeakoulunkatu 6, 33720</p>
+
+    <br>
+    <h4>Mainoskampanjan tilaaja:</h4>
+    <p>{{this.tilaaja}}</p>
+    <p>{{this.mainostaja}}</p>
+    <p>{{this.laskutusosoite}}, {{this.postinumero}}</p>
+    <br>
+    <h4>Laskutettava mainoskampanja:</h4>
+    <p>---------------------------------</p>
+    <p>{{this.kampanja}} {{this.alkupvm}}-{{this.loppupvm}}</p>
+    <p>Sekuntihinta: {{this.sekuntihinta}}€/s</p>
+    <p>Määrärahat: {{this.maararahat}}€</p>
+    <h4>Esitetyt mainokset:</h4>
+    <p>---------------------------------</p>
+      {{#each this.mainokset as |yval ykey |}}
+      <p>Mainos {{@index}}: {{this.nimi}}</p>
+      <p>Lähetysaika: {{../this.alkuaika}}-{{../this.loppuaika}}</p>
+      <p>Mainoksen pituus:{{yval.pituus}}</p>
+      <p>Vastaanotettu:{{yval.kuuntelukerrat}} kertaa</p>
+      <p>Mainoksen hinta:{{yval.mainoksen_hinta}} €/s</p>
+      <br>
+      {{/each}}
+    {{/each}}
+  </div>
