@@ -74,12 +74,12 @@
         </form>
 
         <div id='kampanjat'>
-            {{#each_with data 'nimi' }}
+            {{#each data }}
             <ul>
                 <li class="list-element" onclick="handleClick('{{kampanjaid}}', '{{nimi}}')"> {{{nimi}}} </li>
 
             </ul>
-            {{/each_with}}
+            {{/each}}
         </div>
 
 

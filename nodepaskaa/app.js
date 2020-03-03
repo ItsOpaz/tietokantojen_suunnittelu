@@ -11,7 +11,7 @@ const session = require('express-session')
 
 const PORT = 8000
 
-const conString = "postgres://postgres:admin@localhost:5432/iflac";
+const conString = "postgres://postgres:hilla123@localhost:5432/iflac";
 const client = new pg.Client(conString);
 app.engine('hbs', hbs({ extname: 'hbs', defaultLayout: 'home.hbs', layoutDir: __dirname + '/views/' }));
 app.set('view engine', 'hbs')
@@ -51,15 +51,24 @@ app.get('/', (req, res) => {
 })
 app.get('/mainokset', (req, res) => {
 
-  client.query(('SELECT * FROM mainos'), function (err, result, fields) {
+  client.query(('SELECT * FROM mainos'), function (err, result) {
 
-    const asd = result.rows;
     if (err) throw err;
-    var asdd = JSON.parse(JSON.stringify(result.rows));
-    console.log(asdd);
-    res.render(__dirname + '/views/sivut/mainokset.hbs', { data: asdd, layout: false });
+    var data = JSON.parse(JSON.stringify(result.rows));
+
+    res.render(__dirname + '/views/sivut/mainokset.hbs', { data: data, layout: false });
   });
 });
+
+app.post("/mainokset", (req, res) => {
+  let mainosid = Object.keys(req.body)[0]
+
+
+  res.redirect(`/mainosesitysraportit/${mainosid}`);
+
+})
+
+
 app.get('/lisaa', (req, res) => {
 
   res.render(__dirname + '/views/sivut/lisaa.hbs', { layout: false });
@@ -81,6 +90,8 @@ app.post('/lisaa', (req, res) => {
   });
   res.redirect('/mainokset')
 });
+
+
 app.get('/laskutus', (req, res) => {
   client.query(('SELECT * FROM laskutustiedot'), function (err, result, fields) {
     if (err) throw err;
@@ -88,73 +99,131 @@ app.get('/laskutus', (req, res) => {
 
     var laskut = JSON.parse(JSON.stringify(result.rows));
 
-    res.render(__dirname+'/views/sivut/laskutus.hbs',{laskut, layout: false})
+    res.render(__dirname + '/views/sivut/laskutus.hbs', { laskut, layout: false })
 
   });
 })
 app.post('/laskutus', (req, res) => {
   console.log(req.body);
 
-  if(req.body.laskunumero == "all"){
+  if (req.body.laskunumero == "all") {
     client.query(('SELECT * FROM laskutustiedot'), function (err, result) {
       if (err) throw err;
       const asd = result.rows;
       laskut = JSON.parse(JSON.stringify(result.rows));
-      res.render(__dirname+'/views/sivut/laskutus.hbs',{laskut, layout: false});
+      res.render(__dirname + '/views/sivut/laskutus.hbs', { laskut, layout: false });
     }
-  )
+    )
   }
- else {
-   if(req.body.mainostaja != null){
-     console.log(req.body.mainostaja);
-     client.query((`SELECT * FROM laskutustiedot WHERE mainostaja = '${req.body.mainostaja}'` ), function (err, result) {
-       if (err) throw err;
-       const asd = result.rows;
-       laskut = JSON.parse(JSON.stringify(result.rows));
-       res.render(__dirname+'/views/sivut/laskutus.hbs',{laskut, layout: false});
-       }
-       );
+  else {
+    if (req.body.mainostaja != null) {
+      console.log(req.body.mainostaja);
+      client.query((`SELECT * FROM laskutustiedot WHERE mainostaja = '${req.body.mainostaja}'`), function (err, result) {
+        if (err) throw err;
+        const asd = result.rows;
+        laskut = JSON.parse(JSON.stringify(result.rows));
+        res.render(__dirname + '/views/sivut/laskutus.hbs', { laskut, layout: false });
+      }
+      );
     }
-   else{
-     if(req.body.laskunumero > 1){
+    else {
+      if (req.body.laskunumero > 1) {
         var list = [];
-        client.query((`SELECT * FROM lasku WHERE laskuid = ${req.body.laskunumero}`), function(err, result){
-          if(err) throw err;
-          var lasku = JSON.parse(JSON.stringify( result.rows));
+        client.query((`SELECT * FROM lasku WHERE laskuid = ${req.body.laskunumero}`), function (err, result) {
+          if (err) throw err;
+          var lasku = JSON.parse(JSON.stringify(result.rows));
           client.query(('SELECT * FROM laskutustiedot'), function (err, result) {
             if (err) throw err;
-              laskut = JSON.parse(JSON.stringify(result.rows));
-              var z ;
-              for (x of laskut){
-                if(x.laskuid == req.body.laskunumero){
-                  lasku[0].tilaaja = x.tilaaja;
-                  lasku[0].mainostaja = x.mainostaja;
-                  lasku[0].laskutusosoiteid = x.laskutusosoiteid;
-                  lasku[0].mainoskampanja = x.kampanja;
-                  z = x.laskutusosoiteid;
-                }
+            laskut = JSON.parse(JSON.stringify(result.rows));
+            var z;
+            for (x of laskut) {
+              if (x.laskuid == req.body.laskunumero) {
+                lasku[0].tilaaja = x.tilaaja;
+                lasku[0].mainostaja = x.mainostaja;
+                lasku[0].laskutusosoiteid = x.laskutusosoiteid;
+                lasku[0].mainoskampanja = x.kampanja;
+                z = x.laskutusosoiteid;
               }
-              console.log(z);
-              if (z != null) {
-                client.query((`SELECT * FROM laskutusosoite WHERE osoiteid = ${z}`), function(err, results) {
-                  if (err) throw err;
-                    var pars = JSON.parse(JSON.stringify(results.rows));
+            }
+            console.log(z);
+            if (z != null) {
+              client.query((`SELECT * FROM laskutusosoite WHERE osoiteid = ${z}`), function (err, results) {
+                if (err) throw err;
+                var pars = JSON.parse(JSON.stringify(results.rows));
 
-                    lasku[0].osoite = pars[0].katuosoite;
-                    lasku[0].postinumero = pars[0].postinumero;
-                    lasku[0].maa = pars[0].maa;
-                })
-              }
+                lasku[0].osoite = pars[0].katuosoite;
+                lasku[0].postinumero = pars[0].postinumero;
+                lasku[0].maa = pars[0].maa;
+              })
+            }
 
-              console.log( JSON.stringify(lasku, null, "    ") );
-              res.render(__dirname+'/views/sivut/laskutus.hbs',{laskut,lasku, layout: false});
+            console.log(JSON.stringify(lasku, null, "    "));
+            res.render(__dirname + '/views/sivut/laskutus.hbs', { laskut, lasku, layout: false });
           }
           );
         });
+      }
     }
+  }
+})
+
+app.get("/mainosesitysraportit", (req, res) => {
+  res.redirect("/mainokset")
+})
+
+app.get('/mainosesitysraportit/:mainosid', (req, res) => {
+  // Esittää tietyn mainoksen kaikki esityskerrat, sekä muuta tietoa
+  let quer = `select  mk.nimi as kampanja, m.nimi as mainos, ma.nimi as mainostaja, e.pvm, e.kloaika, k.sukupuoli, k.ika, k.maa, k.paikkakunta from
+  mainos m inner join mainoskampanja mk on m.kampanjaid = mk.kampanjaid
+  inner join yhdiste_kampanja yk on yk.kampanjaid = m.kampanjaid
+  inner join esitys e on e.mainosid = m.mainosid
+  inner join kuuntelija k on k.nimimerkki = e.kuuntelijatunnus
+  left join mainostaja ma on ma.vat = yk.mainostajaid
+  where m.mainosid = ${req.params.mainosid}`
+
+  let success = false;
+  client.query(quer, (err, result) => {
+
+    let data = result.rows;
+    if (data.length == 0) {
+      client.query(`select  mk.nimi as kampanja, m.nimi as mainos, ma.nimi as mainostaja from
+    mainos m inner join mainoskampanja mk on m.kampanjaid = mk.kampanjaid
+    inner join yhdiste_kampanja yk on yk.kampanjaid = m.kampanjaid
+    left join mainostaja ma on ma.vat = yk.mainostajaid where m.mainosid = ${req.params.mainosid}`, (err, result) => {
+
+        var empty = {
+          msg: "Tällä mainoksella ei ole vielä esityksiä"
+        }
+        info = result.rows[0]
+        success = true
+        res.render(__dirname + "/views/sivut/mainosesitysraportit.hbs", { info, empty, layout: false })
+      })
+    } else {
+
+
+      var info = {
+        kampanja: data[0].kampanja,
+        mainostaja: data[0].mainostaja,
+        mainos: data[0].mainos
+      }
+      for (let i = 0; i < data.length; i++) {
+        data[i].pvm = data[i].pvm.toString().split("00:")[0]
+        data[i].kloaika = data[i].kloaika.split('.')[0]
+      }
+      success = true;
+      res.render(__dirname + "/views/sivut/mainosesitysraportit.hbs", { data, info, layout: false })
+
     }
-    }
+
+
+    // console.log(foo);
+
   })
+
+
+
+
+})
 
 app.get('/login', (req, res) => {
 
@@ -242,12 +311,12 @@ app.get('/kampanjat', (req, res) => {
   })
 })
 //get request laskun lisäämiselle
-app.get('/lisaalasku', (req, res) =>{
-  client.query(('SELECT * FROM mainoskampanja WHERE tila = false'), function(err, result){
-    if(err) throw err;
+app.get('/lisaalasku', (req, res) => {
+  client.query(('SELECT * FROM mainoskampanja WHERE tila = false'), function (err, result) {
+    if (err) throw err;
     var kampanjat = JSON.parse(JSON.stringify(result.rows));
     console.log(kampanjat);
-    res.render(__dirname + '/views/sivut/lisaalasku.hbs', {kampanjat, layout: false });
+    res.render(__dirname + '/views/sivut/lisaalasku.hbs', { kampanjat, layout: false });
   });
 })
 app.post('/lisaalasku', (req, res) => {
@@ -267,24 +336,24 @@ app.post('/lisaalasku', (req, res) => {
         false,
         '${req.body.viitenro}'
       )`
-    client.query((qstring), function(err, result){
-      if(err) throw err;
-      console.log('succesful insert');
-      res.redirect('/laskutus')
-    })
+  client.query((qstring), function (err, result) {
+    if (err) throw err;
+    console.log('succesful insert');
+    res.redirect('/laskutus')
+  })
   console.log(qstring);
 
 })
-app.get('/muokkaalasku/:id', (req, res) =>{
-    console.log('keeneri'+req.params.id);
-    var qstring = `SELECT * FROM lasku WHERE laskuid = ${req.params.id}`;
-    console.log(qstring);
-    client.query((qstring), function(err, result){
-      if (err) throw err;
-      var lasku = JSON.parse(JSON.stringify(result.rows));
-      console.log(lasku);
-      res.render(__dirname+'/views/sivut/muokkaalasku.hbs',{lasku, layout: false})
-    })
+app.get('/muokkaalasku/:id', (req, res) => {
+  console.log('keeneri' + req.params.id);
+  var qstring = `SELECT * FROM lasku WHERE laskuid = ${req.params.id}`;
+  console.log(qstring);
+  client.query((qstring), function (err, result) {
+    if (err) throw err;
+    var lasku = JSON.parse(JSON.stringify(result.rows));
+    console.log(lasku);
+    res.render(__dirname + '/views/sivut/muokkaalasku.hbs', { lasku, layout: false })
+  })
 })
 app.post('/muokkaalasku/:id', (req, res) => {
   console.log(req.body);
@@ -298,14 +367,14 @@ app.post('/muokkaalasku/:id', (req, res) => {
                `
   console.log(query);
   client.query((query), (err, result) => {
-    if(err) throw err;
+    if (err) throw err;
     else {
       console.log("succesful update");
       res.redirect('/laskutus')
     }
   })
 })
-app.get('/poistalasku/:id', (req, res) =>{
+app.get('/poistalasku/:id', (req, res) => {
   console.log(req.body);
   client.query((`SELECT * FROM lasku WHERE laskuid = ${req.params.id}`), function (err, result, fields) {
 
@@ -318,65 +387,65 @@ app.get('/poistalasku/:id', (req, res) =>{
 })
 app.post('/poistalasku/:id', (req, res) => {
   console.log(req.body);
-  if(req.body.vastaus == "Ei"){
+  if (req.body.vastaus == "Ei") {
     res.redirect('/laskutus');
   }
   else {
     var query = `DELETE FROM lasku WHERE laskuid = ${req.body.laskuid}`;
-    client.query((query), (err, result) =>{
+    client.query((query), (err, result) => {
       if (err) throw err;
-      else{
+      else {
         res.redirect('/laskutus');
       }
     })
   }
 })
-app.get('/lahetalasku/:id', (req, res )=>{
+app.get('/lahetalasku/:id', (req, res) => {
   console.log(req.params.id);
   client.query((`SELECT * FROM laskutustiedot WHERE laskuid = ${req.params.id}`), (err, result) => {
-    if(err) throw err;
+    if (err) throw err;
     else {
       var tiedot = JSON.parse(JSON.stringify(result.rows));
 
-      client.query((`SELECT lahetyspvm, erapvm FROM lasku WHERE laskuid = ${req.params.id}`), (err, result) =>{
-        if(err) throw err;
+      client.query((`SELECT lahetyspvm, erapvm FROM lasku WHERE laskuid = ${req.params.id}`), (err, result) => {
+        if (err) throw err;
         var paivat = JSON.parse(JSON.stringify(result.rows));
         tiedot[0].lahetyspvm = paivat[0].lahetyspvm;
         tiedot[0].erapvm = paivat[0].erapvm;
 
-        client.query((`SELECT * FROM laskutusosoite WHERE osoiteid = ${tiedot[0].laskutusosoiteid}`), (err, result) =>{
-            if (err) throw(err)
-            var osote = JSON.parse(JSON.stringify(result.rows));
+        client.query((`SELECT * FROM laskutusosoite WHERE osoiteid = ${tiedot[0].laskutusosoiteid}`), (err, result) => {
+          if (err) throw (err)
+          var osote = JSON.parse(JSON.stringify(result.rows));
 
-            tiedot[0].laskutusosoite = osote[0].katuosoite;
-            tiedot[0].postinumero = osote[0].postinumero;
-            client.query((`SELECT * FROM mainoskampanja WHERE kampanjaid = ${tiedot[0].kampanjaid}`), (err, result)=>{
-              var datra = JSON.parse(JSON.stringify(result.rows));
+          tiedot[0].laskutusosoite = osote[0].katuosoite;
+          tiedot[0].postinumero = osote[0].postinumero;
+          client.query((`SELECT * FROM mainoskampanja WHERE kampanjaid = ${tiedot[0].kampanjaid}`), (err, result) => {
+            var datra = JSON.parse(JSON.stringify(result.rows));
 
-              tiedot[0].alkupvm = datra[0].alkupvm;
-              tiedot[0].loppupvm = datra[0].loppupvm;
-              tiedot[0].maararahat = datra[0].maararahat;
-              tiedot[0].sekuntihinta = datra[0].sekuntihinta;
-              client.query((`SELECT * FROM profiili WHERE profiiliid = ${datra[0].profiiliid}`), (err, result) =>{
-                var profiili = JSON.parse(JSON.stringify(result.rows));
+            tiedot[0].alkupvm = datra[0].alkupvm;
+            tiedot[0].loppupvm = datra[0].loppupvm;
+            tiedot[0].maararahat = datra[0].maararahat;
+            tiedot[0].sekuntihinta = datra[0].sekuntihinta;
+            client.query((`SELECT * FROM profiili WHERE profiiliid = ${datra[0].profiiliid}`), (err, result) => {
+              var profiili = JSON.parse(JSON.stringify(result.rows));
 
-                tiedot[0].alkuaika = profiili[0].alkulahetysaika;
-                tiedot[0].loppuaika = profiili[0].loppulahetysaika;
+              tiedot[0].alkuaika = profiili[0].alkulahetysaika;
+              tiedot[0].loppuaika = profiili[0].loppulahetysaika;
 
-              client.query((`SELECT * FROM mainos WHERE kampanjaid = ${tiedot[0].kampanjaid}`), (err, result) =>{
+              client.query((`SELECT * FROM mainos WHERE kampanjaid = ${tiedot[0].kampanjaid}`), (err, result) => {
                 var mainokset = JSON.parse(JSON.stringify(result.rows));
                 tiedot[0].mainokset = mainokset;
-                res.render(__dirname+'/views/sivut/laskulahetys.hbs',{tiedot : tiedot, layout: false});
+                res.render(__dirname + '/views/sivut/laskulahetys.hbs', { tiedot: tiedot, layout: false });
                 console.log(mainokset);
-                for(let x = 0; x < mainokset.length; x++){
-                  client.query((`SELECT * FROM mainosten_kuuntelukerrat WHERE mainosid = ${mainokset[x].mainosid}`), (err, result) =>{
+                for (let x = 0; x < mainokset.length; x++) {
+                  client.query((`SELECT * FROM mainosten_kuuntelukerrat WHERE mainosid = ${mainokset[x].mainosid}`), (err, result) => {
                     var kuuntelukerratt = JSON.parse(JSON.stringify(result.rows));
                     console.log(kuuntelukerratt);
-                    if(kuuntelukerratt != ""){
+                    if (kuuntelukerratt != "") {
                       console.log(parseFloat(tiedot[0].sekuntihinta));
                       var kuuntelut = parseInt(kuuntelukerratt[0].lkm)
-                      var tt=mainokset[x].pituus.split(":");
-                      var sec=tt[0]*3600+tt[1]*60+tt[2]*1;
+                      var tt = mainokset[x].pituus.split(":");
+                      var sec = tt[0] * 3600 + tt[1] * 60 + tt[2] * 1;
                       console.log(sec);
                       var yhe_hinta = parseFloat(tiedot[0].sekuntihinta) * sec;
                       console.log(yhe_hinta);
@@ -386,7 +455,7 @@ app.get('/lahetalasku/:id', (req, res )=>{
                       console.log(koko_hinta);
                       mainokset[x].mainoksen_hinta = koko_hinta;
                     }
-                    else{
+                    else {
                       mainokset[x].kuuntelukerrat = 0;
                       mainokset[x].mainoksen_hinta = 0
                     }
@@ -394,7 +463,7 @@ app.get('/lahetalasku/:id', (req, res )=>{
                 }
               })
             })
-            })
+          })
         })
       })
     }
@@ -416,7 +485,3 @@ app.listen(PORT, () =>
   console.log("Localhost listening on port: " + PORT));
 
 
-const vittu = () => {
-  console.log('vittu')
-
-}

@@ -3,8 +3,6 @@ const LocalStrategy = require('passport-local').Strategy
 
 function initPassport(passport, getUserById) {
 
-    console.log('vittu')
-
     const authenticateUser = (username, password, done) => {
         const user = getUserById(username)
         console.log(user)
