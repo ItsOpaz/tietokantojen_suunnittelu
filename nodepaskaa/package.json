@@ -17,6 +17,7 @@
     "express-session": "^1.17.0",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
+    "password": "^0.1.1",
     "pg": "^7.18.1"
   },
   "devDependencies": {

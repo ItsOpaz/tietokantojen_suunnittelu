@@ -65,10 +65,18 @@ li a {
     <p>---------------------------------</p>
       {{#each this.mainokset as |yval ykey |}}
       <p>Mainos {{@index}}: {{this.nimi}}</p>
-      <p>Lähetysaika: {{../this.alkuaika}}-{{../this.loppuaika}}</p>
+      <p>Lähetysaika: {{yval.esitysaika}}</p>
       <p>Mainoksen pituus:{{yval.pituus}}</p>
+      {{#if yval.kuuntelukerrat}}
       <p>Vastaanotettu:{{yval.kuuntelukerrat}} kertaa</p>
-      <p>Mainoksen hinta:{{yval.mainoksen_hinta}} €/s</p>
+      {{else}}
+      <p>Vastaanotettu: 0 kertaa</p>
+      {{/if}}
+      {{#if yval.mainoksen_hinta}}
+      <p>Mainoksen hinta:{{yval.mainoksen_hinta}}  €/s</p>
+      {{else}}
+      <p>Mainoksen hinta: €/s</p>
+      {{/if}}
       <br>
       {{/each}}
     {{/each}}

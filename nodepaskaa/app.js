@@ -11,7 +11,7 @@ const session = require('express-session')
 
 const PORT = 8000
 
-const conString = "postgres://postgres:hilla123@localhost:5432/iflac";
+const conString = "postgres://postgres:admin@localhost:5432/iflac";
 const client = new pg.Client(conString);
 app.engine('hbs', hbs({ extname: 'hbs', defaultLayout: 'home.hbs', layoutDir: __dirname + '/views/' }));
 app.set('view engine', 'hbs')
@@ -401,73 +401,42 @@ app.post('/poistalasku/:id', (req, res) => {
   }
 })
 app.get('/lahetalasku/:id', (req, res) => {
-  console.log(req.params.id);
-  client.query((`SELECT * FROM laskutustiedot WHERE laskuid = ${req.params.id}`), (err, result) => {
-    if (err) throw err;
-    else {
+   console.log(req.params.id);
+   client.query((`SELECT * FROM laskutustiedot lt INNER JOIN laskutusosoite lo
+      ON lt.laskutusosoiteid = lo.osoiteid
+      INNER JOIN mainoskampanja mk
+      ON mk.kampanjaid = lt.kampanjaid
+      WHERE laskuid = ${req.params.id}`), (err, result) =>{
+      if(err) throw err;
+      console.log(result.rows);
       var tiedot = JSON.parse(JSON.stringify(result.rows));
+      console.log(tiedot[0].kampanjaid);
+      client.query((`SELECT * FROM mainos m  FULL JOIN mainosten_kuuntelukerrat as m_k
+        ON m_k.mainosid = m.mainosid
+        WHERE kampanjaid = ${tiedot[0].kampanjaid}`), (err, result) =>{
+        if(err) throw err;
+        console.log(result.rows);
+        var mainokset = JSON.parse(JSON.stringify(result.rows));
+        console.log(tiedot[0].sekuntihinta);
+        var sekuntihinta = parseFloat(tiedot[0].sekuntihinta);
+        for(let x of mainokset){
+          var tt = x.pituus.split(":");
+          var sec = tt[0] * 3600 + tt[1] * 60 + tt[2] * 1;
+          let yhe_hinta = sekuntihinta * sec;
+          console.log(yhe_hinta);
+          let kuuntelut = parseInt(x.lkm);
+          x.kuuntelukerrat = kuuntelut
+          let mainos_hinta = kuuntelut * yhe_hinta;
+          x.mainoksen_hinta = mainos_hinta;
+        }
+        console.log(mainokset);
+        tiedot[0].mainokset = mainokset;
 
-      client.query((`SELECT lahetyspvm, erapvm FROM lasku WHERE laskuid = ${req.params.id}`), (err, result) => {
-        if (err) throw err;
-        var paivat = JSON.parse(JSON.stringify(result.rows));
-        tiedot[0].lahetyspvm = paivat[0].lahetyspvm;
-        tiedot[0].erapvm = paivat[0].erapvm;
 
-        client.query((`SELECT * FROM laskutusosoite WHERE osoiteid = ${tiedot[0].laskutusosoiteid}`), (err, result) => {
-          if (err) throw (err)
-          var osote = JSON.parse(JSON.stringify(result.rows));
-
-          tiedot[0].laskutusosoite = osote[0].katuosoite;
-          tiedot[0].postinumero = osote[0].postinumero;
-          client.query((`SELECT * FROM mainoskampanja WHERE kampanjaid = ${tiedot[0].kampanjaid}`), (err, result) => {
-            var datra = JSON.parse(JSON.stringify(result.rows));
-
-            tiedot[0].alkupvm = datra[0].alkupvm;
-            tiedot[0].loppupvm = datra[0].loppupvm;
-            tiedot[0].maararahat = datra[0].maararahat;
-            tiedot[0].sekuntihinta = datra[0].sekuntihinta;
-            client.query((`SELECT * FROM profiili WHERE profiiliid = ${datra[0].profiiliid}`), (err, result) => {
-              var profiili = JSON.parse(JSON.stringify(result.rows));
-
-              tiedot[0].alkuaika = profiili[0].alkulahetysaika;
-              tiedot[0].loppuaika = profiili[0].loppulahetysaika;
-
-              client.query((`SELECT * FROM mainos WHERE kampanjaid = ${tiedot[0].kampanjaid}`), (err, result) => {
-                var mainokset = JSON.parse(JSON.stringify(result.rows));
-                tiedot[0].mainokset = mainokset;
-                res.render(__dirname + '/views/sivut/laskulahetys.hbs', { tiedot: tiedot, layout: false });
-                console.log(mainokset);
-                for (let x = 0; x < mainokset.length; x++) {
-                  client.query((`SELECT * FROM mainosten_kuuntelukerrat WHERE mainosid = ${mainokset[x].mainosid}`), (err, result) => {
-                    var kuuntelukerratt = JSON.parse(JSON.stringify(result.rows));
-                    console.log(kuuntelukerratt);
-                    if (kuuntelukerratt != "") {
-                      console.log(parseFloat(tiedot[0].sekuntihinta));
-                      var kuuntelut = parseInt(kuuntelukerratt[0].lkm)
-                      var tt = mainokset[x].pituus.split(":");
-                      var sec = tt[0] * 3600 + tt[1] * 60 + tt[2] * 1;
-                      console.log(sec);
-                      var yhe_hinta = parseFloat(tiedot[0].sekuntihinta) * sec;
-                      console.log(yhe_hinta);
-                      mainokset[x].kuuntelukerrat = kuuntelut;
-                      var koko_hinta = kuuntelut * yhe_hinta;
-                      koko_hinta = koko_hinta.toString()
-                      console.log(koko_hinta);
-                      mainokset[x].mainoksen_hinta = koko_hinta;
-                    }
-                    else {
-                      mainokset[x].kuuntelukerrat = 0;
-                      mainokset[x].mainoksen_hinta = 0
-                    }
-                  })
-                }
-              })
-            })
-          })
-        })
       })
-    }
-  })
+
+      res.render(__dirname + '/views/sivut/laskulahetys.hbs', { tiedot, layout: false })
+   })
 
 })
 app.get('/kampanjat/:id', (req, res) => {
@@ -483,5 +452,3 @@ app.post('/kampanjat/:id', (req, res) => {
 
 app.listen(PORT, () =>
   console.log("Localhost listening on port: " + PORT));
-
-
