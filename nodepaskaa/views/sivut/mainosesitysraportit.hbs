@@ -24,7 +24,17 @@
     table td {
         padding: 10;
     }
+
+    h5 {
+        color: green;
+    }
 </style>
+
+<script>
+    const handleClick = () => {
+        document.getElementById("msgSent").innerHTML = "Sähköposti lähetetty!"
+    }
+</script>
 
 <div class="m-root">
 
@@ -68,4 +78,11 @@
         </tr>
         {{/each}}
     </table>
+
+
+    <br>
+    <h5 id="msgSent"></h5>
+    <label for="sapo">Asiakkaan sähköposti: </label>
+    <input type="text" name="sapo" value="ex@example.com" id="">
+    <button onclick="handleClick()">Lähetä raportti</button>
 </div>

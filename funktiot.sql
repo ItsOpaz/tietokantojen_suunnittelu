@@ -277,6 +277,8 @@ DECLARE
 	moneyLeft numeric;
 	adPrice int;
 	adLength time;
+	sec int;
+	p numeric;
 	
 	kid int;
 
@@ -289,9 +291,11 @@ BEGIN
 	update mainos m set esitysaika = cast((esitysaika + adLength::interval) as time) where m.mainosid = new.mainosid;
 
 	-- Nyt lasketaan mainoksesta aiheutuva kustannus ja vähennetään se määrärahoista
-
-	adPrice = ((select to_seconds(adLength)) * (select sekuntihinta from mainoskampanja mk, mainos m where mk.kampanjaid = m.kampanjaid and m.mainosid = new.mainosid));
-	raise notice 'ad price: %', adPrice;
+	sec = (select to_seconds(adLength));
+	p = (select sekuntihinta from mainoskampanja mk, mainos m where mk.kampanjaid = m.kampanjaid and m.mainosid = new.mainosid);
+	raise notice 'sec : %', sec;
+	raise notice 'price: %', p;
+	adPrice = sec*p;
 
 	-- kampanja id
 	kid = (select kampanjaid from mainos m where m.mainosid = new.mainosid);

@@ -8,13 +8,13 @@ mahdollisesti melko monimutkainen
 -- helpottaa laskutuksessa, kun halutaan lista kampanjoista joihin voidaan 
 -- luoda lasku
 CREATE VIEW laskutettavat AS 
-    SELECT m.kampanjaId, m.nimi
+    (SELECT m.kampanjaId, m.nimi
     FROM mainoskampanja m
 	INNER JOIN yhdiste_kampanja y
 	ON m.kampanjaId = y.kampanjaId
-	WHERE y.laskuNro IS NULL
-	AND m.tila = false;
-	;
+	WHERE y.laskuid IS NULL
+	AND m.tila = false);
+	
 	
 -- kaikkien mainosten kuuntelukerrat, auttaa mainoskampan mainosten tietojen 
 -- hakemisessa
@@ -40,7 +40,7 @@ CREATE VIEW kampanjan_mainokset AS
 -- helpottaa kun kampanjan tarvittavat laskutustiedot saadaan helposti yhdellä
 -- yksinkertaisella kyselyllä
 CREATE VIEW laskutustiedot AS
-	yk.kampanjaId, l.laskuid, yk.kayttajatunnus, yk.mainostajaId
+	(SELECT yk.kampanjaId, l.laskuid, yk.kayttajatunnus, yk.mainostajaId
 	, CONCAT(jk.etunimi, ' ',jk.sukunimi) as myyjä
 	, CONCAT(yh.etunimi, ' ',yh.sukunimi) as tilaaja
 	, m.nimi as mainostaja, m.laskutusosoiteId, mk.nimi as kampanja
@@ -56,7 +56,7 @@ CREATE VIEW laskutustiedot AS
 	INNER JOIN laskutusosoite lo
 	ON m.laskutusosoiteId = lo.osoiteId
 	INNER JOIN lasku l
-	on l.kampanjaid = yk.kampanjaid
+	on l.kampanjaid = yk.kampanjaid)
 	;
 
 --näkymä jossa kaikki mainosesitykset, ongelma on kuitenkin että miten saadaan
