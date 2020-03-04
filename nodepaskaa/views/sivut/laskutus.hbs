@@ -58,9 +58,10 @@ li a {
       <input type="hidden" name="laskunumero" value="all" >
       <button type="submit" name="button">Näytä kaikki</button>
     </form>
-
     </div>
+  
     <div class="laskulista">
+
       <h1>Laskulista:</h1>
       {{#if laskut}}
       {{#each laskut}}
@@ -79,6 +80,7 @@ li a {
       <p>Ei mainoskampanjoita tällä nimellä</p>
       {{/if}}
     </div>
+
     <div class="center">
       <h1>Aktiivinen lasku:</h1>
       {{#each lasku}}

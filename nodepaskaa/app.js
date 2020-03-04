@@ -18,8 +18,8 @@ app.set('view engine', 'hbs')
 
 app.use(parser.urlencoded({ extended: false }));
 app.use(parser.json());
-
 app.use(flash())
+
 app.use(session({
   secret: "super_secret_key",
   resave: false,
@@ -431,14 +431,25 @@ app.get('/lahetalasku/:id', (req, res) => {
         }
         console.log(mainokset);
         tiedot[0].mainokset = mainokset;
-
-
       })
-
       res.render(__dirname + '/views/sivut/laskulahetys.hbs', { tiedot, layout: false })
    })
+})
+app.post('/laskulahetys/:id', (req, res) =>{
+  console.log(req.body.a);
+  var tila = JSON.parse(JSON.stringify(req.body.a));
+  console.log(tila);
+  if(tila == 'false'){
+    console.log("lähetys onnistui");
+    // req.flash('message', 'NEEKERI');
+    // res.redirect('/laskutus')
+  }
+  else{
+    console.log("lähetys epäonnistui");
+  }
 
 })
+
 app.get('/kampanjat/:id', (req, res) => {
 
 })

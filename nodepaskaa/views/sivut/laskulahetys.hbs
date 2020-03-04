@@ -1,3 +1,15 @@
+<script>
+   function myfunction(x){
+     if(x == false){
+       alert('Lähetys onnistui')
+       window.location.href = "http://localhost:8000/laskutus";
+     }
+     else{
+       alert('Lähetys epäonnistui, koska kampanja käynnissä')
+       window.location.href = "http://localhost:8000/laskutus";
+     }
+   }
+</script>
 <style>
 .ylabaari {
   list-style-type: none;
@@ -54,7 +66,7 @@ li a {
     <h4>Mainoskampanjan tilaaja:</h4>
     <p>{{this.tilaaja}}</p>
     <p>{{this.mainostaja}}</p>
-    <p>{{this.laskutusosoite}}, {{this.postinumero}}</p>
+    <p>{{this.katuosoite}}, {{this.postinumero}}</p>
     <br>
     <h4>Laskutettava mainoskampanja:</h4>
     <p>---------------------------------</p>
@@ -75,9 +87,12 @@ li a {
       {{#if yval.mainoksen_hinta}}
       <p>Mainoksen hinta:{{yval.mainoksen_hinta}}  €/s</p>
       {{else}}
-      <p>Mainoksen hinta: €/s</p>
+      <p>Mainoksen hinta: 0 €/s</p>
       {{/if}}
       <br>
       {{/each}}
+      <button type="button" name="button" onclick="myfunction({{this.tila}})">paina mua</button>
+
     {{/each}}
+
   </div>
