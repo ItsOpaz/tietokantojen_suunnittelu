@@ -173,7 +173,7 @@ app.get("/mainosesitysraportit", (req, res) => {
 
 app.get('/mainosesitysraportit/:mainosid', (req, res) => {
   // Esittää tietyn mainoksen kaikki esityskerrat, sekä muuta tietoa
-  let quer = `select  mk.nimi as kampanja, m.nimi as mainos, ma.nimi as mainostaja, e.pvm, e.kloaika, k.sukupuoli, k.ika, k.maa, k.paikkakunta from
+  let quer = `select  ma.yhteyshloid, mk.nimi as kampanja, m.nimi as mainos, ma.nimi as mainostaja, e.pvm, e.kloaika, k.sukupuoli, k.ika, k.maa, k.paikkakunta from
   mainos m inner join mainoskampanja mk on m.kampanjaid = mk.kampanjaid
   inner join yhdiste_kampanja yk on yk.kampanjaid = m.kampanjaid
   inner join esitys e on e.mainosid = m.mainosid
@@ -181,10 +181,14 @@ app.get('/mainosesitysraportit/:mainosid', (req, res) => {
   left join mainostaja ma on ma.vat = yk.mainostajaid
   where m.mainosid = ${req.params.mainosid}`
 
-  let success = false;
-  client.query(quer, (err, result) => {
+  client.query(quer, async (err, result) => {
+    if (err) {
+      console.log(err.message)
+
+    }
 
     let data = result.rows;
+
     if (data.length == 0) {
       client.query(`select  mk.nimi as kampanja, m.nimi as mainos, ma.nimi as mainostaja from
     mainos m inner join mainoskampanja mk on m.kampanjaid = mk.kampanjaid
@@ -195,7 +199,6 @@ app.get('/mainosesitysraportit/:mainosid', (req, res) => {
           msg: "Tällä mainoksella ei ole vielä esityksiä"
         }
         info = result.rows[0]
-        success = true
         res.render(__dirname + "/views/sivut/mainosesitysraportit.hbs", { info, empty, layout: false })
       })
     } else {
@@ -210,18 +213,20 @@ app.get('/mainosesitysraportit/:mainosid', (req, res) => {
         data[i].pvm = data[i].pvm.toString().split("00:")[0]
         data[i].kloaika = data[i].kloaika.split('.')[0]
       }
-      success = true;
-      res.render(__dirname + "/views/sivut/mainosesitysraportit.hbs", { data, info, layout: false })
 
+
+      const email = await client.query(`select email from yhteyshenkilo where hloid = ${data[0].yhteyshloid}`)
+
+      sapo = email.rows[0].email
+
+
+      res.render(__dirname + "/views/sivut/mainosesitysraportit.hbs", { data, info, sapo, layout: false })
     }
 
 
     // console.log(foo);
 
   })
-
-
-
 
 })
 
@@ -402,10 +407,36 @@ app.post('/poistalasku/:id', (req, res) => {
 })
 app.get('/lahetalasku/:id', (req, res) => {
   console.log(req.params.id);
-  client.query((`SELECT * FROM laskutustiedot WHERE laskuid = ${req.params.id}`), (err, result) => {
+  client.query((`SELECT * FROM laskutustiedot lt INNER JOIN laskutusosoite lo
+      ON lt.laskutusosoiteid = lo.osoiteid
+      INNER JOIN mainoskampanja mk
+      ON mk.kampanjaid = lt.kampanjaid
+      WHERE laskuid = ${req.params.id}`), (err, result) => {
     if (err) throw err;
-    else {
-      var tiedot = JSON.parse(JSON.stringify(result.rows));
+    console.log(result.rows);
+    var tiedot = JSON.parse(JSON.stringify(result.rows));
+    console.log(tiedot[0].kampanjaid);
+    client.query((`SELECT * FROM mainos m  FULL JOIN mainosten_kuuntelukerrat as m_k
+        ON m_k.mainosid = m.mainosid
+        WHERE kampanjaid = ${tiedot[0].kampanjaid}`), (err, result) => {
+      if (err) throw err;
+      console.log(result.rows);
+      var mainokset = JSON.parse(JSON.stringify(result.rows));
+      console.log(tiedot[0].sekuntihinta);
+      var sekuntihinta = parseFloat(tiedot[0].sekuntihinta);
+      for (let x of mainokset) {
+        var tt = x.pituus.split(":");
+        var sec = tt[0] * 3600 + tt[1] * 60 + tt[2] * 1;
+        let yhe_hinta = sekuntihinta * sec;
+        console.log(yhe_hinta);
+        let kuuntelut = parseInt(x.lkm);
+        x.kuuntelukerrat = kuuntelut
+        let mainos_hinta = kuuntelut * yhe_hinta;
+        x.mainoksen_hinta = mainos_hinta;
+      }
+      console.log(mainokset);
+      tiedot[0].mainokset = mainokset;
+
 
       client.query((`SELECT lahetyspvm, erapvm FROM lasku WHERE laskuid = ${req.params.id}`), (err, result) => {
         if (err) throw err;
@@ -461,9 +492,11 @@ app.get('/lahetalasku/:id', (req, res) => {
           })
         })
       })
-    }
-  })
 
+      res.render(__dirname + '/views/sivut/laskulahetys.hbs', { tiedot, layout: false })
+    })
+
+  })
 })
 
 app.get('/kuukausiraportit', (req, res) => {
@@ -594,6 +627,4 @@ app.get("/kuukausiraportit/:vat", async (req, res) => {
 })
 
 app.listen(PORT, () =>
-  console.log("Localhost listening on port: " + PORT));
-
-
+  console.log("Localhost listening on port: " + PORT))
