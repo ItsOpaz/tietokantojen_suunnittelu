@@ -19,7 +19,7 @@ CREATE VIEW laskutettavat AS
 -- kaikkien mainosten kuuntelukerrat, auttaa mainoskampan mainosten tietojen 
 -- hakemisessa
 CREATE VIEW mainosten_kuuntelukerrat AS
-	mainosId, COUNT(mainosId) AS lkm
+	select mainosId, COUNT(mainosId) AS lkm
 	FROM esitys
 	GROUP BY mainosId
 	;
@@ -27,7 +27,7 @@ CREATE VIEW mainosten_kuuntelukerrat AS
 -- kaikkien kampanjoiden mainosten tiedot, kuuntelukerrat ja kokonaishinnan
 -- auttaa laskun tekemisessä, kun tiedot saadaan kaikilta kampanjan mainoksilta
 CREATE VIEW kampanjan_mainokset AS
-	m.nimi, m.mainosId,m.kampanjaId, m.pituus, mk.sekuntihinta, ma.lkm
+	select m.nimi, m.mainosId,m.kampanjaId, m.pituus, mk.sekuntihinta, ma.lkm
 	, ma.lkm *mk.sekuntihinta *to_seconds(m.pituus) as kokhinta
 	FROM mainoskampanja mk
 	INNER JOIN mainos m

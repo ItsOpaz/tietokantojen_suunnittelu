@@ -61,9 +61,9 @@ app.get('/mainokset', (req, res) => {
 });
 
 app.post("/mainokset", (req, res) => {
+  console.log(req.body)
+
   let mainosid = Object.keys(req.body)[0]
-
-
   res.redirect(`/mainosesitysraportit/${mainosid}`);
 
 })
@@ -436,23 +436,18 @@ app.get('/lahetalasku/:id', (req, res) => {
                 var mainokset = JSON.parse(JSON.stringify(result.rows));
                 tiedot[0].mainokset = mainokset;
                 res.render(__dirname + '/views/sivut/laskulahetys.hbs', { tiedot: tiedot, layout: false });
-                console.log(mainokset);
+
                 for (let x = 0; x < mainokset.length; x++) {
                   client.query((`SELECT * FROM mainosten_kuuntelukerrat WHERE mainosid = ${mainokset[x].mainosid}`), (err, result) => {
                     var kuuntelukerratt = JSON.parse(JSON.stringify(result.rows));
-                    console.log(kuuntelukerratt);
                     if (kuuntelukerratt != "") {
-                      console.log(parseFloat(tiedot[0].sekuntihinta));
                       var kuuntelut = parseInt(kuuntelukerratt[0].lkm)
                       var tt = mainokset[x].pituus.split(":");
                       var sec = tt[0] * 3600 + tt[1] * 60 + tt[2] * 1;
-                      console.log(sec);
                       var yhe_hinta = parseFloat(tiedot[0].sekuntihinta) * sec;
-                      console.log(yhe_hinta);
                       mainokset[x].kuuntelukerrat = kuuntelut;
                       var koko_hinta = kuuntelut * yhe_hinta;
                       koko_hinta = koko_hinta.toString()
-                      console.log(koko_hinta);
                       mainokset[x].mainoksen_hinta = koko_hinta;
                     }
                     else {
@@ -470,16 +465,133 @@ app.get('/lahetalasku/:id', (req, res) => {
   })
 
 })
-app.get('/kampanjat/:id', (req, res) => {
+
+app.get('/kuukausiraportit', (req, res) => {
+  let q = `Select * from mainostaja`
+  client.query(q)
+    .then(result => {
+      return result.rows
+    }).then(mainostajat => {
+      res.render(__dirname + "/views/sivut/mainostajat.hbs", { mainostajat, layout: false })
+
+    })
+})
+
+app.post("/kuukausiraportit", (req, res) => {
+
+
+  let vat = Object.keys(req.body)[0]
+  res.redirect(`/kuukausiraportit/${vat}`);
 
 })
 
-app.post('/kampanjat/:id', (req, res) => {
-
-  // Päivitä kampanja?
-  let query = `select `;
+app.post("/kuukausiraportit/search", (req, res) => {
+  res.redirect(`/kuukausiraportit/search/${req.body.filter}`)
 })
 
+app.get('/kuukausiraportit/search', (req, res) => {
+  res.redirect('/kuukausiraportit')
+})
+
+app.get('/kuukausiraportit/search/:filter', async (req, res) => {
+
+  let q = `Select * from mainostaja where nimi like '%${req.params.filter}%'`
+
+  client.query(q)
+    .then(result => {
+
+      return result.rows
+    }).then(mainostajat => {
+
+      if (mainostajat.length == 0) {
+        var error = { message: 'Ei hakutuloksia' }
+        res.render(__dirname + "/views/sivut/mainostajat.hbs", { error, layout: false })
+      } else {
+        res.render(__dirname + "/views/sivut/mainostajat.hbs", { mainostajat, layout: false })
+
+      }
+    })
+})
+
+// Pakko rakentaa tämmönen helper-funktio, jota voi käyttää,
+// jos haluaa monelle kampanjaid:lle hakea mainokset
+// Kunei se perkeleen näkymä toimi tuola kannassa
+// Menkää saatana töihin!!!!!
+const getAds = (campaigns) => {
+  const foo = campaigns.rows.map(async camp => {
+    const kampanjaid = camp.kampanjaid;
+    q = `select mainosid, nimi, pituus, esitysaika, profiiliid from mainos where kampanjaid = '${kampanjaid}'`
+    return await client.query(q)
+      .then(adData => {
+        return adData.rows
+      })
+
+  })
+  return Promise.all(foo)
+}
+
+app.get("/kuukausiraportit/:vat", async (req, res) => {
+
+  let d = new Date()
+  let date = {
+    day: d.getDay(),
+    month: d.getMonth(),
+    year: d.getFullYear()
+  }
+  let q = `select vat, nimi, katuosoite, p.postinumero, p.pstoimipaikka
+   from mainostaja left join yhteyshenkilo on yhteyshloid = hloid
+    left join laskutusosoite on laskutusosoiteid = osoiteid 
+    inner join postitoimipaikka p on laskutusosoite.postinumero = p.postinumero
+    where mainostaja.vat = '${req.params.vat}'`
+  let data = []
+  await client.query(q)
+    .then(d => {
+      data = d.rows[0]
+
+    })
+
+
+  q = `select kampanjaid, nimi, profiiliid, sekuntihinta from mainoskampanja where mainostajaid = '${data.vat}'`
+  let campaigns = await client.query(q)
+
+  let ads = await getAds(campaigns)
+  let summary = {
+    yht: 0,
+    kokonaispituus: 0,
+    price: 0
+  }
+
+  for (let i = 0; i < ads.length; i++) {
+    ads[i].nimi = campaigns.rows[i].nimi
+    for (let j = 0; j < ads[i].length; j++) {
+      const current = ads[i][j];
+      let [h, m, s] = current.pituus.split(":")
+      current.pituus = parseInt(s) + parseInt(m) * 60 + parseInt(h) * 60 * 60
+      let [hh, mm, ss] = current.esitysaika.split(":")
+
+      current.lkm = Math.ceil((parseInt(ss) + parseInt(mm) * 60 + parseInt(hh) * 60 * 60) / current.pituus)
+      current.sekuntihinta = campaigns.rows[i].sekuntihinta
+
+      if (current.profiiliid == null) {
+        current.profiiliid = campaigns.rows[i].profiiliid
+      }
+      q = `select alkulahetysaika, loppulahetysaika from profiili where profiiliid = ${current.profiiliid}`
+      const times = await client.query(q);
+      current.alku = times.rows[0].alkulahetysaika
+      current.loppu = times.rows[0].loppulahetysaika
+
+
+      current.hinta = current.sekuntihinta * current.lkm
+      summary.price += current.hinta
+      summary.kokonaispituus += current.pituus * current.lkm
+      summary.yht += current.lkm
+
+    }
+  }
+
+  res.render(__dirname + "/views/sivut/kuukausiraportit.hbs", { data, ads, date, summary, layout: false })
+
+})
 
 app.listen(PORT, () =>
   console.log("Localhost listening on port: " + PORT));
