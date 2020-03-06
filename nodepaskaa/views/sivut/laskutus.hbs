@@ -59,7 +59,7 @@ li a {
       <button type="submit" name="button">Näytä kaikki</button>
     </form>
     </div>
-  
+
     <div class="laskulista">
 
       <h1>Laskulista:</h1>
@@ -97,7 +97,8 @@ li a {
           <li>Laskutusosoite: {{this.osoite}}, {{this.postinumero}}, {{this.maa}}</li>
           <button type="button" name="button1"> <a href="/muokkaalasku/{{this.laskuid}}">MUOKKAA TÄÄ!</a></button><br>
           <button type="button" name="button2"> <a href="/poistalasku/{{this.laskuid}}">POISTA TÄÄ!</a></button><br>
-          <button type="button" name="button3"> <a href="/lahetalasku/{{this.laskuid}}">LÄHETÄ TÄÄ!</a></button>
+          <button type="button" name="button3"> <a href="/lahetalasku/{{this.laskuid}}">LÄHETÄ TÄÄ!</a></button> <br>
+          <button type="button" name="button4"> <a href="/lisaakarhulasku/{{this.laskuid}}">TEE KARHULASKU TÄÄ!</a></button>
 
       </ul>
       {{/each}}

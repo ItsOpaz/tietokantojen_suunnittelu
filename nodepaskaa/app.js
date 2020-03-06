@@ -400,6 +400,15 @@ app.post('/poistalasku/:id', (req, res) => {
     })
   }
 })
+app.get('/lisaakarhulasku/:id', (req, res) =>{
+    console.log(req.params.id);
+    var numero = req.params.id
+    res.render(__dirname + '/views/sivut/lisaakarhulasku.hbs', { numero, layout: false });
+})
+app.post('/lisaakarhulasku/:id', (req, res)=>{
+    console.log(req.body);
+    let query = `INSERT INTO karhulasku(karhulaskuid, laskuid, viivastysmaksu, )`
+})
 app.get('/lahetalasku/:id', (req, res) => {
    console.log(req.params.id);
    client.query((`SELECT * FROM laskutustiedot lt INNER JOIN laskutusosoite lo
