@@ -35,10 +35,6 @@ li a {
     <ul class="ylabaari">
       <li class="ylabaari"><a href="/">Etusivu</a> <br></li>
       <li class="ylabaari"><a href="/lisaalasku">Lisää lasku</a> <br></li>
-      <li class="ylabaari"><a href="#">Muokkaa laskua</a> <br></li>
-      <li class="ylabaari"><a href="#">Lähetä lasku</a> <br></li>
-      <li class="ylabaari"><a href="/poistalasku">Poista lasku</a> <br></li>
-      <li class="ylabaari"><a href="#">Tee karhulasku</a> <br></li>
     </ul>
   </div>
 <div class="">
@@ -52,7 +48,6 @@ li a {
                           <option value="false">false</option>
       </select><br>
      <label for="viitenro ">Viitenumero</label><input type="text" name="viitenro" value="{{this.viitenro}}" required maxlength="20"><br>
-     <label for="viivastysmaksu">Viivästysmaksu:</label><input type="number" name="viivastysmaksu" value="{{this.viivastysmaksu}}" ><br>
      <button type="'submit'" name="button">Submit</button>
   </form>
   {{/each}}

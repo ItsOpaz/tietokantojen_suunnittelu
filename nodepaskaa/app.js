@@ -37,15 +37,10 @@ initPassport(passport, (user) => {
   const query = 'select * from jarjestelma_kirjautumistiedot where kayttajatunnus=\'' + user + '\''
   client.query(query, (err, result) => {
     if (err) { throw err }
-
     console.log(result)
-
     return result[0]
   })
-
 })
-
-
 app.get('/', (req, res) => {
   res.render(__dirname + '/views/layouts/home.hbs')
 })
@@ -360,7 +355,7 @@ app.post('/muokkaalasku/:id', (req, res) => {
                erapvm = '${req.body.eraPvm}',
                tila = ${req.body.tila},
                viitenro = '${req.body.viitenro}',
-               viivastysmaksu = ${req.body.viivastysmaksu}
+               viivastysmaksu = NULL
                WHERE laskuid = ${req.body.laskuid}
                `
   console.log(query);
@@ -450,7 +445,6 @@ app.get('/kuukausiraportit', (req, res) => {
       return result.rows
     }).then(mainostajat => {
       res.render(__dirname + "/views/sivut/mainostajat.hbs", { mainostajat, layout: false })
-
     })
 })
 
@@ -489,7 +483,6 @@ app.get('/kuukausiraportit/search/:filter', async (req, res) => {
       }
     })
 })
-
 // Pakko rakentaa tämmönen helper-funktio, jota voi käyttää,
 // jos haluaa monelle kampanjaid:lle hakea mainokset
 // Kunei se perkeleen näkymä toimi tuola kannassa
@@ -502,7 +495,6 @@ const getAds = (campaigns) => {
       .then(adData => {
         return adData.rows
       })
-
   })
   return Promise.all(foo)
 }
@@ -530,14 +522,12 @@ app.get("/kuukausiraportit/:vat", async (req, res) => {
 
   q = `select kampanjaid, nimi, profiiliid, sekuntihinta from mainoskampanja where mainostajaid = '${data.vat}'`
   let campaigns = await client.query(q)
-
   let ads = await getAds(campaigns)
   let summary = {
     yht: 0,
     kokonaispituus: 0,
     price: 0
   }
-
   for (let i = 0; i < ads.length; i++) {
     ads[i].nimi = campaigns.rows[i].nimi
     for (let j = 0; j < ads[i].length; j++) {
