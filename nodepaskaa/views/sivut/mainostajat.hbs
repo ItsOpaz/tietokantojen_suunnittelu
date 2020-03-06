@@ -1,0 +1,76 @@
+<style>
+    .ylabaari {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: rgb(44, 44, 44);
+
+    }
+
+    .ylabaari a {
+        color: white;
+    }
+
+    li.ylabaari {
+        float: left;
+
+    }
+
+    li a {
+
+        display: block;
+        color: black;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+    }
+</style>
+
+<script>
+    const handleClick = (id) => {
+
+    }
+</script>
+
+<body>
+    <div class="">
+        <ul class="ylabaari">
+            <li class="ylabaari"><a href="/">Etusivu</a> <br></li>
+            <li class="ylabaari"><a href="/laskutus">laskutus</a> <br></li>
+            <li class="ylabaari"><a href="/kuukausiraportit">Kuukausiraportti</a> <br></li>
+            <li class="ylabaari"><a href="/mainosesitysraportit">Mainosesitysraportit</a> <br></li>
+        </ul>
+    </div>
+</body>
+
+<h1>Iflac mainostajat</h1>
+
+<div class="search-form">
+    <form method="post">
+
+        <label for="filter"></label>
+        <input type="text" name="filter">
+        <input type="submit" name="etsi" value="Etsi" formaction="/kuukausiraportit/search/">
+    </form>
+
+</div>
+
+<div id='content-wrapper'>
+    <div class='mainokset'>
+        <form method="post">
+            {{#each mainostajat}}
+            <ul>
+                <li> {{{nimi}}} <input type="submit" name="{{vat}}" value="Kuukausiraportti"
+                        formaction="/kuukausiraportit"></li>
+
+            </ul>
+            {{/each}}
+        </form>
+        {{#with error}}
+        <p>{{message}}</p>
+        {{/with}}
+    </div>
+
+
+</div>
