@@ -398,9 +398,16 @@ app.get('/lisaakarhulasku/:id', (req, res) =>{
     var numero = req.params.id
     res.render(__dirname + '/views/sivut/lisaakarhulasku.hbs', { numero, layout: false });
 })
+
 app.post('/lisaakarhulasku/:id', (req, res)=>{
     console.log(req.body);
-    let query = `INSERT INTO karhulasku(karhulaskuid, laskuid, viivastysmaksu, )`
+    let query = `INSERT INTO karhulasku(karhulaskuid, laskuid, viivastysmaksu )
+                VALUES(${req.body.karhulaskuid}, ${req.body.laskuid}, ${req.body.viivastysmaksu})`
+    client.query((query), (err, result)=>{
+      if(err) console.log(err.message);
+      console.log(result.rows);
+    })
+
 })
 app.get('/lahetalasku/:id', (req, res) => {
   console.log(req.params.id);
