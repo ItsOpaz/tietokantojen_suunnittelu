@@ -42,12 +42,11 @@ li a {
     <form class="" action="laskutus" method="post">
       <label for="laskunnumero">Laskun numero</label>
       <input type="number" name="laskunumero" value="" id ="laskunumero">
-
       <button type="submit" name="button">Hae</button>
     </form>
     <form class="" action="laskutus" method="post">
       <label for="laskunnumero">Mainostajan nimi</label>
-      <input type="text" name="mainostaja" value="" id ="mainostaja">
+      <input type="text" name="mainostaja" value="" id ="mainostaja" maxlength="30">
       <button type="submit" name="button">Hae</button>
     </form>
     <form class="" action="laskutus" method="post">
@@ -57,7 +56,6 @@ li a {
     </div>
 
     <div class="laskulista">
-
       <h1>Laskulista:</h1>
       {{#if laskut}}
       {{#each laskut}}
@@ -68,15 +66,12 @@ li a {
             <input type="hidden" name="laskunumero" value="{{this.laskuid}}">
             <button type="submit" name="button">Valitse aktiiviseksi</button>
           </form>
-
       </ul>
       {{/each}}
-
       {{else}}
       <p>Ei mainoskampanjoita tällä nimellä</p>
       {{/if}}
     </div>
-
     <div class="center">
       <h1>Aktiivinen lasku:</h1>
       {{#each lasku}}
@@ -89,16 +84,15 @@ li a {
           <li>mainostaja: {{this.mainostaja}}</li>
           <li>vastaanottaja: {{this.tilaaja}}</li>
           <li>laskutusosoite: {{this.laskutusosoiteid}}</li>
-          <li>mainoskampanja: {{this.mainoskampanja}}</li>
-          <li>Laskutusosoite: {{this.osoite}}, {{this.postinumero}}, {{this.maa}}</li>
+          <li>mainoskampanja: {{this.nimi}}</li>
+          <li>Laskutusosoite: {{this.katuosoite}}, {{this.postinumero}}, {{this.maa}}</li>
+          <li>Laskun summa: {{this.laskun_hinta}} €</li>
           <button type="button" name="button1"> <a href="/muokkaalasku/{{this.laskuid}}">MUOKKAA TÄÄ!</a></button><br>
           <button type="button" name="button2"> <a href="/poistalasku/{{this.laskuid}}">POISTA TÄÄ!</a></button><br>
           <button type="button" name="button3"> <a href="/lahetalasku/{{this.laskuid}}">LÄHETÄ TÄÄ!</a></button> <br>
           <button type="button" name="button4"> <a href="/lisaakarhulasku/{{this.laskuid}}">TEE KARHULASKU TÄÄ!</a></button>
-
       </ul>
       {{/each}}
     </div>
-
   </div>
 </body>
