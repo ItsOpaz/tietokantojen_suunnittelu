@@ -139,6 +139,10 @@ app.post('/laskutus', (req, res) => {
           if (err) console.log(err.message);
           else{
             var tiedot = JSON.parse(JSON.stringify(result.rows));
+            if(tiedot.length == 0 ){
+              res.redirect('/laskutus');
+            }
+            else{
             client.query(('SELECT eraPvm, viitenro, viivastysmaksu FROM lasku WHERE laskuid = $1'), [req.body.laskunumero], (err, result)=>{
               if (err) console.log(err.message);
               else{
@@ -148,7 +152,9 @@ app.post('/laskutus', (req, res) => {
                 tiedot[0].viivastysmaksu = result.rows[0].viivastysmaksu;
               }
             })
-            console.log(tiedot);
+            console.log(tiedot.length);
+
+
             client.query((`SELECT * FROM mainos m  FULL JOIN mainosten_kuuntelukerrat as m_k
                 ON m_k.mainosid = m.mainosid
                 WHERE kampanjaid = $1`),[tiedot[0].kampanjaid], (err, result) =>{
@@ -175,7 +181,7 @@ app.post('/laskutus', (req, res) => {
                 tiedot[0].mainokset = mainokset;
                 lasku = tiedot;
                 res.render(__dirname + '/views/sivut/laskutus.hbs', { lasku, laskut , layout: false })
-            })
+            })}
           }
       })
     }
@@ -199,21 +205,19 @@ app.get('/mainosesitysraportit/:mainosid', (req, res) => {
   inner join esitys e on e.mainosid = m.mainosid
   inner join kuuntelija k on k.nimimerkki = e.kuuntelijatunnus
   left join mainostaja ma on ma.vat = yk.mainostajaid
-  where m.mainosid = ${req.params.mainosid}`
+  where m.mainosid = $1`
 
-  client.query(quer, async (err, result) => {
+  client.query(quer, [req.params.mainosid], async (err, result) => {
     if (err) {
       console.log(err.message)
 
     }
-
     let data = result.rows;
-
     if (data.length == 0) {
       client.query(`select  mk.nimi as kampanja, m.nimi as mainos, ma.nimi as mainostaja from
     mainos m inner join mainoskampanja mk on m.kampanjaid = mk.kampanjaid
     inner join yhdiste_kampanja yk on yk.kampanjaid = m.kampanjaid
-    left join mainostaja ma on ma.vat = yk.mainostajaid where m.mainosid = ${req.params.mainosid}`, (err, result) => {
+    left join mainostaja ma on ma.vat = yk.mainostajaid where m.mainosid = $1`,[req.params.mainosid], (err, result) => {
 
         var empty = {
           msg: "Tällä mainoksella ei ole vielä esityksiä"
@@ -235,7 +239,7 @@ app.get('/mainosesitysraportit/:mainosid', (req, res) => {
       }
 
 
-      const email = await client.query(`select email from yhteyshenkilo where hloid = ${data[0].yhteyshloid}`)
+      const email = await client.query(`select email from yhteyshenkilo where hloid = $1`, [data[0].yhteyshloid])
 
       sapo = email.rows[0].email
 
@@ -322,13 +326,9 @@ Handlebars.registerHelper("each_with", function (items, attr, options, value = "
 
 
 app.get('/kampanjat', (req, res) => {
-
   client.query('select * from mainoskampanja', (err, result) => {
     if (err) console.log(err.message);;
-
-
     if (result.rowCount > 0) {
-
       res.render(__dirname + '/views/sivut/kampanjat.hbs', {
         layout: false, data: result.rows
       })
@@ -355,13 +355,17 @@ app.post('/lisaalasku', (req, res) => {
         viitenro
       )
       VALUES(
-        ${req.body.kampanjaid},
-        null,
-        '${req.body.erapaiva}',
-        false,
-        '${req.body.viitenro}'
+        $1,
+        $2,
+        $3,
+        $4,
+        $5
       )`
-  client.query((qstring), function (err, result) {
+  client.query((qstring), [req.body.kampanjaid,
+  null,
+  req.body.erapaiva,
+  false,
+  req.body.viitenro], function (err, result) {
     if (err) console.log(err.message);;
     console.log('succesful insert');
     res.redirect('/laskutus')
@@ -371,10 +375,10 @@ app.post('/lisaalasku', (req, res) => {
 })
 app.get('/muokkaalasku/:id', (req, res) => {
   console.log('keeneri' + req.params.id);
-  var qstring = `SELECT * FROM lasku WHERE laskuid = ${req.params.id}`;
+  var qstring = `SELECT * FROM lasku WHERE laskuid = $1`;
   console.log(qstring);
-  client.query((qstring), function (err, result) {
-    if (err) console.log(err.message);;
+  client.query((qstring),[req.params.id], function (err, result) {
+    if (err) console.log(err.message);
     var lasku = JSON.parse(JSON.stringify(result.rows));
     console.log(lasku);
     res.render(__dirname + '/views/sivut/muokkaalasku.hbs', { lasku, layout: false })
@@ -383,15 +387,14 @@ app.get('/muokkaalasku/:id', (req, res) => {
 app.post('/muokkaalasku/:id', (req, res) => {
   console.log(req.body);
   var query = `UPDATE lasku
-               SET lahetyspvm = '${req.body.lahetyspvm}',
-               erapvm = '${req.body.eraPvm}',
-               tila = ${req.body.tila},
-               viitenro = '${req.body.viitenro}',
+               SET lahetyspvm = $1,
+               erapvm = $2,
+               tila = $3,
+               viitenro = $4,
                viivastysmaksu = NULL
-               WHERE laskuid = ${req.body.laskuid}
+               WHERE laskuid = $5
                `
-  console.log(query);
-  client.query((query), (err, result) => {
+  client.query((query), [req.body.lahetyspvm, req.body.eraPvm, req.body.tila, req.body.viitenro , req.body.laskuid], (err, result) => {
     if (err) console.log(err.message);
     else {
       console.log("succesful update");
@@ -400,11 +403,10 @@ app.post('/muokkaalasku/:id', (req, res) => {
   })
 })
 app.get('/poistalasku/:id', (req, res) => {
-  console.log(req.body);
-  client.query((`SELECT * FROM lasku WHERE laskuid = ${req.params.id}`), function (err, result, fields) {
-
+  console.log(req.params.id);
+  client.query((`SELECT * FROM lasku WHERE laskuid = $1`), [req.params.id], function (err, result) {
     const asd = result.rows;
-    if (err) console.log(err.message);;
+    if (err) console.log(err.message);
     var laskut = JSON.parse(JSON.stringify(result.rows));
     console.log(laskut);
     res.render(__dirname + '/views/sivut/poistalasku.hbs', { laskut, layout: false })
@@ -416,8 +418,8 @@ app.post('/poistalasku/:id', (req, res) => {
     res.redirect('/laskutus');
   }
   else {
-    var query = `DELETE FROM lasku WHERE laskuid = ${req.body.laskuid}`;
-    client.query((query), (err, result) => {
+    var query = `DELETE FROM lasku WHERE laskuid = $1`;
+    client.query((query), [req.body.laskuid], (err, result) => {
       if (err) console.log(err.message);
       else {
         res.redirect('/laskutus');
@@ -434,10 +436,13 @@ app.get('/lisaakarhulasku/:id', (req, res) =>{
 app.post('/lisaakarhulasku/:id', (req, res)=>{
     console.log(req.body);
     let query = `INSERT INTO karhulasku(karhulaskuid, laskuid, viivastysmaksu )
-                VALUES(${req.body.karhulaskuid}, ${req.body.laskuid}, ${req.body.viivastysmaksu})`
-    client.query((query), (err, result)=>{
+                VALUES($1, $2, $3)`
+    client.query((query),[req.body.karhulaskuid, req.body.laskuid, req.body.viivastysmaksu ], (err, result)=>{
       if(err) console.log(err.message);
-      console.log(result.rows);
+      else{
+        console.log(result.rows);
+
+      }
     })
 
 })
@@ -447,14 +452,14 @@ app.get('/lahetalasku/:id', (req, res) => {
       ON lt.laskutusosoiteid = lo.osoiteid
       INNER JOIN mainoskampanja mk
       ON mk.kampanjaid = lt.kampanjaid
-      WHERE laskuid = ${req.params.id}`), (err, result) => {
+      WHERE laskuid = $1`),[req.params.id], (err, result) => {
     if (err) console.log(err.message);;
     console.log(result.rows);
     var tiedot = JSON.parse(JSON.stringify(result.rows));
     console.log(tiedot[0].kampanjaid);
     client.query((`SELECT * FROM mainos m  FULL JOIN mainosten_kuuntelukerrat as m_k
         ON m_k.mainosid = m.mainosid
-        WHERE kampanjaid = ${tiedot[0].kampanjaid}`), (err, result) =>{
+        WHERE kampanjaid = $1`), [tiedot[0].kampanjaid], (err, result) =>{
         if(err) console.log(err.message);;
         console.log(result.rows);
         var mainokset = JSON.parse(JSON.stringify(result.rows));
