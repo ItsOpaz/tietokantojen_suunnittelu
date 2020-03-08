@@ -445,7 +445,7 @@ app.post('/lisaakarhulasku/:id', (req, res)=>{
       if(err) console.log(err.message);
       else{
         console.log(result.rows);
-
+        res.redirect('/laskutus')
       }
     })
 
