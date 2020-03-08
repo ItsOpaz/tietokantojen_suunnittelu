@@ -392,7 +392,7 @@ app.post('/muokkaalasku/:id', (req, res) => {
                erapvm = $2,
                tila = $3,
                viitenro = $4,
-               viivastysmaksu = NULL
+               korko = NULL
                WHERE laskuid = $5
                `
   client.query((query), [req.body.lahetyspvm, req.body.eraPvm, req.body.tila, req.body.viitenro , req.body.laskuid], (err, result) => {
