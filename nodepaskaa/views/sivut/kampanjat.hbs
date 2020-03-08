@@ -1,0 +1,107 @@
+<html>
+
+<head>
+
+    <script>
+
+
+        let content = []
+        window.onload = () => {
+            vittu()
+        }
+
+        const handleClick = (kampanjaid, nimi) => {
+            document.getElementById('1').innerHTML = nimi
+        }
+    </script>
+
+    <style>
+        .nav li {
+            list-style: none;
+            float: left;
+            margin: 5px 10px;
+        }
+
+        .list-element {
+            list-style: none;
+        }
+
+        .list-element:hover {
+            background-color: #666666;
+            cursor: pointer;
+        }
+
+        .selected {
+            margin: 100px 100px;
+        }
+
+        .selected ul {
+            list-style: none;
+        }
+
+        td {
+            padding: 25px 25px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+
+    <h1>Iflac kampanjat</h1>
+
+    <ul class="nav">
+        <li><a href="/">Etusivu</a></li>
+        <li><a href="mainokset">mainokset</a></li>
+        <li><a href="mainostajat">mainostajat</a></li>
+        <li><a href="kuukausiraportit">kuukausiraportit</a></li>
+        <li><a href="/laskutus">laskutus</a></li>
+
+    </ul>
+
+
+
+    <div class='content-wrapper'>
+        <br>
+        <h4>Kampanjat</h4>
+
+        <form action="kampanja" method="post">
+            <label for="name-filter">Etsi kampanjan nimellä</label>
+            <input type="text" name="name-filter">
+            <input type="button" value="etsi">
+
+        </form>
+
+        <div id='kampanjat'>
+            {{#each data }}
+            <ul>
+                <li class="list-element" onclick="handleClick('{{kampanjaid}}', '{{nimi}}')"> {{{nimi}}} </li>
+
+            </ul>
+            {{/each}}
+        </div>
+
+
+        <div class="selected">
+
+            <div class="btns">
+                <button>tiedot</button>
+                <button>profiili</button>
+                <button>mainokset</button>
+                <button>muokkaa</button>
+                <button>poista</button>
+                <button>käynnistä/pysäytä</button>
+            </div>
+            <ul>
+                <li>
+                    <h3 id="1"></h3>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+
+</body>
+
+</html>

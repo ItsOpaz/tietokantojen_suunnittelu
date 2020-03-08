@@ -1,0 +1,47 @@
+<title>Lisaa Lasku</title>
+<style>
+.ylabaari {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+}
+
+li.ylabaari  {
+  float: left;
+}
+
+li a {
+
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+</style>
+<body>
+    <div class="">
+      <ul class="ylabaari">
+        <li class="ylabaari"><a href="/">Etusivu</a> <br></li>
+        <li class="ylabaari"><a href="/laskutus">Laskutus</a> <br></li>
+      </ul>
+    </div>
+    <div class="karhulasku">
+
+      <form class="form" action="lisaakarhulasku" method="post">
+        <input type="hidden" name="laskuid" value="{{numero}}">
+        <input type="hidden" name="karhulaskuid" value="{{numero}}">
+        <label for="erapvm">Eräpäivä: </label>
+         <input type="date" name="erapvm" value="" required> <br>
+        <label for="viitenro">Viitenumero: </label>
+        <input type="text" name="viitenro" value="" maxlength="20" required> <br>
+        <label for="viivastysmaksu">Viivästysmaksu: </label>
+        <input type="number" name="viivastysmaksu" value="" required> <br>
+        <input type="submit" name="tallenna" value="Tallenna">
+      </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<title>Lisaa Lasku</title>
+<style>
+.ylabaari {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+}
+
+li.ylabaari  {
+  float: left;
+}
+
+li a {
+
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+</style>
+<body>
+    <div class="">
+      <ul class="ylabaari">
+        <li class="ylabaari"><a href="/">Etusivu</a> <br></li>
+        <li class="ylabaari"><a href="/laskutus">Laskutus</a> <br></li>
+      </ul>
+    </div>
+    <div class="">
+      {{#each kampanjat}}
+      <ul>
+        <li>Kampanjan nimi: {{this.nimi}}</li>
+        <form class="" action="lisaalasku" method="post">
+          <label for="erapaiva">Eräpäivä:</label> <input type="date" name="erapaiva" value="" required>
+          <label for="viitenro">Viitenumero:</label> <input type="text" name="viitenro" value=""maxlength="20" required>
+
+          <input type="hidden" name="kampanjaid" value="{{this.kampanjaid}}">
+          <button type="submit" name="button">Lisää lasku</button>
+        </form>
+
+      </ul>
+      {{/each}}
+    </div>
+</body>
+</html>

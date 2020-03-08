@@ -1,0 +1,88 @@
+<style>
+    #mainostaja-info {
+        list-style: none;
+    }
+
+    .mainos-info ul {
+        list-style: none;
+    }
+
+    .ylabaari {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: silver;
+
+    }
+
+    li.ylabaari {
+        float: left;
+
+    }
+
+    li a {
+
+        display: block;
+        color: black;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+    }
+
+    h3 {
+        display: block;
+        padding: 10px 25px;
+    }
+</style>
+
+<div class="">
+    <ul class="ylabaari">
+        <li class="ylabaari"><a href="/">Etusivu</a> <br></li>
+        <li class="ylabaari"><a href="/laskutus">laskutus</a> <br></li>
+        <li class="ylabaari"><a href="/mainokset">mainokset</a> <br></li>
+        <li class="ylabaari"><a href="/mainosesitysraportit">Mainosesitysraportit</a> <br></li>
+    </ul>
+</div>
+
+<h4>Kuukausiraportti {{{date.day}}}.{{{date.month}}}.{{{date.year}}}</h4>
+
+{{#with data}}
+
+<div>
+    <ul id="mainostaja-info">
+        <li>{{this.nimi}}</li>
+        <li>{{this.katuosoite}}</li>
+        <li>{{this.postinumero}} {{this.postitoimipaikka}}</li>
+    </ul>
+</div>
+{{/with}}
+<p>--------------------------------------</p>
+<div class="mainos-info">
+
+    <ul>
+        {{#each ads}}
+        <h4>{{nimi}}</h4>
+        {{#each this}}
+        <li>Mainoksen nimi: {{this.nimi}}</li>
+        <li>Lähetysaika {{this.alku}}, {{this.loppu}}</li>
+        <li>Mainoksen pituus: {{this.pituus}}s</li>
+        <li>Vastaanotettu: {{this.lkm}} kertaa</li>
+        <li>Mainoksen hinta: {{this.hinta}}€</li>
+        <br>
+        {{/each}}
+        <br>
+        {{/each}}
+
+    </ul>
+    <p>--------------------------------------</p>
+    <h3>Yhteenveto</h3>
+    {{#with summary}}
+    <ul>
+        <li>Esityksiä yhteentä: {{yht}}kpl</li>
+        <li>kokonaispituus: {{kokonaispituus}}s</li>
+        <li>Kokonaishinta: {{price}}€</li>
+    </ul>
+    {{/with}}
+
+</div>

@@ -1,3 +1,60 @@
+3B suunnittelua 30.1.2010->
+
+1.5.1 Laskun lisääminen
+-vastaako nyt luotu laskutettavat-view tähän eli käyttäjälle näytetään sen tulokset listana?
+        Olli: kyllä vastaa
+-käyttäjä valitsee mainoskampanjan klikkaamalla ja jotenkin otetaan tämän kampanjaid talteen
+-käyttäjältä kysytään syötteinä eräpvm ja viitenro, jotka myös otetaan muuttujiin?
+-INSERT INTO lasku VALUES(kampanjaid-muuttuja, NULL, eräpvm-muuttuja, viitenro-muuttuja, korko? (miten?)
+        Olli: korkoo ei tarvi olla, ainakaan esimerkeissä ei mainittu
+-tämä lisäys pitää heti näkyä laskulistassa (mutta laskulistaa ei kai tarvitse näyttää screenillä?)
+--> tällä hetkellä laskuissamme ei ole summaa? (koska laskurivitaulu poistettiin?)
+        Olli: summa lasketaan mainoskampanjan_mainokset taulun mainosten kokonaishinnoista
+        Joonas: Pointti tässä siis se, että kun lasku lähetetään, niin siinä ei ole kokonaissummaa
+                lisätäänkö siis laskuun "summa" sarake vai antaako olla näi miten on?
+        Olli: kampanjahinnat taulusta löytyy kampanjaId:llä kampanjan kokonaishinta
+
+1.5.2 Laskun muokkaaminen
+-käyttäjä valitsee UI:sta "muokkaa" ja antaa uuden arvon. 
+-Javascript kirjoittaa SQL-(update?)lauseen ja lähettää sen Postgresql-rajapinnan kautta querynä? Tapahtunee enteriä painamalla
+-kohdistin (ei hiiri!) siirtyy enteriä painamalla seuraavaan kenttään
+
+1.5.3 Laskun lähettäminen
+-pitänee tehdä vielä kantaan view, jossa kaikki tiedot haluttavista asioista (katso malli 1.5.3 kohdasta)
+        Olli: laskutustiedot ja mainoskampanjan_mainokset viewit palauttaa juuri nämä,
+            - täytyy lisätä profiilista haettava lähetysaika vielä tähän
+        Joonas: Pohdittiin sellaista asiaa, että esim laskun tilanteessa näkymässä ei näy kokonaissummaa vai katsonko väärää näkymää?
+                Summa siis löytyy jostain näkymästä, mutta sieltä puuttui sit jotain muuta
+-view tallennetaan tietorakenteeseen, ja sitten ne haetaan UI näkyviin halutussa mallimuodossa
+-kun käyttäjä klikkaa "lähetä" niin laskutauluun päivitetään lähetyspvm
+-laskun "lähetys" ei varmaankaan oikeasti sitten tee mitään sähköpostia?
+
+
+1.5.4 Laskun poistaminen
+-asiakas valitsee "poista lasku" ja printataan message box missä kysytään varmistusta
+-jos valitsee kyllä, niin lasku poistetaan laskutaulusta, JOS ei liity karhulaskua
+-jos liittyy karhulasku niin heitetään erroria
+        Olli: count(laskuId) from karhulasku
+-jos valitsee ei niin sitten vaan suljetaan message box
+
+
+
+1.5.5 Karhulaskun lisääminen
+-valitaan lasku, jolle tehdään karhulasku
+-syötetään eräpäivä, viite ja viivästysmaksun suuruus
+-INSERT INTO lasku VALUES(kampanjaid(vanhasta laskusta), now(), eräpvm-muuttuja, false, viitenro-muuttuja, viivastysmaksu
+-triggeri, joka asettaa alkuperäisen laskun tilan trueksi ja lisää molemmat id:t karhulasku tauluun
+
+1.6 Kk-raportin lähettäminen (taloussihteeri tai mainosmyyjä, pitänee toteuttaa?)
+- tämän voi hakee kampanjan_mainokset viewistä tiedot
+
+1.7 Mainosesitysraportin lähettäminen  (taloussihteeri tai mainosmyyjä, pitänee toteuttaa?)
+-tämä helppo tehdä viewillä, joka palauttaa kaikki esitykset ja funktiolla
+-funktio SELECT (syötetyt parametrit) FROM VIEW where mainosId tai kampanjaId on tietyt
+-tässä ongelma, sillä esitystä ei ole linkitetty kappaleeseen, vaikka pitäis olla
+
+
+
 MUUTOKSET
 
 28.1.2020
@@ -55,5 +112,3 @@ myös laskun ja laskurivien poiston.
 
 Mainoskampanjaa luodessa yhdiste_kampanja tauluun laskuId pitää asettaa NULL, 
 koska lasku voidaan luoda vasta kampanjan loputtua
-
-create viewit auttaa kyselyissä, ei vielä ajettu kantaan, eikä testattu

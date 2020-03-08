@@ -1,0 +1,65 @@
+<style>
+  .ylabaari {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: rgb(44, 44, 44);
+
+  }
+
+  .ylabaari a {
+    color: white;
+  }
+
+  li.ylabaari {
+    float: left;
+
+  }
+
+  li a {
+
+    display: block;
+    color: black;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+  }
+</style>
+
+<script>
+  const handleClick = (id) => {
+
+  }
+</script>
+
+<body>
+  <div class="">
+    <ul class="ylabaari">
+      <li class="ylabaari"><a href="/">Etusivu</a> <br></li>
+      <li class="ylabaari"><a href="/laskutus">laskutus</a> <br></li>
+      <li class="ylabaari"><a href="/kuukausiraportit">Mainostajat</a> <br></li>
+      <li class="ylabaari"><a href="/lisaa">lisaa mainos</a> <br></li>
+    </ul>
+  </div>
+</body>
+
+<h1>Iflac mainokset</h1>
+
+
+<div id='content-wrapper'>
+
+
+  <div class='mainokset'>
+    <form method="post">
+      {{#each data}}
+      <ul>
+        <li> {{{nimi}}} <input type="submit" name="{{mainosid}}" value="Mainosraportti" formaction="/mainokset"></li>
+
+      </ul>
+      {{/each}}
+    </form>
+
+  </div>
+
+</div>

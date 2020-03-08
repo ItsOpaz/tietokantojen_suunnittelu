@@ -1,0 +1,55 @@
+<div class="">
+
+  <style>
+  .ylabaari {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+  }
+
+  li.ylabaari  {
+    float: left;
+  }
+
+  li a {
+
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+  }
+
+  /* Change the link color to #111 (black) on hover */
+
+  </style>
+  <body>
+      <div class="">
+        <ul class="ylabaari">
+          <li class="ylabaari"><a href="/">Etusivu</a> <br></li>
+          <li class="ylabaari"><a href="/laskutus">Laskutus</a> <br></li>
+        </ul>
+      </div>
+
+  <div class="laskut">
+    {{#each laskut}}
+    <ul>
+      <h4>Poista Lasku ID: {{this.laskuid}}</h2>
+      <li>{{this.lahetyspvm}}</li>
+      <li>{{this.erapvm}}</li>
+      <li>{{this.tila}}</li>
+      <li>{{this.viitenro}}</li>
+      <li>{{this.viivastysmaksu}}</li>
+      <li>{{this.kampanjaid}}</li>
+      <form method="POST" action="poistalasku">
+        <label for="">Haluatko varmasti poistaa laskun {{this.laskuid}} ja kaikki laskuun liittyvät tiedot?</label><br>
+        <input type="hidden" name="laskuid" value="{{this.laskuid}}">
+        <input type="submit" name="vastaus" value="Kylla" >
+        <input type="submit" name="vastaus" value="Ei">
+                    </form>
+    </ul>
+    {{/each}}
+  </div>
+</div>

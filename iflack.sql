@@ -19,11 +19,11 @@ CREATE TABLE jarjestelma_kayttaja (
   tila BOOLEAN
 );
 
-CREATE EXTENSION chkpass;
+--CREATE EXTENSION chkpass;
 -- Kirjautumistiedot
 CREATE TABLE jarjestelma_kirjautumistiedot (
   kayttajatunnus VARCHAR(30) PRIMARY KEY,
-  salasana chkpass NOT NULL,
+  salasana text NOT NULL,
   FOREIGN KEY(kayttajatunnus) REFERENCES jarjestelma_kayttaja(kayttajatunnus) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -130,17 +130,22 @@ CREATE TABLE mainoskampanja(
   FOREIGN Key(profiiliId) REFERENCES profiili(profiiliId) ON UPDATE CASCADE ON DELETE SET NULL
 );
 
+alter table mainoskampanja add column mainostajaid varchar(30);
+alter table mainoskampanja add CONSTRAINT mainostajaid_fk FOREIGN key(mainostajaid) references mainostaja(vat);
+
 -- laskussa viivästysmaksu, joka tulee vain jos laskusta tehdään karhulasku, joka
 -- on normi lasku, mutta yhdistetty alkuperäiseen laskuun karhulasku taulussa
 -- ratkaisu tehty, jotta laskuja on helppo ketjuttaa
 CREATE TABLE lasku(
   laskuId SERIAL PRIMARY KEY,
+  kampanjaid int,
   -- laskun lähetetään oletettavasti luontipäivänä
   lahetyspvm DATE DEFAULT NOW(),
   eraPvm DATE,
   tila boolean,
   viitenro VARCHAR(20),
-  viivastysmaksu numeric DEFAULT NULL
+  viivastysmaksu numeric DEFAULT NULL,
+  FOREIGN key(kampanjaid) REFERENCES mainoskampanja(kampanjaid) on delete no action
 );
 
 CREATE TABLE jingle (

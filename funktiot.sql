@@ -277,6 +277,8 @@ DECLARE
 	moneyLeft numeric;
 	adPrice int;
 	adLength time;
+	sec int;
+	p numeric;
 	
 	kid int;
 
@@ -289,9 +291,11 @@ BEGIN
 	update mainos m set esitysaika = cast((esitysaika + adLength::interval) as time) where m.mainosid = new.mainosid;
 
 	-- Nyt lasketaan mainoksesta aiheutuva kustannus ja vähennetään se määrärahoista
-
-	adPrice = ((select to_seconds(adLength)) * (select sekuntihinta from mainoskampanja mk, mainos m where mk.kampanjaid = m.kampanjaid and m.mainosid = new.mainosid));
-	raise notice 'ad price: %', adPrice;
+	sec = (select to_seconds(adLength));
+	p = (select sekuntihinta from mainoskampanja mk, mainos m where mk.kampanjaid = m.kampanjaid and m.mainosid = new.mainosid);
+	raise notice 'sec : %', sec;
+	raise notice 'price: %', p;
+	adPrice = sec*p;
 
 	-- kampanja id
 	kid = (select kampanjaid from mainos m where m.mainosid = new.mainosid);
@@ -334,3 +338,18 @@ $body$ LANGUAGE plpgsql;
 
 create trigger kampanjalla_rahaa_tr after insert or update on mainoskampanja
 	for each row execute procedure onko_kampanjalla_rahaa();
+
+
+create or replace function yhdista_kampanja() returns trigger as
+$$
+declare
+	lasku int;
+BEGIN
+	lasku = (select laskuid from lasku where kampanjaid = new.kampanjaid);
+	insert into yhdiste_kampanja values(new.kampanjaid, new.mainostajaid, null, lasku);
+end
+$$ LANGUAGE plpgsql;
+
+
+create trigger yhdista_kampanja_tr after insert on mainoskampanja
+	for each row execute procedure yhdista_kampanja();
