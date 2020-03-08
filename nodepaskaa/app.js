@@ -1,21 +1,6 @@
 const express = require('express');
 const app = express();
 const pg = require('pg');
-<<<<<<< HEAD
-var conString = "postgres://postgres:asdsad@localhost:5432/tika";
-var client = new pg.Client(conString);
-client.connect();
-
-app.get( '/' ,(req, res) => {
-   client.query(('SELECT * FROM mainos'), function (err, result, fields) {
-    if (err) throw err;
-    var data = result.rows;
-    console.log(result.rows);
-    res.sendFile(__dirname+'/views/home.html', {data});
-  });
-  //res.sendFile(__dirname+'/views/home.html')
-
-=======
 const parser = require('body-parser')
 const hbs = require('express-handlebars')
 const Handlebars = require('handlebars')
@@ -65,7 +50,7 @@ app.get('/mainokset', (req, res) => {
     var data = JSON.parse(JSON.stringify(result.rows));
     res.render(__dirname + '/views/sivut/mainokset.hbs', { data: data, layout: false });
   });
->>>>>>> react-dev
+
 });
 
 app.post("/mainokset", (req, res) => {
@@ -85,7 +70,7 @@ app.post('/lisaa', (req, res) => {
     req.body.kuvaus,req.body.esitysaika, req.body.jingle] ,
     (err, result) => {
       if (err) {
-        console.log(err.message);;
+        console.log(err.message);
       }
       else (console.log("succes"));
     });
