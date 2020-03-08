@@ -420,7 +420,10 @@ app.post('/poistalasku/:id', (req, res) => {
   else {
     var query = `DELETE FROM lasku WHERE laskuid = $1`;
     client.query((query), [req.body.laskuid], (err, result) => {
-      if (err) console.log(err.message);
+      if (err){
+        console.log(err.message);
+        res.redirect('/laskutus')
+      }
       else {
         res.redirect('/laskutus');
       }
