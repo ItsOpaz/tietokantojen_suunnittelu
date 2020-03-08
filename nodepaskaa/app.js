@@ -144,7 +144,7 @@ app.post('/laskutus', (req, res) => {
               res.redirect('/laskutus');
             }
             else{
-            client.query(('SELECT eraPvm, viitenro, viivastysmaksu FROM lasku WHERE laskuid = $1'), [req.body.laskunumero], (err, result)=>{
+            client.query(('SELECT eraPvm, viitenro, korko FROM lasku WHERE laskuid = $1'), [req.body.laskunumero], (err, result)=>{
               if (err) console.log(err.message);
               else{
                 console.log(result.rows);
